@@ -1,8 +1,9 @@
-name: RM Observe — Read-Only State Collection
+name: RM Observe — State Collection + Availability Refresh
 
 on:
   schedule:
     - cron: '0 */4 * * *'  # Every 4 hours
+    - cron: '0 */2 * * *'  # Every 2 hours — availability refresh
   workflow_dispatch:
 
 permissions:
@@ -54,6 +55,35 @@ jobs:
             'state_hash': state.state_hash,
           }, indent=2))
           " || echo "State collection failed"
+
+      - name: Refresh availability
+        env:
+          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+        run: |
+          python3 -c "
+          from rm_traffic.api_client import RentMasseurAPI
+          from rm_traffic.state_engine import collect_state
+          import json
+
+          api = RentMasseurAPI()
+          state = collect_state(api)
+
+          if not state.measurement_valid:
+              print('::warning::Measurement invalid — skipping availability refresh')
+              exit(0)
+
+          if state.available_status != 'Available':
+              print(f'◉ Status is \"{state.available_status}\" — setting to Available (6h)')
+              api.set_availability(option=1, duration=5)
+              print('◆ Availability set to Available (6h)')
+          elif state.availability_seconds_left < 3600:
+              print(f'◉ Availability expiring in {state.availability_seconds_left:.0f}s — refreshing')
+              api.set_availability(option=1, duration=5)
+              print('◆ Availability refreshed to Available (6h)')
+          else:
+              print(f'◉ Already Available with {state.availability_seconds_left:.0f}s remaining — no action needed')
+          " || echo "Availability refresh failed"
 
       - name: Build visitor revisit queue
         env:
