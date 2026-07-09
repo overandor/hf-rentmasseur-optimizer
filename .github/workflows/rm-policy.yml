@@ -34,19 +34,26 @@ jobs:
       - name: Policy 1 — No cloud on private client text
         run: |
           python3 -c "
-          import inspect
+          import inspect, re
           from rm_traffic.reply_drafter import _try_local_llm_polish, draft_reply
           from rm_traffic.visitor_revisit_engine import build_revisit_queue
 
-          # Check reply_drafter has no cloud providers
-          src = inspect.getsource(_try_local_llm_polish)
-          assert 'groq' not in src.lower(), 'POLICY VIOLATION: Groq in private text path'
-          assert 'openrouter' not in src.lower(), 'POLICY VIOLATION: OpenRouter in private text path'
+          def strip_comments(src):
+            lines = []
+            for line in src.split('\n'):
+              stripped = line.split('#')[0]
+              lines.append(stripped)
+            return '\n'.join(lines)
+
+          # Check reply_drafter has no cloud provider CALLS (not comments)
+          src = strip_comments(inspect.getsource(_try_local_llm_polish))
+          assert 'groq' not in src.lower(), 'POLICY VIOLATION: Groq call in private text path'
+          assert 'openrouter' not in src.lower(), 'POLICY VIOLATION: OpenRouter call in private text path'
 
           # Check visitor_revisit_engine has no cloud
-          src2 = inspect.getsource(build_revisit_queue)
-          assert 'groq' not in src2.lower(), 'POLICY VIOLATION: Groq in visitor engine'
-          assert 'openrouter' not in src2.lower(), 'POLICY VIOLATION: OpenRouter in visitor engine'
+          src2 = strip_comments(inspect.getsource(build_revisit_queue))
+          assert 'groq' not in src2.lower(), 'POLICY VIOLATION: Groq call in visitor engine'
+          assert 'openrouter' not in src2.lower(), 'POLICY VIOLATION: OpenRouter call in visitor engine'
 
           print('✅ Policy 1: No cloud on private text — PASS')
           "
