@@ -1,0 +1,264 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* ProofWalletConciergeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* ProofWalletConciergeApp.swift */; };
+		A10000000000000000000002 /* ProofModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* ProofModels.swift */; };
+		A10000000000000000000003 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* APIClient.swift */; };
+		A10000000000000000000004 /* CoreMLClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* CoreMLClassifier.swift */; };
+		A10000000000000000000005 /* MLXEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* MLXEngine.swift */; };
+		A10000000000000000000006 /* ConciergeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ConciergeStore.swift */; };
+		A10000000000000000000007 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* Views.swift */; };
+		/* End PBXBuildFile section */
+
+		/* Begin PBXFileReference section */
+		A10000000000000000000020 /* ProofWalletConcierge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProofWalletConcierge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000011 /* ProofWalletConciergeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofWalletConciergeApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000012 /* ProofModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofModels.swift; sourceTree = "<group>"; };
+		A10000000000000000000013 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		A10000000000000000000014 /* CoreMLClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLClassifier.swift; sourceTree = "<group>"; };
+		A10000000000000000000015 /* MLXEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXEngine.swift; sourceTree = "<group>"; };
+		A10000000000000000000016 /* ConciergeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConciergeStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000017 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
+		/* End PBXFileReference section */
+
+		/* Begin PBXGroup section */
+		A10000000000000000000030 /* ProofWalletConcierge */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000040 /* Sources */,
+				A10000000000000000000050 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000050 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000020 /* ProofWalletConcierge.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000040 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000041 /* ProofWalletConcierge */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000041 /* ProofWalletConcierge */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000011 /* ProofWalletConciergeApp.swift */,
+				A10000000000000000000012 /* ProofModels.swift */,
+				A10000000000000000000013 /* APIClient.swift */,
+				A10000000000000000000014 /* CoreMLClassifier.swift */,
+				A10000000000000000000015 /* MLXEngine.swift */,
+				A10000000000000000000016 /* ConciergeStore.swift */,
+				A10000000000000000000017 /* Views.swift */,
+			);
+			path = ProofWalletConcierge;
+			sourceTree = "<group>";
+		};
+		/* End PBXGroup section */
+
+		/* Begin PBXNativeTarget section */
+		A10000000000000000000060 /* ProofWalletConcierge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000070 /* Build configuration list for PBXNativeTarget "ProofWalletConcierge" */;
+			buildPhases = (
+				A10000000000000000000061 /* Sources */,
+				A10000000000000000000062 /* Frameworks */,
+				A10000000000000000000063 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ProofWalletConcierge;
+			productName = ProofWalletConcierge;
+			productReference = A10000000000000000000020 /* ProofWalletConcierge.app */;
+			productType = "com.apple.product-type.application";
+		};
+		/* End PBXNativeTarget section */
+
+		/* Begin PBXProject section */
+		A10000000000000000000080 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = A10000000000000000000090 /* Build configuration list for PBXProject "ProofWalletConcierge" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = ("en", "Base");
+			mainGroup = A10000000000000000000030 /* ProofWalletConcierge */;
+			productRefGroup = A10000000000000000000050 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000060 /* ProofWalletConcierge */,
+			);
+		};
+		/* End PBXProject section */
+
+		/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* ProofWalletConciergeApp.swift in Sources */,
+				A10000000000000000000002 /* ProofModels.swift in Sources */,
+				A10000000000000000000003 /* APIClient.swift in Sources */,
+				A10000000000000000000004 /* CoreMLClassifier.swift in Sources */,
+				A10000000000000000000005 /* MLXEngine.swift in Sources */,
+				A10000000000000000000006 /* ConciergeStore.swift in Sources */,
+				A10000000000000000000007 /* Views.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		/* End PBXSourcesBuildPhase section */
+
+		/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000062 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		/* End PBXFrameworksBuildPhase section */
+
+		/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000063 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		/* End PBXResourcesBuildPhase section */
+
+		/* Begin XCBuildConfiguration section */
+		A10000000000000000000091 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A10000000000000000000092 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A10000000000000000000071 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ProofWallet;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.proofwallet.concierge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A10000000000000000000072 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ProofWallet;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.proofwallet.concierge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		/* End XCBuildConfiguration section */
+
+		/* Begin XCConfigurationList section */
+		A10000000000000000000090 /* Build configuration list for PBXProject "ProofWalletConcierge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000091 /* Debug */,
+				A10000000000000000000092 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000070 /* Build configuration list for PBXNativeTarget "ProofWalletConcierge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000071 /* Debug */,
+				A10000000000000000000072 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		/* End XCConfigurationList section */
+	};
+	rootObject = A10000000000000000000080 /* Project object */;
+}

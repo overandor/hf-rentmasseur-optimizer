@@ -1,0 +1,15 @@
+workflow: JorkiFullGateway
+intent: index a local file, upload the compact index, verify integrity, search, retrieve chunk, revoke access, confirm revocation
+step 1: index file → local_index
+step 2: compute hash → merkle_root
+step 3: upload index to gateway → query_gateway
+step 4: verify hash integrity → verified
+step 5: read meta → meta_result
+step 6: read summary → summary_result
+step 7: search index → search_result
+step 8: retrieve chunk 0 → chunk_result
+step 9: revoke access → revoke_result
+step 10: confirm revoke 404 closed → confirm_result
+artifact: query_gateway
+receipt: SHA256 chained from step 1 through step 10
+value: local file indexed, queryable, revoked — full lifecycle proven

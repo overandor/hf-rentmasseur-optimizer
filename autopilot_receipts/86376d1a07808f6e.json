@@ -1,0 +1,14 @@
+{
+  "id": "86376d1a07808f6e",
+  "stage": "govern",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T19:42:22.624470Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

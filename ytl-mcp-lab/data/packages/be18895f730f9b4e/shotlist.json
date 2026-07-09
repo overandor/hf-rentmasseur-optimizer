@@ -1,0 +1,50 @@
+{
+  "script_id": "1c681d737be089ab",
+  "shots": [
+    {
+      "section": "hook",
+      "shot_type": "talking_head",
+      "duration_s": 7,
+      "visual_notes": "Visual for hook: Open with the core tension: AI coding tools improve producti",
+      "b_roll_needed": false
+    },
+    {
+      "section": "context",
+      "shot_type": "b_roll",
+      "duration_s": 20,
+      "visual_notes": "Visual for context: Establish why this matters now",
+      "b_roll_needed": true
+    },
+    {
+      "section": "evidence",
+      "shot_type": "b_roll",
+      "duration_s": 60,
+      "visual_notes": "Visual for evidence: Present the data, demo, or proof",
+      "b_roll_needed": true
+    },
+    {
+      "section": "implication",
+      "shot_type": "b_roll",
+      "duration_s": 30,
+      "visual_notes": "Visual for implication: What this means for the audience",
+      "b_roll_needed": true
+    },
+    {
+      "section": "payoff",
+      "shot_type": "b_roll",
+      "duration_s": 15,
+      "visual_notes": "Visual for payoff: Deliver the resolution promised in the hook",
+      "b_roll_needed": true
+    },
+    {
+      "section": "cta",
+      "shot_type": "talking_head",
+      "duration_s": 8,
+      "visual_notes": "Visual for cta: Clear, specific next action",
+      "b_roll_needed": false
+    }
+  ],
+  "total_shots": 6,
+  "b_roll_count": 4,
+  "generated_at": "2026-06-25T02:56:57Z"
+}

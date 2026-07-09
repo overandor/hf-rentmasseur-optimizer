@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.venv
+.conda
+data/
+receipts/
+RUNS/
+LOGS/
+SPEC/
+tests/
+*.db
+*.sqlite
+*.zip
+*.dmg

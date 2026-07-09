@@ -1,0 +1,10 @@
+▷ GlyphLockCodec
+  □ → Γdict(□)
+  Γdict → Czip
+  Czip → Ekey(Czip)
+  Ekey Æ Rpublic
+  Rpublic Æ TOTP
+  TOTP → ◎unfold
+  ◎unfold ≡ □
+  ⊙̂ ◎unfold
+◀

@@ -1,0 +1,14 @@
+{
+  "id": "8d545e06d9acc118",
+  "stage": "govern",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T21:01:31.296031Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

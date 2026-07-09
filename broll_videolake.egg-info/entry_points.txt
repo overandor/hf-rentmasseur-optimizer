@@ -1,0 +1,4 @@
+[console_scripts]
+broll = broll.__main__:main
+videolake = broll.__main__:main
+youtube-os = broll.__main__:main

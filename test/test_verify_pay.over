@@ -1,0 +1,9 @@
+# OverLanguage test: verify and pay workflow
+workflow: TestVerifyPay
+intent: test verification and payment workflow
+step 1: hash file → file_hash
+step 2: verify hash → verified
+step 3: issue payment → payment_receipt
+artifact: payment_receipt
+receipt: SHA256 chained from step 1 to step 3
+value: test passes if hash verified and payment issued

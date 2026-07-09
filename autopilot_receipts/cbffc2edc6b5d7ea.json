@@ -1,0 +1,10 @@
+{
+  "id": "cbffc2edc6b5d7ea",
+  "stage": "build",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T20:23:57.817384Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ScreenPulse/.build/release/ScreenPulse",
+  "binary_size": 91720,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ScreenPulse/build.log"
+}

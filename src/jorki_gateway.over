@@ -1,0 +1,23 @@
+# OverLanguage: JORKI file gateway workflow
+# Local file → compact index → query gateway → LLM selective retrieval
+
+workflow: JorkiFileGateway
+intent: let LLMs query huge files by URL/index without full upload
+
+step 1: right-click file in Finder → file_selected
+step 2: local C++ engine creates compact searchable index → local_index
+step 3: compute SHA256 and Merkle root → file_identity
+step 4: upload index to Hugging Face Space → query_gateway
+step 5: LLM reads /meta endpoint → file_metadata
+step 6: LLM reads /summary endpoint → file_summary
+step 7: LLM searches /search for candidate locations → search_results
+step 8: LLM retrieves /chunk for necessary ranges → file_chunks
+step 9: LLM queries /query/sql for read-only SELECT → sql_results
+step 10: verify merkle_root and receipt fields → integrity_verified
+step 11: revoke URL when session ends → url_revoked
+step 12: confirm post-revoke 404 → access_closed
+
+artifact: query_gateway
+artifact: file_identity
+receipt: SHA256 chained from file selection to revocation confirmation
+value: AI file gateway for large local artifacts — not file transfer, context transfer

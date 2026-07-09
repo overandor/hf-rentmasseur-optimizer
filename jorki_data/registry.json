@@ -1,0 +1,24 @@
+{
+  "bd34034b31e2": {
+    "filename": "forge.py",
+    "merkle_root": "bd34034b31e23032cb4ca1dcb17c33ffcebc124bc6953da46de3143f948e0c7b",
+    "indexed_at": 1782508220.511276,
+    "status": "active",
+    "index_path": "jorki_data/indexes/bd34034b31e2.idx"
+  },
+  "9df7315ee91f": {
+    "filename": "jorki_1gb_test.bin",
+    "merkle_root": "9df7315ee91fca4cd7a206a91c8c352bedb77144b254ef822bcb3d6abba4f40c",
+    "indexed_at": 1782508760.917249,
+    "status": "revoked",
+    "index_path": "jorki_data/indexes/9df7315ee91f.idx",
+    "revoked_at": 1782508761.0122728
+  },
+  "f0810e7866d2": {
+    "filename": "jorki_100mb_text.txt",
+    "merkle_root": "f0810e7866d2b9621982406af3602a4c4ca823c0debcedde6b2549071c8e2500",
+    "indexed_at": 1782508687.7430332,
+    "status": "active",
+    "index_path": "jorki_data/indexes/f0810e7866d2.idx"
+  }
+}

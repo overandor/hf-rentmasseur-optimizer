@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-06-27T06:28:59.877293+00:00",
+  "total_profiles": 356,
+  "ny_users": 316,
+  "visited_profiles": 48,
+  "merged_profiles": 356,
+  "A_contact_ready": 1,
+  "B_verify_needed": 0,
+  "C_unknown": 281,
+  "D_exclude": 74,
+  "X_compliance_risk": 0,
+  "client_candidates": 1,
+  "providers_excluded": 74,
+  "next_action": "revisit B and C profiles for body evidence"
+}

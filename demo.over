@@ -1,0 +1,9 @@
+workflow: pipeline
+intent: autonomous file analysis pipeline with proof
+step 1: observe screen state → screen_data
+step 2: index file → file_index
+step 3: compute hash → merkle_root
+step 4: verify integrity → verification
+step 5: stream results → stream_out
+step 6: issue receipt → final_receipt
+value: proof of execution

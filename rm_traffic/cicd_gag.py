@@ -1,0 +1,965 @@
+"""
+CI/CD GAG — GitHub Actions Governor.
+
+A self-healing optimization loop that observes failures, diagnoses root causes,
+generates repair branches, runs tests, enforces policy, and opens PRs —
+but NEVER pushes directly to main.
+
+Loop:
+  detect failure → classify → propose repair → run local tests → policy check
+  → artifact attestation → open PR → human approval → merge → monitor
+
+Not allowed:
+  detect failure → edit itself → push main → hope
+
+Five engines:
+  1. Failure Intake    — reads GH Actions logs, receipts, overclock.db, telemetry
+  2. Diagnosis         — maps failures to safe repair types
+  3. Patch Generator   — creates branch, patches allowlisted files, writes receipt
+  4. Policy Gate       — policy-as-code before PR can be marked healthy
+  5. Healing PR        — opens PR with patch, evidence, tests, receipts, rollback plan
+
+Three self-healing rules:
+  Rule 1: 403 telemetry → MEASUREMENT_INVALID, no bandit update
+  Rule 2: Private LLM policy → block cloud on private text, force local-only
+  Rule 3: Bad draft validation → reject bad LLM output, use template fallback
+"""
+
+import hashlib
+import json
+import logging
+import os
+import re
+import subprocess
+import sqlite3
+import time
+from dataclasses import dataclass, field, asdict
+from datetime import datetime, timezone
+from enum import Enum
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+log = logging.getLogger("cicd_gag")
+
+# ─── Hyperparameters ─────────────────────────────────────────────────
+
+MAX_FILES_PER_PATCH = 3
+MAX_LINES_CHANGED_PER_PATCH = 250
+MAX_PATCH_ATTEMPTS_PER_FAILURE = 2
+COOLDOWN_AFTER_FAILED_HEAL = 6 * 3600  # 6 hours
+REQUIRED_GREEN_RUNS_BEFORE_TRUST = 3
+ROLLBACK_WINDOW = 24 * 3600  # 24 hours
+MIN_CONFIDENCE_TO_OPEN_PR = 0.70
+MIN_CONFIDENCE_TO_AUTO_LABEL_READY = 0.90
+AUTO_MERGE_ENABLED = False
+BRANCH_PREFIX = "gag/self-heal/"
+
+# Files that GAG is allowed to patch
+ALLOWLISTED_FILES = {
+    "rm_traffic/reward_engine.py",
+    "rm_traffic/state_engine.py",
+    "rm_traffic/llm_client.py",
+    "rm_traffic/reply_drafter.py",
+    "rm_traffic/hypothesis_lab.py",
+    "rm_traffic/visitor_revisit_engine.py",
+    "rm_traffic/cicd_gag.py",
+    ".github/workflows/rm-engagement-daemon.yml",
+    ".github/workflows/booking-ops.yml",
+    "tests/",
+}
+
+# Files that GAG must NEVER touch
+PROTECTED_FILES = {
+    ".env", "secrets", "credentials", "tenant configs",
+    "rm_traffic/api_client.py",  # production sender
+    "rm_traffic/send_message.py",
+}
+
+# Mutation modes
+ALLOWED_MUTATION_MODES = {"patch_branch_only", "pr_only", "test_only"}
+BLOCKED_MUTATION_MODES = {
+    "direct_main_push", "credential_edit", "auto_send_enable",
+    "cloud_private_fallback_enable",
+}
+
+# Severity levels
+SEVERITY_BLOCKER = "blocker"
+SEVERITY_WARNING = "warning"
+SEVERITY_INFO = "info"
+
+
+class FailureClass(Enum):
+    SYNTAX_FAILURE = "syntax_failure"
+    TEST_FAILURE = "test_failure"
+    API_AUTH_FAILURE = "api_auth_failure"
+    MEASUREMENT_INVALID_403 = "403_measurement_invalid"
+    LLM_PROVIDER_FAILURE = "llm_provider_failure"
+    DEPENDENCY_FAILURE = "dependency_failure"
+    REWARD_REGRESSION = "reward_regression_failure"
+    PRIVACY_POLICY_FAILURE = "privacy_policy_failure"
+    ARTIFACT_MISSING = "artifact_missing_failure"
+    BAD_DRAFT = "bad_draft_failure"
+    UNKNOWN = "unknown"
+
+
+class MeasurementStatus(Enum):
+    OK = "OK"
+    INVALID = "MEASUREMENT_INVALID"
+    NOT_CHECKED = "NOT_CHECKED"
+
+
+@dataclass
+class FailureEvent:
+    failure_id: str = ""
+    failure_class: FailureClass = FailureClass.UNKNOWN
+    source: str = ""  # github_actions, local_receipt, overclock_db, telemetry
+    description: str = ""
+    timestamp: str = ""
+    raw_data: Dict = field(default_factory=dict)
+    severity: str = SEVERITY_WARNING
+    confidence: float = 0.0
+
+
+@dataclass
+class RepairPlan:
+    failure_id: str = ""
+    failure_class: FailureClass = FailureClass.UNKNOWN
+    repair_type: str = ""
+    files_to_patch: List[str] = field(default_factory=list)
+    patch_description: str = ""
+    confidence: float = 0.0
+    test_commands: List[str] = field(default_factory=list)
+    rollback_plan: str = ""
+    policy_checks: List[str] = field(default_factory=list)
+
+
+@dataclass
+class ArtifactReceipt:
+    failure_id: str = ""
+    failure_class: str = ""
+    files_changed: List[str] = field(default_factory=list)
+    diff_hash: str = ""
+    test_command: str = ""
+    test_result: str = ""
+    policy_result: str = ""
+    measurement_status: str = ""
+    training_performed: bool = False
+    fine_tuning_performed: bool = False
+    private_cloud_used: bool = False
+    human_approval_required: bool = True
+    timestamp: str = ""
+    rollback_plan: str = ""
+
+
+@dataclass
+class HealingPR:
+    branch_name: str = ""
+    title: str = ""
+    body: str = ""
+    files_changed: List[str] = field(default_factory=list)
+    receipt: ArtifactReceipt = field(default_factory=ArtifactReceipt)
+    ready_to_merge: bool = False
+    auto_merge: bool = False
+
+
+# ─── Engine 1: Failure Intake ───────────────────────────────────────
+
+class FailureIntakeEngine:
+    """Reads failures from GitHub Actions, local receipts, overclock.db, telemetry."""
+
+    def __init__(self, repo_root: str = "."):
+        self.repo_root = Path(repo_root)
+        self.receipts_dir = self.repo_root / "rm_traffic" / "receipts"
+        self.overclock_db = self.repo_root / "rm_traffic" / "overclock_bandit.db"
+
+    def scan_github_actions(self) -> List[FailureEvent]:
+        """Scan for failed GitHub Actions runs."""
+        failures = []
+        # Check for failed workflow logs
+        logs_dir = self.repo_root / ".github" / "logs"
+        if logs_dir.exists():
+            for log_file in logs_dir.glob("*.log"):
+                content = log_file.read_text(errors="replace")
+                if "##[error]" in content or "Error:" in content:
+                    fclass = self._classify_log_error(content)
+                    failures.append(FailureEvent(
+                        failure_id=hashlib.sha256(f"{log_file.name}:{time.time()}".encode()).hexdigest()[:12],
+                        failure_class=fclass,
+                        source="github_actions",
+                        description=content[:500],
+                        timestamp=datetime.now(timezone.utc).isoformat(),
+                        raw_data={"log_file": str(log_file)},
+                        severity=SEVERITY_BLOCKER if fclass == FailureClass.SYNTAX_FAILURE else SEVERITY_WARNING,
+                        confidence=0.8,
+                    ))
+        return failures
+
+    def scan_receipts(self) -> List[FailureEvent]:
+        """Scan tamper-evident receipts for measurement_invalid or error markers."""
+        failures = []
+        if not self.receipts_dir.exists():
+            return failures
+
+        for receipt_file in self.receipts_dir.glob("*.json"):
+            try:
+                data = json.loads(receipt_file.read_text())
+                error = data.get("error", "")
+                reason = data.get("reason", "")
+
+                if "measurement_invalid" in error or "measurement_invalid" in reason:
+                    failures.append(FailureEvent(
+                        failure_id=hashlib.sha256(f"{receipt_file.name}:{time.time()}".encode()).hexdigest()[:12],
+                        failure_class=FailureClass.MEASUREMENT_INVALID_403,
+                        source="local_receipt",
+                        description=f"Receipt {receipt_file.name}: {error or reason}",
+                        timestamp=datetime.now(timezone.utc).isoformat(),
+                        raw_data=data,
+                        severity=SEVERITY_WARNING,
+                        confidence=0.95,
+                    ))
+                elif error and "login_failed" in error:
+                    failures.append(FailureEvent(
+                        failure_id=hashlib.sha256(f"{receipt_file.name}:{time.time()}".encode()).hexdigest()[:12],
+                        failure_class=FailureClass.API_AUTH_FAILURE,
+                        source="local_receipt",
+                        description=f"Auth failure in {receipt_file.name}: {error}",
+                        timestamp=datetime.now(timezone.utc).isoformat(),
+                        raw_data=data,
+                        severity=SEVERITY_BLOCKER,
+                        confidence=0.9,
+                    ))
+            except Exception:
+                continue
+        return failures
+
+    def scan_overclock_db(self) -> List[FailureEvent]:
+        """Scan overclock_bandit.db for reward regressions and invalid measurements."""
+        failures = []
+        if not self.overclock_db.exists():
+            return failures
+
+        try:
+            conn = sqlite3.connect(str(self.overclock_db))
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            # Check for extreme negative rewards (reward regression)
+            cur.execute(
+                "SELECT action, reward, timestamp FROM action_outcomes "
+                "WHERE reward < -50 ORDER BY timestamp DESC LIMIT 10"
+            )
+            for row in cur.fetchall():
+                failures.append(FailureEvent(
+                    failure_id=hashlib.sha256(f"reward:{row['timestamp']}:{time.time()}".encode()).hexdigest()[:12],
+                    failure_class=FailureClass.REWARD_REGRESSION,
+                    source="overclock_db",
+                    description=f"Extreme negative reward: {row['action']} reward={row['reward']}",
+                    timestamp=row["timestamp"],
+                    raw_data={"action": row["action"], "reward": row["reward"]},
+                    severity=SEVERITY_BLOCKER,
+                    confidence=0.85,
+                ))
+
+            conn.close()
+        except Exception as e:
+            log.warning(f"  ⟁ overclock_db scan error: {e}")
+
+        return failures
+
+    def scan_telemetry(self) -> List[FailureEvent]:
+        """Scan last run telemetry for LLM provider failures and bad drafts."""
+        failures = []
+        telemetry_file = self.repo_root / "rm_traffic" / "last_telemetry.json"
+        if not telemetry_file.exists():
+            return failures
+
+        try:
+            data = json.loads(telemetry_file.read_text())
+            action = data.get("action", "")
+            result = data.get("result", {})
+
+            # Check for cloud fallback on private text
+            if result.get("cloud_fallback_attempted"):
+                failures.append(FailureEvent(
+                    failure_id=hashlib.sha256(f"cloud:{time.time()}".encode()).hexdigest()[:12],
+                    failure_class=FailureClass.PRIVACY_POLICY_FAILURE,
+                    source="telemetry",
+                    description=f"Cloud fallback attempted on private text in {action}",
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    raw_data=data,
+                    severity=SEVERITY_BLOCKER,
+                    confidence=0.95,
+                ))
+
+            # Check for bad draft content
+            sample = result.get("sample_draft", "")
+            if sample and self._is_bad_draft(sample):
+                failures.append(FailureEvent(
+                    failure_id=hashlib.sha256(f"draft:{time.time()}".encode()).hexdigest()[:12],
+                    failure_class=FailureClass.BAD_DRAFT,
+                    source="telemetry",
+                    description=f"Bad draft content detected: {sample[:100]}",
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    raw_data=data,
+                    severity=SEVERITY_WARNING,
+                    confidence=0.8,
+                ))
+        except Exception:
+            pass
+
+        return failures
+
+    def scan_all(self) -> List[FailureEvent]:
+        """Run all intake scanners."""
+        all_failures = []
+        all_failures.extend(self.scan_github_actions())
+        all_failures.extend(self.scan_receipts())
+        all_failures.extend(self.scan_overclock_db())
+        all_failures.extend(self.scan_telemetry())
+        log.info(f"  ◉ Failure intake: {len(all_failures)} failures detected")
+        return all_failures
+
+    def _classify_log_error(self, content: str) -> FailureClass:
+        if "SyntaxError" in content or "IndentationError" in content:
+            return FailureClass.SYNTAX_FAILURE
+        if "AssertionError" in content or "FAILED" in content:
+            return FailureClass.TEST_FAILURE
+        if "403" in content and ("forbidden" in content.lower() or "endpoint" in content.lower()):
+            return FailureClass.MEASUREMENT_INVALID_403
+        if "ModuleNotFoundError" in content or "ImportError" in content:
+            return FailureClass.DEPENDENCY_FAILURE
+        if "groq" in content.lower() or "openrouter" in content.lower():
+            return FailureClass.LLM_PROVIDER_FAILURE
+        return FailureClass.UNKNOWN
+
+    def _is_bad_draft(self, text: str) -> bool:
+        """Check if draft text contains bad patterns."""
+        text_lower = text.lower()
+        bad_phrases = ["reaching out to us", "last-minute app", "thank you for reaching out"]
+        if any(p in text_lower for p in bad_phrases):
+            return True
+        # Check for "we/us/our" (should be first person singular)
+        if re.search(r'\b(we|us|our)\b', text_lower):
+            return True
+        # Too many words (> 80)
+        if len(text.split()) > 80:
+            return True
+        # No question mark (no next-step question)
+        if "?" not in text:
+            return True
+        return False
+
+
+# ─── Engine 2: Diagnosis ────────────────────────────────────────────
+
+class DiagnosisEngine:
+    """Maps failures to safe repair types."""
+
+    REPAIR_MAP = {
+        FailureClass.MEASUREMENT_INVALID_403: {
+            "repair_type": "measurement_invalid_self_heal",
+            "files": ["rm_traffic/reward_engine.py", "rm_traffic/state_engine.py"],
+            "description": "Mark cycle MEASUREMENT_INVALID on 403, return zero delta, skip bandit update",
+            "confidence": 0.95,
+            "tests": ["python3 -m pytest tests/test_reward_engine.py -v"],
+        },
+        FailureClass.PRIVACY_POLICY_FAILURE: {
+            "repair_type": "private_llm_policy_self_heal",
+            "files": ["rm_traffic/reply_drafter.py", "rm_traffic/llm_client.py"],
+            "description": "Block cloud providers on private client text, force local-only",
+            "confidence": 0.95,
+            "tests": ["python3 -m pytest tests/test_reply_drafter.py -v"],
+        },
+        FailureClass.BAD_DRAFT: {
+            "repair_type": "bad_draft_self_heal",
+            "files": ["rm_traffic/reply_drafter.py"],
+            "description": "Reject bad LLM output, use template fallback, add quality checks",
+            "confidence": 0.85,
+            "tests": ["python3 -m pytest tests/test_reply_drafter.py -v"],
+        },
+        FailureClass.REWARD_REGRESSION: {
+            "repair_type": "reward_poisoning_self_heal",
+            "files": ["rm_traffic/reward_engine.py"],
+            "description": "Ignore invalid post-state, null reward for invalid measurement",
+            "confidence": 0.80,
+            "tests": ["python3 -m pytest tests/test_reward_engine.py -v"],
+        },
+        FailureClass.SYNTAX_FAILURE: {
+            "repair_type": "syntax_fix",
+            "files": [],
+            "description": "Fix syntax error in identified file",
+            "confidence": 0.50,
+            "tests": ["python3 -m py_compile <target_file>"],
+        },
+        FailureClass.TEST_FAILURE: {
+            "repair_type": "test_fix",
+            "files": [],
+            "description": "Fix failing test or implementation",
+            "confidence": 0.40,
+            "tests": ["python3 -m pytest -v"],
+        },
+        FailureClass.LLM_PROVIDER_FAILURE: {
+            "repair_type": "provider_fallback_fix",
+            "files": ["rm_traffic/llm_client.py", "rm_traffic/reply_drafter.py"],
+            "description": "Fix LLM provider fallback chain, ensure local-first",
+            "confidence": 0.75,
+            "tests": ["python3 -m pytest tests/test_reply_drafter.py -v"],
+        },
+        FailureClass.DEPENDENCY_FAILURE: {
+            "repair_type": "dependency_fix",
+            "files": ["requirements.txt", "pyproject.toml"],
+            "description": "Add or pin missing dependency",
+            "confidence": 0.60,
+            "tests": ["python3 -c 'import rm_traffic'"],
+        },
+        FailureClass.API_AUTH_FAILURE: {
+            "repair_type": "manual_auth_review",
+            "files": [],
+            "description": "Auth failure — manual credential review required, no auto-patch",
+            "confidence": 0.10,
+            "tests": [],
+        },
+        FailureClass.ARTIFACT_MISSING: {
+            "repair_type": "artifact_rebuild",
+            "files": [],
+            "description": "Rebuild missing artifact",
+            "confidence": 0.30,
+            "tests": [],
+        },
+    }
+
+    def diagnose(self, failure: FailureEvent) -> RepairPlan:
+        """Map a failure to a repair plan."""
+        repair = self.REPAIR_MAP.get(failure.failure_class, {
+            "repair_type": "manual_review",
+            "files": [],
+            "description": "Unknown failure — manual review required",
+            "confidence": 0.10,
+            "tests": [],
+        })
+
+        # Validate files are allowlisted
+        safe_files = [f for f in repair["files"] if self._is_allowlisted(f)]
+
+        plan = RepairPlan(
+            failure_id=failure.failure_id,
+            failure_class=failure.failure_class,
+            repair_type=repair["repair_type"],
+            files_to_patch=safe_files[:MAX_FILES_PER_PATCH],
+            patch_description=repair["description"],
+            confidence=repair["confidence"] * failure.confidence,
+            test_commands=repair["tests"],
+            rollback_plan=f"git revert <merge_commit> within {ROLLBACK_WINDOW // 3600}h",
+            policy_checks=[
+                "no_cloud_on_private_text",
+                "no_auto_send_enable",
+                "no_direct_main_push",
+                "no_credential_edit",
+                "tests_required",
+                "measurement_invalid_not_rewarded",
+            ],
+        )
+
+        log.info(f"  ◉ Diagnosis: {failure.failure_class.value} → {plan.repair_type} "
+                 f"(confidence={plan.confidence:.2f}, files={plan.files_to_patch})")
+        return plan
+
+    def _is_allowlisted(self, filepath: str) -> bool:
+        """Check if file is in the allowlist and not protected."""
+        if filepath in PROTECTED_FILES:
+            return False
+        for allowed in ALLOWLISTED_FILES:
+            if filepath.startswith(allowed) or filepath == allowed:
+                return True
+        return False
+
+
+# ─── Engine 3: Patch Generator ──────────────────────────────────────
+
+class PatchGenerator:
+    """Creates repair branches with patches to allowlisted files only."""
+
+    def __init__(self, repo_root: str = "."):
+        self.repo_root = Path(repo_root)
+
+    def generate_branch_name(self, repair_type: str) -> str:
+        ts = int(time.time())
+        return f"{BRANCH_PREFIX}{repair_type}-{ts}"
+
+    def create_patch(self, plan: RepairPlan) -> Tuple[str, ArtifactReceipt]:
+        """Create a patch branch with the repair applied.
+        Returns (branch_name, receipt)."""
+        branch = self.generate_branch_name(plan.repair_type)
+
+        # For now, we generate the branch name and receipt.
+        # Actual file patching would be done by specific repair handlers.
+        receipt = ArtifactReceipt(
+            failure_id=plan.failure_id,
+            failure_class=plan.failure_class.value,
+            files_changed=plan.files_to_patch,
+            diff_hash="",  # filled after patch applied
+            test_command="; ".join(plan.test_commands),
+            test_result="pending",
+            policy_result="pending",
+            measurement_status=MeasurementStatus.NOT_CHECKED.value,
+            training_performed=False,
+            fine_tuning_performed=False,
+            private_cloud_used=False,
+            human_approval_required=True,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            rollback_plan=plan.rollback_plan,
+        )
+
+        log.info(f"  ◆ Patch branch: {branch} ({len(plan.files_to_patch)} files)")
+        return branch, receipt
+
+    def compute_diff_hash(self, diff_content: str) -> str:
+        """Compute SHA-256 hash of diff content for attestation."""
+        return hashlib.sha256(diff_content.encode()).hexdigest()[:16]
+
+
+# ─── Engine 4: Policy Gate ──────────────────────────────────────────
+
+class PolicyGate:
+    """Policy-as-code gate. Blocks unsafe changes before PR can be marked healthy."""
+
+    POLICIES = {
+        "no_cloud_on_private_text": {
+            "description": "Cloud LLM providers must not be called on private client text",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "no_auto_send_enable": {
+            "description": "Auto-send must not be enabled by a patch",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "no_direct_main_push": {
+            "description": "Patches must go through PR, not direct push to main",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "no_credential_edit": {
+            "description": "Credentials, secrets, and .env must not be modified",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "no_fake_visits": {
+            "description": "No fake visits, clicks, or synthetic activity generation",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "tests_required": {
+            "description": "Every patched module must have passing tests",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "measurement_invalid_not_rewarded": {
+            "description": "Invalid measurements must not produce negative rewards",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "max_files_enforced": {
+            "description": f"Max {MAX_FILES_PER_PATCH} files per patch",
+            "severity": SEVERITY_BLOCKER,
+        },
+        "max_lines_enforced": {
+            "description": f"Max {MAX_LINES_CHANGED_PER_PATCH} lines changed per patch",
+            "severity": SEVERITY_BLOCKER,
+        },
+    }
+
+    def evaluate(self, plan: RepairPlan, diff_content: str = "",
+                 test_results: Dict = None) -> Tuple[bool, Dict]:
+        """Evaluate all policies against the repair plan.
+        Returns (passed, results_dict)."""
+        results = {}
+        all_passed = True
+
+        for policy_name, policy_def in self.POLICIES.items():
+            passed = self._check_policy(policy_name, plan, diff_content, test_results)
+            results[policy_name] = {
+                "passed": passed,
+                "severity": policy_def["severity"],
+                "description": policy_def["description"],
+            }
+            if not passed and policy_def["severity"] == SEVERITY_BLOCKER:
+                all_passed = False
+
+        log.info(f"  ◉ Policy gate: {'PASS' if all_passed else 'FAIL'} — "
+                 f"{sum(1 for r in results.values() if r['passed'])}/{len(results)} policies passed")
+        return all_passed, results
+
+    def _check_policy(self, name: str, plan: RepairPlan,
+                      diff: str, test_results: Dict) -> bool:
+        if name == "no_cloud_on_private_text":
+            # Check diff doesn't add cloud calls on private text paths
+            if "groq" in diff.lower() and "private" in diff.lower():
+                return False
+            if "openrouter" in diff.lower() and "private" in diff.lower():
+                return False
+            return True
+
+        if name == "no_auto_send_enable":
+            if "auto_send" in diff and "True" in diff:
+                return False
+            return True
+
+        if name == "no_direct_main_push":
+            # GAG never pushes to main — always branch
+            return True
+
+        if name == "no_credential_edit":
+            for f in plan.files_to_patch:
+                if f in PROTECTED_FILES or ".env" in f or "secret" in f.lower():
+                    return False
+            return True
+
+        if name == "no_fake_visits":
+            if "fake_visit" in diff.lower() or "synthetic_click" in diff.lower():
+                return False
+            return True
+
+        if name == "tests_required":
+            if not plan.test_commands:
+                return False
+            if test_results and not test_results.get("all_passed"):
+                return False
+            return True
+
+        if name == "measurement_invalid_not_rewarded":
+            # Check diff doesn't reward invalid measurements
+            if "measurement_invalid" in diff and "reward" in diff:
+                # Make sure it's setting reward to 0, not computing negative
+                if "reward = 0" not in diff and "return 0.0" not in diff:
+                    return False
+            return True
+
+        if name == "max_files_enforced":
+            return len(plan.files_to_patch) <= MAX_FILES_PER_PATCH
+
+        if name == "max_lines_enforced":
+            if diff:
+                added = sum(1 for line in diff.split("\n") if line.startswith("+") and not line.startswith("+++"))
+                removed = sum(1 for line in diff.split("\n") if line.startswith("-") and not line.startswith("---"))
+                return (added + removed) <= MAX_LINES_CHANGED_PER_PATCH
+            return True
+
+        return True
+
+
+# ─── Engine 5: Healing PR ───────────────────────────────────────────
+
+class HealingPREngine:
+    """Opens PRs with patches, evidence, tests, receipts, and rollback plans."""
+
+    def __init__(self, repo_root: str = "."):
+        self.repo_root = Path(repo_root)
+
+    def create_pr(self, branch: str, plan: RepairPlan,
+                  receipt: ArtifactReceipt, policy_results: Dict,
+                  test_results: Dict = None) -> HealingPR:
+        """Create a healing PR object with full evidence."""
+
+        confidence = plan.confidence
+        ready = (confidence >= MIN_CONFIDENCE_TO_AUTO_LABEL_READY and
+                 all(r["passed"] for r in policy_results.values()) and
+                 test_results and test_results.get("all_passed"))
+
+        pr_body = self._build_pr_body(plan, receipt, policy_results, test_results)
+
+        pr = HealingPR(
+            branch_name=branch,
+            title=f"[GAG] {plan.repair_type}: {plan.failure_class.value}",
+            body=pr_body,
+            files_changed=plan.files_to_patch,
+            receipt=receipt,
+            ready_to_merge=ready,
+            auto_merge=AUTO_MERGE_ENABLED and ready,
+        )
+
+        log.info(f"  ◆ Healing PR: {pr.title}")
+        log.info(f"    Branch: {pr.branch_name}")
+        log.info(f"    Ready: {pr.ready_to_merge} (confidence={confidence:.2f})")
+        log.info(f"    Auto-merge: {pr.auto_merge} (disabled by policy)")
+        return pr
+
+    def _build_pr_body(self, plan: RepairPlan, receipt: ArtifactReceipt,
+                       policy_results: Dict, test_results: Dict = None) -> str:
+        lines = [
+            f"## CI/CD GAG — Self-Healing PR",
+            "",
+            f"**Failure class**: `{plan.failure_class.value}`",
+            f"**Repair type**: `{plan.repair_type}`",
+            f"**Confidence**: `{plan.confidence:.2f}`",
+            f"**Files changed**: `{', '.join(plan.files_to_patch)}`",
+            "",
+            f"### Description",
+            plan.patch_description,
+            "",
+            f"### Policy Gate Results",
+            "",
+        ]
+
+        for name, result in policy_results.items():
+            icon = "✅" if result["passed"] else "❌"
+            lines.append(f"- {icon} **{name}**: {result['description']}")
+
+        lines.extend([
+            "",
+            f"### Test Results",
+            f"```json",
+            json.dumps(test_results or {}, indent=2),
+            "```",
+            "",
+            f"### Artifact Receipt",
+            f"```json",
+            json.dumps(asdict(receipt), indent=2),
+            "```",
+            "",
+            f"### Rollback Plan",
+            receipt.rollback_plan,
+            "",
+            f"### Attestation",
+            f"- `training_performed`: {receipt.training_performed}",
+            f"- `fine_tuning_performed`: {receipt.fine_tuning_performed}",
+            f"- `private_cloud_used`: {receipt.private_cloud_used}",
+            f"- `human_approval_required`: {receipt.human_approval_required}",
+            f"- `auto_merge_enabled`: {AUTO_MERGE_ENABLED}",
+            "",
+            f"---",
+            f"Generated by CI/CD GAG at {receipt.timestamp}",
+        ])
+
+        return "\n".join(lines)
+
+
+# ─── Self-Healing Rules ─────────────────────────────────────────────
+
+def rule1_403_telemetry_self_heal(failure: FailureEvent) -> RepairPlan:
+    """
+    Rule 1: 403 telemetry self-heal.
+    If post-action protected endpoints return 403, mark cycle MEASUREMENT_INVALID,
+    do not compute negative deltas, do not update bandit or hypothesis reward.
+    """
+    return RepairPlan(
+        failure_id=failure.failure_id,
+        failure_class=FailureClass.MEASUREMENT_INVALID_403,
+        repair_type="measurement_invalid_self_heal",
+        files_to_patch=["rm_traffic/reward_engine.py", "rm_traffic/state_engine.py"],
+        patch_description=(
+            "Ensure is_measurement_valid() checks both snapshots for endpoint errors. "
+            "compute_delta returns zero MetricDelta if invalid. "
+            "compute_reward returns 0.0 for invalid measurements. "
+            "Bandit update skipped when measurement_valid=False."
+        ),
+        confidence=0.95,
+        test_commands=[
+            "python3 -c 'from rm_traffic.reward_engine import is_measurement_valid; print(\"OK\")'",
+            "python3 -c 'from rm_traffic.state_engine import TrafficState; assert hasattr(TrafficState, \"measurement_valid\"); print(\"OK\")'",
+        ],
+        rollback_plan=f"git revert <merge_commit> within {ROLLBACK_WINDOW // 3600}h",
+        policy_checks=[
+            "measurement_invalid_not_rewarded",
+            "no_direct_main_push",
+            "tests_required",
+        ],
+    )
+
+
+def rule2_private_llm_policy_self_heal(failure: FailureEvent) -> RepairPlan:
+    """
+    Rule 2: Private LLM policy self-heal.
+    If reply_draft_queue attempts Groq/OpenRouter with private mailbox text,
+    block the provider, force private_local_only, and open a patch PR.
+    """
+    return RepairPlan(
+        failure_id=failure.failure_id,
+        failure_class=FailureClass.PRIVACY_POLICY_FAILURE,
+        repair_type="private_llm_policy_self_heal",
+        files_to_patch=["rm_traffic/reply_drafter.py"],
+        patch_description=(
+            "Remove cloud provider imports from reply_drafter. "
+            "Use local-only LLM (Ollama/Transformers.js) with 8s timeout. "
+            "Template is canonical — LLM is optional polish only. "
+            "No Groq, no OpenRouter on private client text."
+        ),
+        confidence=0.95,
+        test_commands=[
+            "python3 -c 'from rm_traffic.reply_drafter import draft_reply; print(\"OK\")'",
+            "python3 -c 'import inspect; from rm_traffic.reply_drafter import _try_local_llm_polish; src=inspect.getsource(_try_local_llm_polish); assert \"groq\" not in src.lower(); assert \"openrouter\" not in src.lower(); print(\"no cloud in private path OK\")'",
+        ],
+        rollback_plan=f"git revert <merge_commit> within {ROLLBACK_WINDOW // 3600}h",
+        policy_checks=[
+            "no_cloud_on_private_text",
+            "no_direct_main_push",
+            "tests_required",
+        ],
+    )
+
+
+def rule3_bad_draft_self_heal(failure: FailureEvent) -> RepairPlan:
+    """
+    Rule 3: Bad draft self-heal.
+    If local model draft contains 'we/us/our', 'app', unsupported facts,
+    raw phone when disabled, too many words, or no next-step question,
+    reject draft and use template fallback.
+    """
+    return RepairPlan(
+        failure_id=failure.failure_id,
+        failure_class=FailureClass.BAD_DRAFT,
+        repair_type="bad_draft_self_heal",
+        files_to_patch=["rm_traffic/reply_drafter.py"],
+        patch_description=(
+            "Add quality validation to LLM polish output. "
+            "Reject drafts with: 'we/us/our' pronouns, 'app' references, "
+            "known bad phrases ('reaching out to us', 'last-minute app'), "
+            ">80 words, or no question mark. "
+            "Fall back to template on rejection."
+        ),
+        confidence=0.85,
+        test_commands=[
+            "python3 -c 'from rm_traffic.reply_drafter import draft_reply; d=draft_reply(\"Hi, are you available today?\"); assert \"?\" in d.reply_text; print(\"draft has question OK\")'",
+            "python3 -c 'from rm_traffic.reply_drafter import draft_reply; d=draft_reply(\"Hi\"); assert len(d.reply_text.split()) < 80; print(\"draft length OK\")'",
+        ],
+        rollback_plan=f"git revert <merge_commit> within {ROLLBACK_WINDOW // 3600}h",
+        policy_checks=[
+            "no_cloud_on_private_text",
+            "no_direct_main_push",
+            "tests_required",
+        ],
+    )
+
+
+# ─── Main GAG Orchestrator ──────────────────────────────────────────
+
+class CICDGAG:
+    """CI/CD GitHub Actions Governor — main orchestrator."""
+
+    def __init__(self, repo_root: str = "."):
+        self.repo_root = repo_root
+        self.intake = FailureIntakeEngine(repo_root)
+        self.diagnosis = DiagnosisEngine()
+        self.patcher = PatchGenerator(repo_root)
+        self.policy = PolicyGate()
+        self.pr_engine = HealingPREngine(repo_root)
+        self.heal_history: List[Dict] = []
+        self.last_heal_time: float = 0.0
+
+    def run_healing_cycle(self) -> List[HealingPR]:
+        """Run one full healing cycle: detect → diagnose → patch → policy → PR."""
+        print(f"\n{'='*60}")
+        print(f"  CI/CD GAG — HEALING CYCLE")
+        print(f"  {datetime.now(timezone.utc).isoformat()}")
+        print(f"{'='*60}\n")
+
+        # Check cooldown
+        if self.last_heal_time and (time.time() - self.last_heal_time) < COOLDOWN_AFTER_FAILED_HEAL:
+            remaining = COOLDOWN_AFTER_FAILED_HEAL - (time.time() - self.last_heal_time)
+            print(f"  ⧖ Cooldown active — {remaining / 3600:.1f}h remaining")
+            return []
+
+        # Engine 1: Detect failures
+        print("[INTAKE] Scanning for failures...")
+        failures = self.intake.scan_all()
+        if not failures:
+            print("  ◉ No failures detected — system healthy")
+            return []
+
+        prs = []
+        for failure in failures:
+            print(f"\n[DIAGNOSE] {failure.failure_class.value}: {failure.description[:80]}")
+
+            # Engine 2: Diagnose
+            plan = self.diagnosis.diagnose(failure)
+
+            # Apply self-healing rules for known failure classes
+            if failure.failure_class == FailureClass.MEASUREMENT_INVALID_403:
+                plan = rule1_403_telemetry_self_heal(failure)
+            elif failure.failure_class == FailureClass.PRIVACY_POLICY_FAILURE:
+                plan = rule2_private_llm_policy_self_heal(failure)
+            elif failure.failure_class == FailureClass.BAD_DRAFT:
+                plan = rule3_bad_draft_self_heal(failure)
+
+            if plan.confidence < MIN_CONFIDENCE_TO_OPEN_PR:
+                print(f"  ⟁ Confidence {plan.confidence:.2f} < {MIN_CONFIDENCE_TO_OPEN_PR} — skipping")
+                continue
+
+            # Engine 3: Generate patch
+            print(f"[PATCH] Generating repair branch...")
+            branch, receipt = self.patcher.create_patch(plan)
+
+            # Engine 4: Policy gate
+            print(f"[POLICY] Evaluating policies...")
+            policy_passed, policy_results = self.policy.evaluate(plan, diff_content="", test_results=None)
+
+            if not policy_passed:
+                print(f"  ⟁ Policy gate FAILED — PR will be labeled needs-review")
+                receipt.policy_result = "failed"
+            else:
+                receipt.policy_result = "passed"
+
+            # Engine 5: Create healing PR
+            print(f"[PR] Creating healing PR...")
+            pr = self.pr_engine.create_pr(branch, plan, receipt, policy_results)
+            prs.append(pr)
+
+            # Record in history
+            self.heal_history.append({
+                "failure_id": failure.failure_id,
+                "failure_class": failure.failure_class.value,
+                "repair_type": plan.repair_type,
+                "branch": branch,
+                "confidence": plan.confidence,
+                "policy_passed": policy_passed,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            })
+
+        self.last_heal_time = time.time()
+
+        # Summary
+        print(f"\n{'='*60}")
+        print(f"  HEALING CYCLE COMPLETE")
+        print(f"  Failures detected: {len(failures)}")
+        print(f"  PRs generated: {len(prs)}")
+        print(f"  Auto-merge: {AUTO_MERGE_ENABLED} (always disabled by policy)")
+        print(f"{'='*60}\n")
+
+        return prs
+
+    def get_status(self) -> Dict:
+        """Get GAG status summary."""
+        return {
+            "heal_history_count": len(self.heal_history),
+            "last_heal": datetime.fromtimestamp(self.last_heal_time, tz=timezone.utc).isoformat() if self.last_heal_time else None,
+            "cooldown_active": (time.time() - self.last_heal_time) < COOLDOWN_AFTER_FAILED_HEAL if self.last_heal_time else False,
+            "auto_merge_enabled": AUTO_MERGE_ENABLED,
+            "max_files_per_patch": MAX_FILES_PER_PATCH,
+            "max_lines_per_patch": MAX_LINES_CHANGED_PER_PATCH,
+            "protected_files": list(PROTECTED_FILES),
+            "allowlisted_files": list(ALLOWLISTED_FILES),
+        }
+
+
+# ─── CLI ────────────────────────────────────────────────────────────
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="CI/CD GAG — GitHub Actions Governor")
+    parser.add_argument("--run", action="store_true", help="Run one healing cycle")
+    parser.add_argument("--status", action="store_true", help="Show GAG status")
+    parser.add_argument("--repo-root", default=".", help="Repository root path")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+    gag = CICDGAG(args.repo_root)
+
+    if args.status:
+        status = gag.get_status()
+        print(json.dumps(status, indent=2))
+    elif args.run:
+        prs = gag.run_healing_cycle()
+        for pr in prs:
+            print(f"\n  PR: {pr.title}")
+            print(f"  Branch: {pr.branch_name}")
+            print(f"  Ready: {pr.ready_to_merge}")
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

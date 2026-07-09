@@ -1,0 +1,10 @@
+{
+  "id": "b6dd62996f17f8b1",
+  "stage": "build",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T19:22:23.764227Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/GlyphBoard/.build/release/GlyphBoard",
+  "binary_size": 91624,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/GlyphBoard/build.log"
+}

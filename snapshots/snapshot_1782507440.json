@@ -1,0 +1,77 @@
+{
+  "snapshot_time": 1782507440.95905,
+  "build_sha256": "336eb7a0e5b858b82c97b604187a8e09c64b677c28157e80e3801fb9e647602d",
+  "file_count": 11,
+  "operator_ratio": 0.3804,
+  "artifacts": [
+    {
+      "file": "dimensional_layer.glyph",
+      "sha256": "0bcf5e23ebce35c5d04c4c643c5b69721054cfa8a4bd37d39835e83119be2d4c",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "example.glyph",
+      "sha256": "b8b8fbe25c9e70aa6d3ec1dd67ef8a9b2d4ed680369f7805b8fbf29907bc6f0b",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "feature_layer.glyph",
+      "sha256": "1f3ea848737ea871f41ca3a2c73faeb443eca306bb85f0488ed6ff8837737500",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "glyph_layer.glyph",
+      "sha256": "7776ace9857bd117705aa9d70b7aa9019c028ddefc251789f2de8e0238465220",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "hyperglyph_supervisor.glyph",
+      "sha256": "8c59898c7fcbc3093a7914c28a79c65dde61769b052ca9c51a87e81729f2b830",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "receipt_layer.glyph",
+      "sha256": "72f6436867307f206965e7caa6b44435940a4b64307f1df48ff12c8f74aa8900",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "supervisor_layer.glyph",
+      "sha256": "6b3d2ec7af66bad58bfa18d0d6520039bae94e0d92c08fc3cd96e78919ef01d4",
+      "type": "glyph_compiled"
+    },
+    {
+      "file": "example.over",
+      "sha256": "7442543a00d075aa827c7d9a524c509508b6f139799a8bc193f66fffed409297",
+      "type": "over_compiled"
+    },
+    {
+      "file": "hyperglyph_pipeline.over",
+      "sha256": "d54280a618cc4fdfa67e056e00289e15ffe3162955e46e7da58a806a817c32be",
+      "type": "over_compiled"
+    },
+    {
+      "file": "jorki_gateway.over",
+      "sha256": "dec0e2f4ec908b10340987635ce24336d068250956d43cb75aac37b77ddf1722",
+      "type": "over_compiled"
+    },
+    {
+      "file": "layer4meter.over",
+      "sha256": "493a6b780198419951d6c25ff55b95f8bc4e2ce8e81b4fec3bf840aa1f53b590",
+      "type": "over_compiled"
+    }
+  ],
+  "policy": {
+    "mode": "production",
+    "supervisor": "shared",
+    "models": [
+      "PCA",
+      "KMeans",
+      "SVM",
+      "RandomForest",
+      "GradientBoosting",
+      "XGBoost"
+    ],
+    "dry_run": false
+  },
+  "sha256": "2fcca268449d1acb53b2cde282b595294be3d8b60c6d8b072312b4cd2988db3f"
+}

@@ -1,0 +1,16 @@
+{
+  "project": "TodoCLI",
+  "description": "A CLI todo manager with add, list, done, delete and JSON storage",
+  "stages": [
+    "IDEA",
+    "SPEC",
+    "ARCHITECT",
+    "CODE",
+    "BUILD",
+    "TEST",
+    "RECEIPT"
+  ],
+  "build_dir": "/Users/alep/Downloads/windsurf-smoke/relay/builds/todocli",
+  "timestamp": "2026-06-25T01:36:44Z",
+  "receipt_id": "673acbb7-988"
+}

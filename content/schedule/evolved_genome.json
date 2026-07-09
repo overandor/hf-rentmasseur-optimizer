@@ -1,0 +1,60 @@
+{
+  "generation": 14,
+  "fitness": 0.6825165233312055,
+  "genes": [
+    {
+      "module": "risk",
+      "flex": 0.3,
+      "wake_hour": 3,
+      "wake_minute": 0,
+      "active_duration": 90,
+      "priority": 1,
+      "co_operates_with": []
+    },
+    {
+      "module": "receipts",
+      "flex": 1.9362859811331798,
+      "wake_hour": 11,
+      "wake_minute": 15,
+      "active_duration": 30,
+      "priority": 9,
+      "co_operates_with": []
+    },
+    {
+      "module": "trust",
+      "flex": 0.3,
+      "wake_hour": 10,
+      "wake_minute": 15,
+      "active_duration": 30,
+      "priority": 8,
+      "co_operates_with": []
+    },
+    {
+      "module": "receipts",
+      "flex": 1.900680998574259,
+      "wake_hour": 7,
+      "wake_minute": 15,
+      "active_duration": 15,
+      "priority": 4,
+      "co_operates_with": []
+    },
+    {
+      "module": "virality",
+      "flex": 3.0,
+      "wake_hour": 8,
+      "wake_minute": 15,
+      "active_duration": 15,
+      "priority": 3,
+      "co_operates_with": []
+    },
+    {
+      "module": "bios",
+      "flex": 2.4828869922475287,
+      "wake_hour": 12,
+      "wake_minute": 45,
+      "active_duration": 90,
+      "priority": 2,
+      "co_operates_with": []
+    }
+  ]
+}

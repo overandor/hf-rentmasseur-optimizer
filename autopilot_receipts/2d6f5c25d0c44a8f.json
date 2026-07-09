@@ -1,0 +1,14 @@
+{
+  "id": "2d6f5c25d0c44a8f",
+  "stage": "govern",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T20:49:20.597977Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

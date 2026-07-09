@@ -1,0 +1,21 @@
+{
+  "id": "1f617d0b2d871c0f",
+  "stage": "scout",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T19:41:16.911606Z",
+  "concept": {
+    "name": "ScreenPulse",
+    "category": "Utility",
+    "description": "Real-time screen activity monitor",
+    "features": [
+      "Window tracking",
+      "CPU/RAM overlay",
+      "Accessibility tree",
+      "Receipt ledger"
+    ],
+    "price_tier": "3.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 2
+}

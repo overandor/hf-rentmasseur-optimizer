@@ -1,0 +1,8 @@
+{
+  "id": "9043c06ed25c4170",
+  "stage": "codesign",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T19:54:33.544348Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/FocusBeam/FocusBeam.app']' timed out after 60 seconds"
+}

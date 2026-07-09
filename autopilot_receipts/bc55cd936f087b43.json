@@ -1,0 +1,21 @@
+{
+  "id": "bc55cd936f087b43",
+  "stage": "scout",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T22:25:48.001889Z",
+  "concept": {
+    "name": "ClipFlow",
+    "category": "Utility",
+    "description": "Clipboard history manager with search and pin",
+    "features": [
+      "Searchable clipboard history",
+      "Pin important clips",
+      "Keyboard shortcut overlay",
+      "iCloud sync"
+    ],
+    "price_tier": "1.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 5
+}

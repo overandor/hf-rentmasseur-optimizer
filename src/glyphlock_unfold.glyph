@@ -1,0 +1,11 @@
+▷ GlyphLockUnfold
+  ◇ → Ekey
+  Ekey ⊘ TOTP
+  TOTP → Kt
+  Kt ⊕ D
+  D → Czip
+  Czip → Γdict
+  Γdict → □
+  □ ≡ ◎
+  ⊙̂ □
+◀

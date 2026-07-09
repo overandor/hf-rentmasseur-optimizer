@@ -1,0 +1,16 @@
+{
+  "id": "1cdde08460661ddb",
+  "stage": "verify",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T22:19:47.944024Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

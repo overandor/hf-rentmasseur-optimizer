@@ -1,0 +1,21 @@
+{
+  "id": "69fe643ac07639db",
+  "stage": "scout",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T23:03:05.223674Z",
+  "concept": {
+    "name": "QuickLaunch",
+    "category": "Productivity",
+    "description": "Keyboard-driven app launcher with fuzzy search",
+    "features": [
+      "Fuzzy search apps",
+      "Custom shortcuts",
+      "Recent apps",
+      "Menu bar icon"
+    ],
+    "price_tier": "3.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 9
+}

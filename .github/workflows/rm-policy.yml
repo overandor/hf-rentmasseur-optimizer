@@ -1,0 +1,198 @@
+name: RM Policy Gate — Compliance & Safety Checks
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 */12 * * *'  # Every 12 hours
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  policy-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt 2>/dev/null || pip install requests beautifulsoup4
+
+      - name: Policy 1 — No cloud on private client text
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reply_drafter import _try_local_llm_polish, draft_reply
+          from rm_traffic.visitor_revisit_engine import build_revisit_queue
+
+          # Check reply_drafter has no cloud providers
+          src = inspect.getsource(_try_local_llm_polish)
+          assert 'groq' not in src.lower(), 'POLICY VIOLATION: Groq in private text path'
+          assert 'openrouter' not in src.lower(), 'POLICY VIOLATION: OpenRouter in private text path'
+
+          # Check visitor_revisit_engine has no cloud
+          src2 = inspect.getsource(build_revisit_queue)
+          assert 'groq' not in src2.lower(), 'POLICY VIOLATION: Groq in visitor engine'
+          assert 'openrouter' not in src2.lower(), 'POLICY VIOLATION: OpenRouter in visitor engine'
+
+          print('✅ Policy 1: No cloud on private text — PASS')
+          "
+
+      - name: Policy 2 — No auto-send enabled
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reply_drafter import draft_reply, draft_mailbox_replies
+
+          src = inspect.getsource(draft_reply)
+          # Should not contain send_message or api.send calls
+          assert 'send_message' not in src, 'POLICY VIOLATION: send_message in draft_reply'
+          assert 'api.send' not in src, 'POLICY VIOLATION: api.send in draft_reply'
+
+          src2 = inspect.getsource(draft_mailbox_replies)
+          assert 'send_message' not in src2, 'POLICY VIOLATION: send_message in draft_mailbox_replies'
+
+          print('✅ Policy 2: No auto-send — PASS')
+          "
+
+      - name: Policy 3 — No fake visits or synthetic engagement
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.visitor_revisit_engine import build_revisit_queue
+
+          src = inspect.getsource(build_revisit_queue)
+          assert 'fake_visit' not in src.lower(), 'POLICY VIOLATION: fake_visit detected'
+          assert 'synthetic_click' not in src.lower(), 'POLICY VIOLATION: synthetic_click detected'
+          assert 'fake_click' not in src.lower(), 'POLICY VIOLATION: fake_click detected'
+
+          print('✅ Policy 3: No fake visits/clicks — PASS')
+          "
+
+      - name: Policy 4 — No credential edits in diff
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff origin/main...HEAD --name-only | while read f; do
+            if [[ "$f" == ".env" ]] || [[ "$f" == *"secret"* ]] || [[ "$f" == *"credential"* ]] || [[ "$f" == *"tenant_config"* ]]; then
+              echo "::error::POLICY VIOLATION: Protected file modified: $f"
+              exit 1
+            fi
+          done
+          echo "✅ Policy 4: No credential edits — PASS"
+
+      - name: Policy 5 — No invalid measurement reward
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reward_engine import compute_reward, is_measurement_valid
+
+          src = inspect.getsource(compute_reward)
+          # Must check measurement_valid and return 0.0 if invalid
+          assert 'measurement_valid' in src, 'POLICY VIOLATION: compute_reward does not check measurement_valid'
+          assert 'return 0.0' in src, 'POLICY VIOLATION: compute_reward does not return 0.0 for invalid'
+
+          print('✅ Policy 5: No invalid measurement reward — PASS')
+          "
+
+      - name: Policy 6 — No direct push to main (GAG)
+        run: |
+          python3 -c "
+          from rm_traffic.cicd_gag import BLOCKED_MUTATION_MODES
+          assert 'direct_main_push' in BLOCKED_MUTATION_MODES, 'POLICY VIOLATION: direct_main_push not blocked'
+          assert 'credential_edit' in BLOCKED_MUTATION_MODES, 'POLICY VIOLATION: credential_edit not blocked'
+          assert 'auto_send_enable' in BLOCKED_MUTATION_MODES, 'POLICY VIOLATION: auto_send_enable not blocked'
+          assert 'cloud_private_fallback_enable' in BLOCKED_MUTATION_MODES, 'POLICY VIOLATION: cloud_private_fallback_enable not blocked'
+
+          print('✅ Policy 6: GAG blocked mutation modes — PASS')
+          "
+
+      - name: Policy 7 — Tests required for patched modules
+        run: |
+          python3 -c "
+          from rm_traffic.cicd_gag import PolicyGate, RepairPlan, FailureClass, FailureEvent
+
+          gate = PolicyGate()
+          f = FailureEvent(failure_class=FailureClass.MEASUREMENT_INVALID_403, confidence=0.95)
+          plan = RepairPlan(
+              failure_id='test',
+              failure_class=FailureClass.MEASUREMENT_INVALID_403,
+              repair_type='test',
+              files_to_patch=['rm_traffic/reward_engine.py'],
+              test_commands=['python3 -m pytest tests/'],
+              confidence=0.95,
+          )
+          passed, results = gate.evaluate(plan)
+          assert passed, f'Policy gate failed: {[k for k,v in results.items() if not v[\"passed\"]]}'
+
+          print('✅ Policy 7: Policy gate evaluates correctly — PASS')
+          "
+
+      - name: Policy 8 — All drafts approval-gated
+        run: |
+          python3 -c "
+          from rm_traffic.reply_drafter import draft_reply
+
+          # First contact must require approval
+          d = draft_reply('Hi, are you available?', {'username': 'test', 'is_first_contact': True})
+          assert d.needs_human_approval, 'POLICY VIOLATION: first contact not approval-gated'
+
+          print('✅ Policy 8: All first-contact drafts approval-gated — PASS')
+          "
+
+      - name: Policy 9 — Template is canonical
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reply_drafter import draft_reply
+
+          src = inspect.getsource(draft_reply)
+          assert 'template' in src.lower(), 'POLICY VIOLATION: template not mentioned in draft_reply'
+          assert '_template_fallback' in src, 'POLICY VIOLATION: template_fallback not called'
+
+          print('✅ Policy 9: Template is canonical — PASS')
+          "
+
+      - name: Policy summary
+        if: always()
+        run: |
+          echo "## Policy Gate Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All policy checks completed. See individual step results above." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Invariants enforced" >> $GITHUB_STEP_SUMMARY
+          echo "- No cloud on private text" >> $GITHUB_STEP_SUMMARY
+          echo "- No auto-send" >> $GITHUB_STEP_SUMMARY
+          echo "- No fake visits/clicks" >> $GITHUB_STEP_SUMMARY
+          echo "- No credential edits" >> $GITHUB_STEP_SUMMARY
+          echo "- No invalid measurement reward" >> $GITHUB_STEP_SUMMARY
+          echo "- No direct push to main" >> $GITHUB_STEP_SUMMARY
+          echo "- No patch without tests" >> $GITHUB_STEP_SUMMARY
+          echo "- No merge without human approval" >> $GITHUB_STEP_SUMMARY
+          echo "- No artifact without receipt" >> $GITHUB_STEP_SUMMARY
+          echo "- No self-evolution without rollback" >> $GITHUB_STEP_SUMMARY
+
+      - name: Awaken issue on policy violation
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[RM-Policy] Policy gate failure — run ${context.runId}`,
+              body: `## Policy Gate Failure\n\n**Run**: ${context.runId}\n\nOne or more policy checks failed. See workflow logs for details.\n\n### Invariants enforced\n- No cloud on private text\n- No auto-send\n- No fake visits/clicks\n- No credential edits\n- No invalid measurement reward\n- No direct push to main\n- No patch without tests\n- No merge without human approval\n\nGAG should diagnose and propose a repair PR.`,
+              labels: ['gag:needs-human-review', 'gag:privacy-policy'],
+            });

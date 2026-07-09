@@ -1,0 +1,21 @@
+{
+  "id": "fa71413d8015b412",
+  "stage": "scout",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T23:23:08.943671Z",
+  "concept": {
+    "name": "DimLight",
+    "category": "Utility",
+    "description": "Screen dimmer below minimum brightness",
+    "features": [
+      "Overlay dimmer",
+      "Blue light filter",
+      "Schedule dimming",
+      "Keyboard shortcuts"
+    ],
+    "price_tier": "1.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 6
+}

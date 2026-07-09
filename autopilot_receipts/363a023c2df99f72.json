@@ -1,0 +1,16 @@
+{
+  "id": "363a023c2df99f72",
+  "stage": "verify",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T19:35:16.822670Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

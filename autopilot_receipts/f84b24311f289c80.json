@@ -1,0 +1,14 @@
+{
+  "id": "f84b24311f289c80",
+  "stage": "govern",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T18:52:12.962316Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

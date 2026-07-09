@@ -1,0 +1,179 @@
+{
+  "timestamp": "2026-06-27T06:21:26.240288+00:00",
+  "total_clients": 10,
+  "visited_clients": 1,
+  "ny_clients": 9,
+  "clients": [
+    {
+      "username": "DanitzHH",
+      "status": "visited",
+      "title": "DanitzHH - Looking for Male Massage Ther",
+      "classification": {
+        "username": "DanitzHH",
+        "title": "DanitzHH - Looking for Male Massage Ther",
+        "score": 100,
+        "label": "client_likely",
+        "reasons": [
+          "client_title:looking for male massage",
+          "client_title:looking for male massage ther"
+        ]
+      },
+      "source": "visited_with_title"
+    },
+    {
+      "username": "RelaxwithNick",
+      "name": "RelaxwithNick",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RelaxwithNick",
+      "classification": {
+        "username": "RelaxwithNick",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "comerelaxtodayla",
+      "name": "comerelaxtodayla",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/comerelaxtodayla",
+      "classification": {
+        "username": "comerelaxtodayla",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "relaxandrestore",
+      "name": "relaxandrestore",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxandrestore",
+      "classification": {
+        "username": "relaxandrestore",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "CArelax",
+      "name": "CArelax",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CArelax",
+      "classification": {
+        "username": "CArelax",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "relaxinstyle",
+      "name": "relaxinstyle",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxinstyle",
+      "classification": {
+        "username": "relaxinstyle",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "darrellsbody",
+      "name": "darrellsbody",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/darrellsbody",
+      "classification": {
+        "username": "darrellsbody",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:body",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "RelaxwithDaddy",
+      "name": "RelaxwithDaddy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/RelaxwithDaddy",
+      "classification": {
+        "username": "RelaxwithDaddy",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:relax",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "IlovewhatIdo",
+      "name": "IlovewhatIdo",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/IlovewhatIdo",
+      "classification": {
+        "username": "IlovewhatIdo",
+        "title": null,
+        "score": 40,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:love",
+          "generic_or_uninformative_title"
+        ]
+      },
+      "source": "ny_username_only"
+    },
+    {
+      "username": "BestBodyMassage",
+      "name": "BestBodyMassage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BestBodyMassage",
+      "classification": {
+        "username": "BestBodyMassage",
+        "title": null,
+        "score": 30,
+        "label": "client_possible",
+        "reasons": [
+          "client_username:massage",
+          "client_username:body",
+          "generic_or_uninformative_title",
+          "provider_username:massage"
+        ]
+      },
+      "source": "ny_username_only"
+    }
+  ]
+}

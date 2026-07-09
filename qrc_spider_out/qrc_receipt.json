@@ -1,0 +1,10 @@
+{
+  "schema": "qrc.spider.receipt.v1",
+  "created_at": "2026-06-21T19:57:12Z",
+  "packet_sha256": "4bde896daa8cafc556790e61778cb1d2137971c6cfcd73d20137e00cfd203310",
+  "compressed_sha256": "a207fb8882304f23e6ec8a72201ebb8a40dc9916e3186be67f902063aa2b17ec",
+  "b64_sha256": "a5dab1fecc1f23b604c047a9644857f125da2be687c777b21cd28d9c20cafd00",
+  "file_count": 134,
+  "secret_name_files_skipped": 3,
+  "secret_value_redactions": 29
+}

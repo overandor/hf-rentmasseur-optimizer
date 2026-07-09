@@ -1,0 +1,35 @@
+#!/bin/bash
+# Git post-commit hook — posts CI/CD task to Agent Bridge on every commit
+# Install: cp agent_bridge/git_post_commit .git/hooks/post-commit && chmod +x .git/hooks/post-commit
+
+BRIDGE_URL="http://127.0.0.1:8766"
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+COMMIT_HASH=$(git rev-parse HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%s)
+COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+COMMIT_DIFF=$(git diff HEAD~1 HEAD --stat 2>/dev/null | tail -5)
+
+# Post a CI/CD task to the bridge for ChatGPT to review
+curl -s -X POST "$BRIDGE_URL/tasks" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"direction\": \"to_chatgpt\",
+    \"sender\": \"git_hook\",
+    \"prompt\": \"Review this commit:\\n\\nRepo: $REPO_NAME\\nCommit: $COMMIT_HASH\\nAuthor: $COMMIT_AUTHOR\\nMessage: $COMMIT_MSG\\n\\nChanged files:\\n$COMMIT_DIFF\\n\\nProvide a brief code review.\",
+    \"context\": \"CI/CD auto-trigger from git post-commit hook\",
+    \"priority\": 5,
+    \"workflow_id\": \"cicd_$COMMIT_HASH\"
+  }" > /dev/null 2>&1
+
+# Also post a task for Windsurf to run tests
+curl -s -X POST "$BRIDGE_URL/tasks" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"direction\": \"to_windsurf\",
+    \"sender\": \"git_hook\",
+    \"prompt\": \"Run tests for commit $COMMIT_HASH: python3 -m pytest test_agent_bridge.py -v\",
+    \"context\": \"CI/CD auto-trigger: $COMMIT_MSG\",
+    \"priority\": 3
+  }" > /dev/null 2>&1
+
+echo "[agent-bridge] CI/CD tasks posted for commit $COMMIT_HASH"

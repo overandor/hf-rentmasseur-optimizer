@@ -1,0 +1,8 @@
+{
+  "id": "3d00d55e3846b465",
+  "stage": "codesign",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T20:37:10.201648Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ReceiptVault/ReceiptVault.app']' timed out after 60 seconds"
+}

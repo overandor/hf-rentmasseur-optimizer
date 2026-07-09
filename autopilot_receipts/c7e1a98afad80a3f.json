@@ -1,0 +1,15 @@
+{
+  "id": "c7e1a98afad80a3f",
+  "stage": "architect",
+  "app": "NetSignal",
+  "timestamp": "2026-06-27T19:47:22.665031Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/NetSignal",
+  "files": [
+    "Package.swift",
+    "Sources/NetSignal/NetSignalApp.swift",
+    "Sources/NetSignal/Info.plist",
+    "README.md"
+  ],
+  "icon": "clipboard",
+  "bundle_id": "com.autopilot.netsignal"
+}

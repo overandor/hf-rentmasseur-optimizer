@@ -1,0 +1,46 @@
+# bug_reviewer.recept — Example RECEPT program
+# A bug reviewer agent that observes screen, decides if there's a bug, and fixes it.
+
+capsule bug_reviewer
+
+observe:
+    screenshot = capture_screen()
+    code_text = ocr(screenshot)
+
+decide:
+    if code_text.contains("error") or code_text.contains("bug"):
+        bug = extract_issue(code_text)
+        should_fix = true
+    else:
+        should_fix = false
+
+execute:
+    if should_fix:
+        fix = "Fix: " + bug
+        type_into(fix, window=2)
+        receipt "reviewed and fixed: " + bug
+    else:
+        receipt "no issues found"
+
+endpoint GET /status:
+    return { capsule: "bug_reviewer", active: true }
+
+endpoint GET /health:
+    return { status: "ok" }
+
+workflow daily_review:
+    step 1: observe screen
+    step 2: decide if bug exists
+    step 3: execute fix if needed
+    step 4: receipt summary
+
+fn extract_issue(text: text) -> text:
+    return text
+
+fn generate_fix(bug: text) -> text:
+    return "Fix: " + bug
+
+@approved
+fn cleanup():
+    rm("/tmp/old_recept_files")
+    receipt "cleanup completed"

@@ -1,0 +1,63 @@
+name: HyperFlow CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt 2>/dev/null || true
+          pip install pytest flake8 2>/dev/null || true
+      
+      - name: Lint
+        run: |
+          chmod +x scripts/lint.sh
+          bash scripts/lint.sh
+        continue-on-error: true
+      
+      - name: Build
+        run: |
+          chmod +x scripts/build.sh
+          bash scripts/build.sh
+      
+      - name: Test
+        run: |
+          chmod +x scripts/test.sh
+          bash scripts/test.sh
+      
+      - name: Validate receipts
+        run: |
+          python3 -c "
+          from pathlib import Path
+          receipts = list(Path('RECEIPTS').rglob('*.md'))
+          receipts = [r for r in receipts if r.name != 'receipt_template.md']
+          print(f'Found {len(receipts)} receipts')
+          for r in receipts:
+              content = r.read_text()
+              required = ['Task ID:', 'Agent:', 'Date:', 'Pass/fail:']
+              missing = [f for f in required if f not in content]
+              if missing:
+                  print(f'WARNING: {r.name} missing: {missing}')
+              else:
+                  print(f'OK: {r.name}')
+          "
+      
+      - name: Upload receipts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hyperflow-receipts
+          path: RECEIPTS/

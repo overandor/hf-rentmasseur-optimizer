@@ -1,0 +1,23 @@
+{
+  "system": "Membra Desktop Operator 2",
+  "subject": "runtime",
+  "source": "layer_crawler",
+  "timestamp": "2026-06-25T16:21:05.104387",
+  "artifact": "receipts/Membra Desktop Operator 2-20260625162105.json",
+  "signals": {
+    "SubjectType.CODE_EvidenceType.BUILD_VERIFIED": true,
+    "SubjectType.CODE_EvidenceType.TESTS_VERIFIED": true,
+    "SubjectType.DEPENDENCY_EvidenceType.BUILD_VERIFIED": 10,
+    "SubjectType.LICENSE_EvidenceType.BUILD_VERIFIED": false,
+    "SubjectType.TEST_BUILD_EvidenceType.TESTS_VERIFIED": false,
+    "SubjectType.SECURITY_SECRETS_EvidenceType.SECRETS_EXPOSED": 4,
+    "SubjectType.DOCS_CLAIMS_EvidenceType.BUILD_VERIFIED": 0
+  },
+  "scores": {
+    "evidence": 25,
+    "reality_penalty": 70,
+    "prod_score": 0,
+    "ip_risk": 0
+  },
+  "hash": "ad3f11880d299e7e"
+}

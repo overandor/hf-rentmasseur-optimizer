@@ -1,0 +1,15 @@
+{
+  "id": "69e801c36f59c7e8",
+  "stage": "architect",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T20:23:54.690772Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ScreenPulse",
+  "files": [
+    "Package.swift",
+    "Sources/ScreenPulse/ScreenPulseApp.swift",
+    "Sources/ScreenPulse/Info.plist",
+    "README.md"
+  ],
+  "icon": "textformat",
+  "bundle_id": "com.autopilot.screenpulse"
+}

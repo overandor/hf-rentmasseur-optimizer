@@ -1,0 +1,29 @@
+# OverLanguage: ZipToApp — AI-native zip → .app bundle renderer
+# Content-aware binary analysis, smart resource classification, entitlements inference,
+# dependency graph, AI-readable manifest, self-healing validation, bundle optimization
+
+workflow: ZipToApp
+intent: take a .zip archive and render it into a valid, optimized, AI-readable macOS .app bundle — detecting binary type by magic bytes, classifying resources by content, inferring entitlements from capability hints, building a dependency graph, emitting an AI manifest, self-healing structural issues, and optimizing bundle layout
+
+step 1: read zip archive → zip_contents
+step 2: validate zip structure → zip_validated
+step 3: extract zip to staging → staging_dir
+step 4: analyze binary content → binary_analysis
+step 5: detect executable entry → exec_entry
+step 6: classify resources → resource_map
+step 7: infer entitlements → entitlements
+step 8: build dependency graph → dependency_graph
+step 9: generate Info.plist → info_plist
+step 10: assemble .app bundle → app_bundle
+step 11: set executable permissions → exec_perms
+step 12: ad-hoc code sign → code_signature
+step 13: emit AI manifest → ai_manifest
+step 14: self-heal bundle validation → heal_report
+step 15: compute SHA256 of bundle → bundle_hash
+step 16: write chained receipt → signed_receipt
+
+artifact: app_bundle
+artifact: ai_manifest
+artifact: signed_receipt
+receipt: SHA256 chained from step 1 through step 16, merkle root over bundle hash + plist + signature + AI manifest
+value: any zip archive rendered into a launchable, AI-readable, self-healing macOS .app bundle — no Xcode required, no human intervention needed

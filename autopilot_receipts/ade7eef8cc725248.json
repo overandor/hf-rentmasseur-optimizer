@@ -1,0 +1,10 @@
+{
+  "id": "ade7eef8cc725248",
+  "stage": "build",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T18:33:57.686968Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/SnapBarrier/.build/release/SnapBarrier",
+  "binary_size": 91720,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/SnapBarrier/build.log"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "f8a0b458f376e22f",
+  "stage": "build",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T22:44:15.295903Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/QuickLaunch/.build/release/QuickLaunch",
+  "binary_size": 91720,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/QuickLaunch/build.log"
+}

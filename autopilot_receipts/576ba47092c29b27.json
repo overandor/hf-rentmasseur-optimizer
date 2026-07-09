@@ -1,0 +1,14 @@
+{
+  "id": "576ba47092c29b27",
+  "stage": "govern",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T21:25:54.468519Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

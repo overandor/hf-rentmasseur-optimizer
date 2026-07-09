@@ -1,0 +1,16 @@
+{
+  "id": "884957677fff54eb",
+  "stage": "verify",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T22:13:41.938182Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

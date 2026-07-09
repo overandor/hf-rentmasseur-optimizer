@@ -1,0 +1,14 @@
+{
+  "id": "341cbac95eb11683",
+  "stage": "govern",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T18:35:05.208819Z",
+  "decision": "SHIP",
+  "reasoning": "All stages passed — ship it",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

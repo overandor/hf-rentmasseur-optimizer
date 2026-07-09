@@ -1,0 +1,84 @@
+▷ GrammarTest
+  ⧀ ⧂ CryptoPack
+  ⧂ ⧃ CryptoPack
+    ⏦ encrypt_fn
+      ⏨ □ ⏨ Ⲷ
+      ⏩
+        □ ⬠ → H
+        H ⬤ → MAC
+        MAC ⬥ → CT
+        CT ⇝
+      ⏧
+    ⏦ decrypt_fn
+      ⏨ CT ⏨ MAC ⏨ Ⲷ
+      ⏩
+        CT ⬩ → PT
+        PT ⬠ → H2
+        H2 ≡ MAC
+        H2 ≡ ◎
+        PT ⇝
+      ⏧
+    ⧄ ⧂
+
+  ⦜ StateInit
+    ⦠ ⬠ → H0
+    ⦝ StateInit → StateEncrypt
+    ⦞ H0 ≡ ◎
+  ⦜ StateEncrypt
+    ⦠ H0 ⬥ → CT
+    ⦝ StateEncrypt → StateVerify
+    ⦞ CT ⪳ Ⲷ
+  ⦜ StateVerify
+    ⦠ CT ⬧ → ◎
+    ⦝ StateVerify → StateFinal
+  ⦣ StateFinal
+    ⊙̂ ◎
+
+  ⦂ □ ⪳ ⲻ
+    ⦙ □ ⪳ Ⲹ
+      ⥂ □
+        ⥅ □ → item
+        item ⬠ → itemH
+        itemH ⊕ Σ → Σ
+        ⥆
+      ⥇
+  ⦂ □ ⪳ ⲹ
+    ⦙ ⦩ ⛯
+
+  ⦦
+    □ ⬨ → CT2
+    ⦂ CT2 ≡ ✕
+      ⦙ ⦪ CT2
+    ⦨
+      ⊙̂ ◎
+  ⦧ ⦯ ⛯
+
+  ⦰ □
+    ⦱ ⦸
+      □ → val
+      val ⇝
+    ⦱ ⦹
+      ⭚ ⛯
+    ⦱ ⦺
+      val → result
+      result ⇝
+    ⦱ ⦻
+      ⦩ ⛯
+
+  ⣢
+    ⣚ ⬠ → h1
+    ⣚ ⬠ → h2
+    ⣡ h1 h2
+    h1 ⊕ h2 → combined
+    combined ≡ ◎
+
+  ⭐ → T0
+  ⭒ ⭗ → elapsed
+  ⦂ elapsed ⪱ ⭔
+    ⦙ ⦩ ⛯
+
+  ⬠ → finalHash
+  finalHash ≡ ◎
+  ◈ finalHash
+  ⊙̂ ◎
+◀

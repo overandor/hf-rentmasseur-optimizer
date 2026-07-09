@@ -1,0 +1,10 @@
+{
+  "id": "a30dce0b3aabe975",
+  "stage": "build",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T22:31:58.798448Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/DimLight/.build/release/DimLight",
+  "binary_size": 91400,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/DimLight/build.log"
+}

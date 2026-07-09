@@ -1,0 +1,21 @@
+{
+  "id": "5d371b5deaa743e4",
+  "stage": "scout",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T22:56:23.794279Z",
+  "concept": {
+    "name": "CleanSweep",
+    "category": "Utility",
+    "description": "Disk space analyzer and cleaner",
+    "features": [
+      "Visual disk map",
+      "Find large files",
+      "Clean caches",
+      "Safe delete with receipts"
+    ],
+    "price_tier": "4.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 10
+}

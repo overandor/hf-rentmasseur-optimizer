@@ -1,0 +1,16 @@
+{
+  "project": "Base64Tool",
+  "description": "A base64 encode/decode CLI with file support",
+  "stages": [
+    "IDEA",
+    "SPEC",
+    "ARCHITECT",
+    "CODE",
+    "BUILD",
+    "TEST",
+    "RECEIPT"
+  ],
+  "build_dir": "/Users/alep/Downloads/windsurf-smoke/relay/builds/base64tool",
+  "timestamp": "2026-06-25T01:37:27Z",
+  "receipt_id": "c98d3235-738"
+}

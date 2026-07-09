@@ -1,0 +1,15 @@
+{
+  "id": "47456057b584a2df",
+  "stage": "architect",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T21:43:07.030750Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ReceiptVault",
+  "files": [
+    "Package.swift",
+    "Sources/ReceiptVault/ReceiptVaultApp.swift",
+    "Sources/ReceiptVault/Info.plist",
+    "README.md"
+  ],
+  "icon": "sun.min",
+  "bundle_id": "com.autopilot.receiptvault"
+}

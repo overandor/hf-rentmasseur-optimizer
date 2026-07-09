@@ -1,0 +1,14 @@
+{
+  "id": "fff473670c04e64b",
+  "stage": "govern",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T21:32:00.952322Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "ecb009387a33f297",
+  "stage": "verify",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T20:30:04.925885Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

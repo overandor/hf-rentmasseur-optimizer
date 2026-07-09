@@ -1,0 +1,16 @@
+{
+  "id": "511aa312a77b84a9",
+  "stage": "verify",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T22:01:29.760333Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

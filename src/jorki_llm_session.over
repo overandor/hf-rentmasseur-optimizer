@@ -1,0 +1,11 @@
+workflow: JorkiLLMSession
+intent: simulate an LLM querying a JORKI-indexed file — read meta, read summary, search, retrieve only needed chunk, verify merkle root
+step 1: read meta → meta
+step 2: read summary → summary
+step 3: search index → search_hits
+step 4: retrieve chunk 0 → chunk_bytes
+step 5: verify hash integrity → integrity
+step 6: issue receipt → session_receipt
+artifact: session_receipt
+receipt: SHA256 chained — LLM session proof
+value: LLM queried file through compact index without downloading full file

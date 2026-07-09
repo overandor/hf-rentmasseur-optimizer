@@ -1,0 +1,116 @@
+{
+  "packet_type": "launch_packet_v1",
+  "timestamp": 1782356778.148282,
+  "token": {
+    "name": "LatentOS Proof Token",
+    "symbol": "LPT",
+    "description": "Proof-backed access token for evidence verification services",
+    "utility": "Access to proof verification API, receipt-based settlement, audit credits, academic proof settlement",
+    "chain_target": "simulation",
+    "supply": 1000000.0,
+    "decimals": 18,
+    "creator_wallet": "0x0000000000000000000000000000000000000001",
+    "project_url": "https://example.com/latentos",
+    "github_url": "https://github.com/example/latentos",
+    "evidence_text": "Evidence packet contains: ML model with balanced_accuracy=0.85 on 1000 samples, k-fold cross-validation, leakage checked, out-of-sample tested. Receipt chain verified. Proof grade: TESTNET_READY.",
+    "model_metrics": {
+      "accuracy": 0.87,
+      "balanced_accuracy": 0.85,
+      "precision": null,
+      "recall": null,
+      "f1": 0.83,
+      "auc": 0.89,
+      "sample_size": 1000,
+      "validation_type": "k_fold",
+      "leakage_checked": true,
+      "out_of_sample": true
+    },
+    "allow_public_launch_claim": false
+  },
+  "scores": {
+    "token_name": "LatentOS Proof Token",
+    "symbol": "LPT",
+    "chain_target": "simulation",
+    "scores": {
+      "proof_density_score": 0.8,
+      "ml_score": 0.733,
+      "utility_score": 1.0,
+      "launch_readiness_score": 0.647,
+      "fraud_risk_score": 0.0,
+      "compliance_risk_score": 0.0
+    },
+    "proof_grade": "EXTERNALLY_VERIFIED",
+    "mainnet_blocked": true,
+    "safe_to_generate_testnet_plan": true,
+    "recommended_routes": [
+      "simulation_packet",
+      "evm_testnet_contract_spec",
+      "solana_devnet_mint_plan",
+      "proof_token_access_credit",
+      "receipt_backed_utility_token"
+    ],
+    "blocked_actions": [
+      "mainnet_deployment"
+    ],
+    "disclaimer": "This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.",
+    "receipt_id": "rcpt_fd5da98ed5febf36",
+    "receipt_hash": "sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3"
+  },
+  "evm_spec": "// SPDX-License-Identifier: MIT\n// ============================================================================\n// ONEFILE ML TOKEN LAUNCHER \u2014 EVM TESTNET CONTRACT SPEC\n// ============================================================================\n// WARNING: This is a SPEC ONLY. Do not deploy to mainnet.\n// This contract has not been audited. Use only on testnet.\n// This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.\n// ============================================================================\n\npragma solidity ^0.8.20;\n\n// NOTE: In production, use OpenZeppelin ERC-20 implementation:\n// import \"@openzeppelin/contracts/token/ERC20/ERC20.sol\";\n// import \"@openzeppelin/contracts/access/Ownable.sol\";\n\ncontract LPTToken {\n    string public name = \"LatentOS Proof Token\";\n    string public symbol = \"LPT\";\n    uint8 public decimals = 18;\n    uint256 public totalSupply = 1000000;\n\n    address public owner;\n    // WARNING: Owner/minter has mint control. Use multisig in production.\n    // Creator wallet (public address only): 0x0000000000000000000000000000000000000001\n\n    mapping(address => uint256) public balanceOf;\n\n    event Transfer(address indexed from, address indexed to, uint256 value);\n    event Mint(address indexed to, uint256 value);\n\n    // Proof grade: EXTERNALLY_VERIFIED\n    // Receipt hash: sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3\n    // Launch readiness: 0.647\n\n    constructor() {\n        owner = msg.sender;\n        balanceOf[owner] = totalSupply;\n        emit Transfer(address(0), owner, totalSupply);\n    }\n\n    // === TESTNET ONLY NOTICE ===\n    // Mainnet deployment requires:\n    //   1. Professional security audit\n    //   2. Legal/compliance review\n    //   3. Multisig ownership\n    //   4. Timelock on critical functions\n    //   5. Proof of utility and revenue\n}\n",
+  "solana_plan": {
+    "plan_type": "solana_devnet_mint_plan",
+    "status": "SPEC_ONLY",
+    "warning": "This is a plan only. Do not execute on mainnet.",
+    "disclaimer": "This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.",
+    "token": {
+      "name": "LatentOS Proof Token",
+      "symbol": "LPT",
+      "decimals": 18,
+      "supply": 1000000.0
+    },
+    "mint_account": {
+      "description": "Solana mint account representing the token",
+      "mint_authority": "0x0000000000000000000000000000000000000001",
+      "decimals": 18,
+      "supply": 1000000.0,
+      "is_initialized": true,
+      "freeze_authority": null
+    },
+    "token_account": {
+      "description": "Associated token account for the creator",
+      "owner": "0x0000000000000000000000000000000000000001",
+      "amount": 1000000.0
+    },
+    "metadata": {
+      "uri": "https://example.com/latentos",
+      "name": "LatentOS Proof Token",
+      "symbol": "LPT"
+    },
+    "devnet_checklist": [
+      "1. Generate keypair OUTSIDE this tool (never enter private keys here)",
+      "2. Configure Solana CLI to devnet: solana config set --url https://api.devnet.solana.com",
+      "3. Airdrop test SOL: solana airdrop 2",
+      "4. Create mint account: spl-token create-token",
+      "5. Create token account: spl-token create-account <MINT_ADDRESS>",
+      "6. Mint tokens: spl-token mint <MINT_ADDRESS> <AMOUNT>",
+      "7. Verify on devnet explorer: https://explorer.solana.com?cluster=devnet"
+    ],
+    "proof_metadata": {
+      "proof_grade": "EXTERNALLY_VERIFIED",
+      "receipt_hash": "sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3"
+    }
+  },
+  "testnet_checklist": [
+    "1. Review all scores and risk assessments",
+    "2. Ensure proof grade is at least METRICS_PRESENT",
+    "3. Generate keypair outside this tool (never enter private keys)",
+    "4. Deploy to testnet only (Sepolia, Goerli, or Solana devnet)",
+    "5. Verify contract/mint on testnet explorer",
+    "6. Run test transactions",
+    "7. Get external code audit before any mainnet consideration",
+    "8. Obtain legal/compliance review for any public launch"
+  ],
+  "disclaimer": "This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.",
+  "receipt_id": "rcpt_fd5da98ed5febf36",
+  "receipt_hash": "sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3"
+}

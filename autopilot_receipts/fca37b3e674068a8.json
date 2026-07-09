@@ -1,0 +1,16 @@
+{
+  "id": "fca37b3e674068a8",
+  "stage": "verify",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T19:29:11.186329Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

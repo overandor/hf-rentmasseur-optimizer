@@ -1,0 +1,359 @@
+{
+  "timestamp": "2026-06-27T06:19:59.204237+00:00",
+  "count": 9,
+  "clients": [
+    {
+      "username": "RelaxwithNick",
+      "name": "RelaxwithNick",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RelaxwithNick",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "RelaxwithNick",
+        "url": "https://rentmasseur.com/RelaxwithNick",
+        "extracted_at": "2026-06-27T06:19:40.765289+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "RelaxwithNick",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "comerelaxtodayla",
+      "name": "comerelaxtodayla",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/comerelaxtodayla",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "comerelaxtodayla",
+        "url": "https://rentmasseur.com/comerelaxtodayla",
+        "extracted_at": "2026-06-27T06:19:41.158530+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "comerelaxtodayla",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "relaxandrestore",
+      "name": "relaxandrestore",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxandrestore",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "relaxandrestore",
+        "url": "https://rentmasseur.com/relaxandrestore",
+        "extracted_at": "2026-06-27T06:19:43.413032+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "relaxandrestore",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "CArelax",
+      "name": "CArelax",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CArelax",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "CArelax",
+        "url": "https://rentmasseur.com/CArelax",
+        "extracted_at": "2026-06-27T06:19:46.035497+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "CArelax",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "relaxinstyle",
+      "name": "relaxinstyle",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxinstyle",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "relaxinstyle",
+        "url": "https://rentmasseur.com/relaxinstyle",
+        "extracted_at": "2026-06-27T06:19:46.718405+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "relaxinstyle",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "darrellsbody",
+      "name": "darrellsbody",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/darrellsbody",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "darrellsbody",
+        "url": "https://rentmasseur.com/darrellsbody",
+        "extracted_at": "2026-06-27T06:19:48.297801+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "darrellsbody",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "RelaxwithDaddy",
+      "name": "RelaxwithDaddy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/RelaxwithDaddy",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "RelaxwithDaddy",
+        "url": "https://rentmasseur.com/RelaxwithDaddy",
+        "extracted_at": "2026-06-27T06:19:51.026679+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "RelaxwithDaddy",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "IlovewhatIdo",
+      "name": "IlovewhatIdo",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/IlovewhatIdo",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:love",
+        "generic_or_uninformative_title"
+      ],
+      "evidence": {
+        "username": "IlovewhatIdo",
+        "url": "https://rentmasseur.com/IlovewhatIdo",
+        "extracted_at": "2026-06-27T06:19:52.699845+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "IlovewhatIdo",
+        "lead_value_score": 66.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 90,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    },
+    {
+      "username": "BestBodyMassage",
+      "name": "BestBodyMassage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BestBodyMassage",
+      "title": null,
+      "score": 30,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:massage",
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ],
+      "evidence": {
+        "username": "BestBodyMassage",
+        "url": "https://rentmasseur.com/BestBodyMassage",
+        "extracted_at": "2026-06-27T06:19:53.527046+00:00",
+        "title": "CrowdSec Captcha",
+        "headline": null,
+        "bio": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>crowdsec captcha</title>\n    <meta content=\"text/html; charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <style>/*! tailwindcss v3.2.7 | mit license | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:\"\"}html{-webkit-text-size-adjust:100%;font-feature-settings:normal;font-family:ui-sans-serif,system-ui,-apple-system,blinkmacsystemfont,segoe ui,roboto,helvetica neue,arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,sfmono-regular,menlo,monaco,consolas,liberation mono,courier new,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,",
+        "services": null,
+        "looking_for": null,
+        "has_prices": false,
+        "has_booking": false,
+        "raw_length": 13922,
+        "client_signal_count": 1
+      },
+      "lead_value": {
+        "username": "BestBodyMassage",
+        "lead_value_score": 62.0,
+        "bucket": "B",
+        "components": {
+          "client_probability": 80,
+          "recency": 30,
+          "location_quality": 80,
+          "intent_strength": 40,
+          "ambiguity_penalty": 0
+        }
+      }
+    }
+  ]
+}

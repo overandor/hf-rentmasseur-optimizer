@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "broll-videolake"
+version = "7.0.0"
+description = "Investigation YouTube OS — Evidence-backed research media channel platform"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [{name = "Membra"}]
+keywords = ["investigation", "evidence", "video", "youtube", "research", "mevf", "vrap"]
+
+dependencies = [
+    "fastapi>=0.104",
+    "uvicorn>=0.24",
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "urllib3>=2.0",
+    "httpx>=0.25",
+    "aiohttp>=3.9",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+clip = ["torch", "transformers", "Pillow"]
+youtube = ["google-api-python-client", "youtube-transcript-api"]
+dev = ["pytest>=7.0", "httpx>=0.25"]
+
+[project.scripts]
+broll = "broll.__main__:main"
+videolake = "broll.__main__:main"
+youtube-os = "broll.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["broll*"]
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = ["test_*.py"]

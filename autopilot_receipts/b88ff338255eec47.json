@@ -1,0 +1,8 @@
+{
+  "id": "b88ff338255eec47",
+  "stage": "codesign",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T19:11:13.279954Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/CleanSweep/CleanSweep.app']' timed out after 60 seconds"
+}

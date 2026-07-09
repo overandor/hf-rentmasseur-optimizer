@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-06-27T06:26:08.469191+00:00",
+  "input_profiles": 356,
+  "visited_profiles": 48,
+  "ny_users": 316,
+  "client_likely": 1,
+  "client_possible": 0,
+  "unknown": 285,
+  "provider_likely": 70,
+  "next_best_action": "crawl profile bodies for client_possible and unknown only"
+}

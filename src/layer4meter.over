@@ -1,0 +1,24 @@
+# OverLanguage: Layer4Meter — substrate accounting for AI-native Mac work
+# Quantify invisible compute behind AI work
+
+workflow: Layer4Meter
+intent: capture the invisible compute behind AI work and convert it into a signed production receipt
+
+step 1: start idle baseline (5 min) → idle_baseline
+step 2: start human-only baseline (manual task) → human_baseline
+step 3: start agent workload (Windsurf/Codex/Claude) → agent_workload
+step 4: capture screen checkpoints via ScreenCaptureKit → visual_plane
+step 5: capture file deltas via FSEvents → file_plane
+step 6: capture process events via Endpoint Security → process_plane
+step 7: capture power metrics via MetricKit → power_plane
+step 8: capture Time Machine snapshot delta → snapshot_plane
+step 9: compute Latent Compute Index (LCI) → lci_score
+step 10: compute Hidden Compute Lift = agent - human - idle → hidden_lift
+step 11: compute cost per artifact and agent efficiency → business_metrics
+step 12: build Merkle receipt with all planes → substrate_receipt
+step 13: export PDF/ZIP receipt → exportable_receipt
+
+artifact: substrate_receipt
+artifact: exportable_receipt
+receipt: SHA256 chained across all 5 planes with Merkle root
+value: quantify the invisible compute behind AI work — rank workflows by value per unit of substrate compute

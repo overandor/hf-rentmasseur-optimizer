@@ -1,0 +1,21 @@
+{
+  "id": "f65d9248793f646c",
+  "stage": "scout",
+  "app": "NetSignal",
+  "timestamp": "2026-06-27T20:05:38.814656Z",
+  "concept": {
+    "name": "NetSignal",
+    "category": "Utility",
+    "description": "Network speed monitor in menu bar",
+    "features": [
+      "Real-time bandwidth",
+      "Ping monitor",
+      "WiFi signal strength",
+      "Daily summary"
+    ],
+    "price_tier": "2.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 8
+}

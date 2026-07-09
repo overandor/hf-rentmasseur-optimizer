@@ -1,0 +1,79 @@
+name: Social Traffic Tunnel — 24/7 Reddit + X.com Lead Pipeline
+
+on:
+  schedule:
+    # Every 30 minutes — scrape Reddit + X.com for massage-seeking leads
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to scrape (all, reddit, x)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+jobs:
+  social-tunnel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt 2>/dev/null || pip install requests beautifulsoup4 praw tweepy
+          pip install praw tweepy 2>/dev/null || true
+
+      - name: Run Reddit tunnel
+        if: github.event.inputs.platform != 'x'
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        run: |
+          python3 -m rm_traffic.social_traffic_tunnel --reddit --cycle ${{ github.run_number }}
+
+      - name: Run X.com tunnel
+        if: github.event.inputs.platform != 'reddit'
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        run: |
+          python3 -m rm_traffic.social_traffic_tunnel --x --cycle ${{ github.run_number }}
+
+      - name: Show tunnel stats
+        run: |
+          python3 -m rm_traffic.social_traffic_tunnel --stats
+
+      - name: Upload leads DB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: social-leads-${{ github.run_number }}
+          path: |
+            rm_traffic/social_leads.db
+            receipts/social/
+          retention-days: 30
+
+      - name: Commit leads and receipts
+        run: |
+          git config user.name "Social Tunnel Bot"
+          git config user.email "social-tunnel@users.noreply.github.com"
+          git add receipts/social/ rm_traffic/social_leads.db 2>/dev/null || true
+          git commit -m "social tunnel cycle ${{ github.run_number }} — $(date -u +%Y%m%d_%H%M)" || echo "No changes"
+          git push || echo "Push failed — may need PAT"

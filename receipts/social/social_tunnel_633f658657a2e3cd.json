@@ -1,0 +1,20 @@
+{
+  "id": "633f658657a2e3cd",
+  "timestamp": "2026-07-07T08:51:20.485644+00:00",
+  "data": {
+    "cycle": 48,
+    "timestamp": "2026-07-07T08:51:20.485446+00:00",
+    "platforms": "x",
+    "posts_scraped": 0,
+    "leads_stored": 0,
+    "leads_classified": 0,
+    "high_intent": 0,
+    "responses_generated": 0,
+    "duplicates_skipped": 0,
+    "errors": 0,
+    "by_platform": {
+      "x": 0
+    },
+    "by_intent": {}
+  }
+}

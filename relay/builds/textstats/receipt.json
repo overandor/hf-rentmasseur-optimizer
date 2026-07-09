@@ -1,0 +1,16 @@
+{
+  "project": "TextStats",
+  "description": "A text analysis tool: word count, char count, top words",
+  "stages": [
+    "IDEA",
+    "SPEC",
+    "ARCHITECT",
+    "CODE",
+    "BUILD",
+    "TEST",
+    "RECEIPT"
+  ],
+  "build_dir": "/Users/alep/Downloads/windsurf-smoke/relay/builds/textstats",
+  "timestamp": "2026-06-25T01:38:11Z",
+  "receipt_id": "332d877c-4f5"
+}

@@ -1,0 +1,24 @@
+{
+  "raw_response": "3 core features:\n05:23\n\n1. SQLite task ledge:\n\n12h © ® X\n\n2. Receipt logging — every create, upaate, complete, ana aerete action writes an appena-only JSONL receipt.\n\n3. Local dashboard — browser dashboard shows open tasks, completed tasks, recent receipts, and basic\n\nproductivity stats.\n\nTech stack:\n\nPython 3.114\n\nSQLite via sqlites\n\nCLI via argparse\n\nDashboard via FastAPI + Jinja2\nServer via uvicorn\n\nReceipts via SONL append-only log\nPackaging via pyproject.. toml.\n\nFile structure:\n\nPlain text\n\ntaskforge/\npyproject.toml\nREADME .md\ntaskforge/\n__init__.py\ncli.py\ndb.py\nmodels .py\nreceipts.py\ndashboard. py\ntemplates/\ndashboard. html\nstatic/\nstyle.css\ndata/\ntaskforge.sqlites\nreceipts. jsonl\ntests/\ntest_db. py\ntest_cli.py\ntest_receipts.py\n\nWhat problem it solves:\n\n@ Copy\n\nTaskForge solves the “I did work but cannot prove, review, or reconstruct it later” problem. Instead of tasks living in\nscattered notes, chats, terminals, and memory, it creates a local operational ledger: every task has a database record,\nevery action has a receipt, and the dashboard gives a fast daily/weekly view of what is pending, what changed, and what\n\nwas completed.\n\nOv69~\n",
+  "product_name": "AutoProduct",
+  "description": "",
+  "features": [
+    "SQLite task ledge:",
+    "Receipt logging — every create, upaate, complete, ana aerete action writes an app",
+    "Local dashboard — browser dashboard shows open tasks, completed tasks, recent rec"
+  ],
+  "files": [
+    "test_receipts.py",
+    "receipts.py",
+    "test_cli.py",
+    "db.py",
+    "__init__.py",
+    "cli.py"
+  ],
+  "tech_stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "parsed_at": "2026-06-24T19:46:42.099224Z"
+}

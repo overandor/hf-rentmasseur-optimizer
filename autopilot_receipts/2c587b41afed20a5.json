@@ -1,0 +1,10 @@
+{
+  "id": "2c587b41afed20a5",
+  "stage": "build",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T22:25:52.503805Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ClipFlow/.build/release/ClipFlow",
+  "binary_size": 91400,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ClipFlow/build.log"
+}

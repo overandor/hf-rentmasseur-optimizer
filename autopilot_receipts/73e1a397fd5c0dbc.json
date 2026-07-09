@@ -1,0 +1,8 @@
+{
+  "id": "73e1a397fd5c0dbc",
+  "stage": "codesign",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T22:44:20.377739Z",
+  "result": "FAIL",
+  "error": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/QuickLaunch/QuickLaunch.app: replacing existing signature\n"
+}

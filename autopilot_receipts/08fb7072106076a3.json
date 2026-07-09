@@ -1,0 +1,8 @@
+{
+  "id": "08fb7072106076a3",
+  "stage": "codesign",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T22:20:47.989965Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/SnapBarrier/SnapBarrier.app']' timed out after 60 seconds"
+}

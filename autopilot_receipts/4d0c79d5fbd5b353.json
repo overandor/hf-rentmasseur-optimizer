@@ -1,0 +1,21 @@
+{
+  "id": "4d0c79d5fbd5b353",
+  "stage": "scout",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T19:35:11.277060Z",
+  "concept": {
+    "name": "ReceiptVault",
+    "category": "Finance",
+    "description": "Tamper-evident receipt ledger for personal transactions",
+    "features": [
+      "Hash-chain receipts",
+      "Photo attachments",
+      "CSV export",
+      "Search and filter"
+    ],
+    "price_tier": "4.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 3
+}

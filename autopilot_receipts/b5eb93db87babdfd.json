@@ -1,0 +1,21 @@
+{
+  "id": "b5eb93db87babdfd",
+  "stage": "scout",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T23:09:48.911092Z",
+  "concept": {
+    "name": "SnapBarrier",
+    "category": "Utility",
+    "description": "Window snap manager with center barrier",
+    "features": [
+      "Center screen barrier",
+      "Snap windows to halves",
+      "Hover menu bar",
+      "Glow animations"
+    ],
+    "price_tier": "2.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 8
+}

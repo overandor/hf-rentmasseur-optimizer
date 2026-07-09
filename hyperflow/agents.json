@@ -1,0 +1,50 @@
+{
+  "chatgpt": {
+    "role": "command_center",
+    "allowed_actions": ["spec", "audit", "valuation", "task_creation", "review", "classify_failure"],
+    "file_access": ["SPEC/", "TASK_LEDGER.md", "hyperflow/tasks.jsonl", "hyperflow/receipts.jsonl", "hyperflow/valuation.md"],
+    "can_edit_code": false,
+    "can_run_commands": false,
+    "can_commit": false
+  },
+  "claude": {
+    "role": "architecture_reviewer",
+    "allowed_actions": ["review", "plan", "refactor_plan", "risk_analysis", "documentation"],
+    "file_access": ["SPEC/", "AGENTS.md", "HYPERFLOW.md", "TASK_LEDGER.md", "hyperflow/", "src/"],
+    "can_edit_code": false,
+    "can_run_commands": false,
+    "can_commit": false
+  },
+  "codex": {
+    "role": "patch_worker",
+    "allowed_actions": ["edit_files", "run_tests", "generate_diff", "fix_errors"],
+    "file_access": ["src/", "tests/", "patches/"],
+    "can_edit_code": true,
+    "can_run_commands": true,
+    "can_commit": false
+  },
+  "windsurf": {
+    "role": "ide_operator",
+    "allowed_actions": ["edit_files", "run_commands", "navigate_repo", "apply_patches", "update_ledger", "create_receipts"],
+    "file_access": ["*"],
+    "can_edit_code": true,
+    "can_run_commands": true,
+    "can_commit": true
+  },
+  "xcode": {
+    "role": "build_truth",
+    "allowed_actions": ["build", "test", "archive", "sign", "profile", "simulate"],
+    "file_access": ["*.xcodeproj", "*.xcworkspace", "build_logs/"],
+    "can_edit_code": false,
+    "can_run_commands": true,
+    "can_commit": false
+  },
+  "github": {
+    "role": "external_ledger",
+    "allowed_actions": ["commit", "create_pr", "create_issue", "tag_release", "store_artifacts"],
+    "file_access": ["*"],
+    "can_edit_code": false,
+    "can_run_commands": false,
+    "can_commit": true
+  }
+}

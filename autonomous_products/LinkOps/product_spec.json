@@ -1,0 +1,12 @@
+{
+  "product_name": "LinkOps",
+  "raw_response": "Thought for a couple of seconds\n\nSelf-selling answer:\n\nPai\nDevelopers lose time searching across local files and Git commits separately, then manually reconstructing what\nchanged, where it changed, and what artifact should be updated.\n\nMechanism:\nLinkOps indexes project files and Git commits into SQLite, lets the user search both from one CLI, and exports matched\nfile/commit results into a transformation task list.\n\nProof:\nMinimal\n\ncan be tested with a temp Git repo, sample files, and assertions that file matches, commit matches, and\nexported tasks are written correctly.\n\nDelta:\nCuts repo investigation from 10-30 minutes of manual grep/git-log switching into a 30-second local query and\ntask export.\n\nNext action:\nBuild the 4-file Python version below.\n\nBoundary:\nThis is a minimal local CLI product, not a full code-mod engine yet. It identifies and exports transformations; it does not\nsafely rewrite production code automatically.\n\n‘Score from 0-10:\nfio\n",
+  "features": [],
+  "files": [],
+  "tech_stack": [
+    "Python",
+    "SQLite"
+  ],
+  "parsed_at": "2026-06-24T19:53:26.958017Z",
+  "iteration": 2
+}

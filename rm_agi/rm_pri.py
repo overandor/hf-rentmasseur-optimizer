@@ -1,0 +1,383 @@
+"""
+RM-PRI — RentMasseur Profile Revenue Intelligence
+Honest system: real labels, real validation, real execution, real feedback.
+
+Stages:
+  1. Real corpus loaded (DONE: 2,723 bios)
+  2. Public visits/day enrichment (BLOCKED: CrowdSec captcha)
+  3. Dashboard time series (requires API access)
+  4. Live experiment labels (requires approval + apply)
+  5. Validated online learner (requires stages 2-4)
+"""
+
+import json
+import re
+import time
+import hashlib
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import requests
+
+DATA_DIR = Path("rm_traffic/data")
+ENRICHED_PATH = DATA_DIR / "real_bios_with_views.jsonl"
+RANKED_PATH = DATA_DIR / "real_ranked_views_day.txt"
+RAW_PATH = DATA_DIR / "real_bios.jsonl"
+
+
+# ─── Gate 1: Data Validation ───
+
+REQUIRED_FIELDS = ["id", "username", "city", "headline", "description",
+                   "ratingAverage", "reviewsCount", "isGold", "isAvailable", "isCertified"]
+
+ENRICHMENT_FIELDS = ["visits", "member_since", "days_online", "views_per_day"]
+
+EXPERIMENT_FIELDS = ["variant_id", "started_at", "ended_at",
+                     "before_views", "after_views",
+                     "before_clicks", "after_clicks",
+                     "availability_minutes"]
+
+
+def validate_corpus(path: Path = RAW_PATH) -> dict:
+    """Gate 1: validate that every row has required fields."""
+    results = {
+        "total": 0, "valid": 0, "invalid": 0, "errors": [],
+        "fields_present": {}, "fields_missing": {},
+    }
+    for field in REQUIRED_FIELDS:
+        results["fields_present"][field] = 0
+        results["fields_missing"][field] = 0
+
+    with path.open() as f:
+        for i, line in enumerate(f):
+            if not line.strip():
+                continue
+            results["total"] += 1
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as e:
+                results["invalid"] += 1
+                results["errors"].append(f"Line {i+1}: JSON parse error: {e}")
+                continue
+
+            row_valid = True
+            for field in REQUIRED_FIELDS:
+                if field in row and row[field] is not None:
+                    results["fields_present"][field] += 1
+                else:
+                    results["fields_missing"][field] += 1
+                    row_valid = False
+
+            if row_valid:
+                results["valid"] += 1
+            else:
+                results["invalid"] += 1
+
+    results["pass"] = results["invalid"] == 0
+    return results
+
+
+def validate_enriched(path: Path = ENRICHED_PATH) -> dict:
+    """Gate 1: validate that enriched rows have visits/day labels."""
+    results = {"total": 0, "has_views_per_day": 0, "missing_views_per_day": 0,
+               "has_visits": 0, "has_member_since": 0, "pass": False}
+    if not path.exists():
+        results["error"] = "Enriched file does not exist yet"
+        return results
+
+    with path.open() as f:
+        for line in f:
+            if not line.strip():
+                continue
+            results["total"] += 1
+            row = json.loads(line)
+            if row.get("views_per_day", 0) > 0:
+                results["has_views_per_day"] += 1
+            else:
+                results["missing_views_per_day"] += 1
+            if row.get("visits", 0) > 0:
+                results["has_visits"] += 1
+            if row.get("member_since"):
+                results["has_member_since"] += 1
+
+    results["pass"] = results["has_views_per_day"] > 0
+    return results
+
+
+# ─── Gate 2: Enrichment (public visits + member-since) ───
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+
+def fetch_profile_views(username: str) -> dict:
+    """Fetch public visits and member-since from a profile page."""
+    result = {"visits": 0, "member_since": "", "days_online": 0, "views_per_day": 0}
+    try:
+        r = requests.get(f"https://rentmasseur.com/{username}", headers=HEADERS, timeout=12)
+        if r.status_code != 200:
+            return result
+        if "CrowdSec" in r.text:
+            result["error"] = "captcha"
+            return result
+
+        member = re.search(r'Member Since:</div><div class="value">([^<]+)</div>', r.text)
+        member_since = member.group(1).strip() if member else ""
+
+        visit_values = [int(v) for v in re.findall(r'"visits":(\d+)', r.text) if v != "0"]
+        visits = max(visit_values) if visit_values else 0
+
+        days_online = 0
+        if member_since:
+            try:
+                joined = datetime.strptime(member_since, "%b %d, %Y")
+                days_online = max(1, (datetime.now() - joined).days)
+            except ValueError:
+                pass
+
+        views_per_day = visits / days_online if days_online > 0 else 0
+
+        return {
+            "visits": visits,
+            "member_since": member_since,
+            "days_online": days_online,
+            "views_per_day": views_per_day,
+        }
+    except Exception as e:
+        result["error"] = str(e)
+        return result
+
+
+def enrich_bios(input_path: Path = RAW_PATH,
+                output_path: Path = ENRICHED_PATH,
+                workers: int = 16,
+                rate_limit: float = 0.5) -> dict:
+    """Enrich bios with public visits and member-since dates."""
+    bios = [json.loads(l) for l in input_path.open() if l.strip()]
+    total = len(bios)
+    result = {"total": total, "enriched": 0, "failed": 0, "captcha": False}
+
+    print(f"Enriching {total} bios with {workers} workers (rate_limit={rate_limit}s)...")
+
+    usernames = [b.get("username") for b in bios if b.get("username")]
+
+    # Check first request for captcha
+    test = fetch_profile_views(usernames[0])
+    if test.get("error") == "captcha":
+        result["captcha"] = True
+        result["error"] = "CrowdSec captcha active. Cannot enrich. Wait for ban to clear."
+        print(f"BLOCKED: {result['error']}")
+        return result
+
+    # If first works, proceed with batch
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(fetch_profile_views, u): u for u in usernames}
+        view_map = {}
+
+        for i, fut in enumerate(as_completed(futures)):
+            u = futures[fut]
+            try:
+                view_map[u] = fut.result()
+                if view_map[u].get("error") == "captcha":
+                    result["captcha"] = True
+                    print(f"Captcha detected at {u}. Stopping.")
+                    pool.shutdown(wait=False, cancel_futures=True)
+                    break
+            except Exception as e:
+                view_map[u] = {"visits": 0, "member_since": "", "days_online": 0, "views_per_day": 0}
+
+            if (i + 1) % 100 == 0:
+                print(f"  Progress: {i+1}/{total} ({result['enriched']} enriched)")
+
+    # Update bios
+    for b in bios:
+        v = view_map.get(b.get("username"), {})
+        b["visits"] = v.get("visits", 0)
+        b["member_since"] = v.get("member_since", "")
+        b["days_online"] = v.get("days_online", 0)
+        b["views_per_day"] = v.get("views_per_day", 0)
+        b["scraped_at"] = datetime.now(timezone.utc).isoformat()
+        if b["views_per_day"] > 0:
+            result["enriched"] += 1
+        else:
+            result["failed"] += 1
+
+    # Save
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w") as f:
+        for b in bios:
+            f.write(json.dumps(b, ensure_ascii=False, default=str) + "\n")
+
+    print(f"Done: {result['enriched']} enriched, {result['failed']} failed")
+    return result
+
+
+# ─── Rank by views/day ───
+
+def rank_by_views_per_day(input_path: Path = ENRICHED_PATH,
+                          output_path: Path = RANKED_PATH) -> dict:
+    """Rank real bios by views_per_day."""
+    if not input_path.exists():
+        return {"error": "Enriched file does not exist. Run enrich-views first."}
+
+    bios = [json.loads(l) for l in input_path.open() if l.strip()]
+    has_views = [b for b in bios if b.get("views_per_day", 0) > 0]
+
+    if not has_views:
+        return {"error": "No bios have views_per_day. Enrichment needed."}
+
+    has_views.sort(key=lambda b: b.get("views_per_day", 0), reverse=True)
+
+    with output_path.open("w") as f:
+        for i, b in enumerate(has_views, 1):
+            f.write(
+                f"#{i} | {b.get('username')} | {b.get('city')} | "
+                f"visits={b.get('visits',0)} | days={b.get('days_online',0)} | "
+                f"views/day={b.get('views_per_day',0):.2f} | "
+                f"rating={b.get('ratingAverage')} | reviews={b.get('reviewsCount')} | "
+                f"gold={b.get('isGold')} | available={b.get('isAvailable')} | "
+                f"certified={b.get('isCertified')}\n"
+            )
+            f.write(f"HEADLINE: {b.get('headline','')}\n")
+            desc = (b.get("description") or "").replace("\n", " | ")
+            f.write(f"DESC: {desc[:1200]}\n")
+            f.write(f"SERVICES: {b.get('services')}\n")
+            f.write(f"MEMBER SINCE: {b.get('member_since','N/A')}\n\n")
+
+    result = {
+        "total_bios": len(bios),
+        "ranked_bios": len(has_views),
+        "top_5": [{"username": b["username"], "views_per_day": b["views_per_day"],
+                    "headline": b.get("headline", "")}
+                  for b in has_views[:5]],
+        "output": str(output_path),
+    }
+    return result
+
+
+# ─── Corpus atomizer (feature extraction) ───
+
+def atomize_bios(input_path: Path = RAW_PATH,
+                 output_path: Path = DATA_DIR / "bio_atoms.jsonl") -> dict:
+    """Extract structural atoms from each bio."""
+    bios = [json.loads(l) for l in input_path.open() if l.strip()]
+    count = 0
+
+    with output_path.open("w") as f:
+        for b in bios:
+            headline = b.get("headline", "")
+            desc = b.get("description", "")
+            full = (headline + " " + desc).lower()
+
+            atom = {
+                "id": b.get("id"),
+                "username": b.get("username"),
+                "city": b.get("city"),
+                "headline_len": len(headline),
+                "desc_len": len(desc),
+                "word_count": len(full.split()),
+                "services_count": len(b.get("services") or []),
+                "rating": float(b.get("ratingAverage") or 0),
+                "reviews": b.get("reviewsCount", 0),
+                "is_gold": bool(b.get("isGold")),
+                "is_available": bool(b.get("isAvailable")),
+                "is_certified": bool(b.get("isCertified")),
+                "has_cta": any(w in full for w in ["text", "call", "message", "book", "contact", "reach", "email", "schedule"]),
+                "has_price": bool(re.search(r'\$\d+', full)),
+                "has_urgency": any(w in full for w in ["now", "today", "same-day", "available", "limited", "visiting", "this week"]),
+                "has_deep_tissue": "deep tissue" in full,
+                "has_sports": "sports" in full or "athletic" in full or "recovery" in full,
+                "has_trust": any(w in full for w in ["certified", "licensed", "trained", "professional", "discreet", "clean", "private"]),
+                "has_location": any(w in full for w in ["manhattan", "bronx", "brooklyn", "nyc", "new york", "studio", "incall", "outcall", "travel"]),
+                "has_hygiene": any(w in full for w in ["clean", "shower", "hygiene", "safe", "sanitized", "fresh", "towels"]),
+                "has_humor": any(w in full for w in ["wolf", "funny", "joke", "desk goblin", "posture", "laugh", "lol"]),
+                "has_explicit": any(w in full for w in ["naked", "nude", "sensual", "erotic", "sexual"]),
+                "newline_count": desc.count("\n"),
+                "sentence_count": max(1, desc.count(".") + desc.count("!") + desc.count("?")),
+            }
+            f.write(json.dumps(atom, ensure_ascii=False) + "\n")
+            count += 1
+
+    return {"atomized": count, "output": str(output_path)}
+
+
+# ─── Experiment measurement ───
+
+def compute_lift(before: dict, after: dict) -> dict:
+    """Compute real lift between before/after dashboard snapshots."""
+    bv = before.get("profile_views", 0)
+    av = after.get("profile_views", 0)
+    bc = before.get("contact_clicks", 0)
+    ac = after.get("contact_clicks", 0)
+    be = before.get("new_emails", 0)
+    ae = after.get("new_emails", 0)
+
+    before_ctr = bc / bv if bv > 0 else 0
+    after_ctr = ac / av if av > 0 else 0
+
+    return {
+        "lift_views": av - bv,
+        "lift_clicks": ac - bc,
+        "lift_emails": ae - be,
+        "before_ctr": before_ctr,
+        "after_ctr": after_ctr,
+        "ctr_lift": after_ctr - before_ctr,
+        "ctr_lift_pct": ((after_ctr - before_ctr) / before_ctr * 100) if before_ctr > 0 else 0,
+        "result": "winner" if after_ctr > before_ctr else "loser",
+    }
+
+
+# ─── Receipt ledger (SHA-256 chained) ───
+
+class ReceiptLedger:
+    def __init__(self, path: Path = DATA_DIR / "receipts" / "ledger.jsonl"):
+        self.path = path
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.entries: List[dict] = []
+        self._load()
+
+    def _load(self):
+        if self.path.exists():
+            for line in self.path.open():
+                if line.strip():
+                    self.entries.append(json.loads(line))
+
+    def add(self, action: str, description: str, data: dict) -> dict:
+        prev_hash = self.entries[-1]["hash"] if self.entries else "0" * 64
+        ts = datetime.now(timezone.utc).isoformat()
+        entry = {
+            "index": len(self.entries),
+            "timestamp": ts,
+            "action": action,
+            "description": description,
+            "data": data,
+            "prev_hash": prev_hash,
+        }
+        entry_str = json.dumps(entry, sort_keys=True)
+        entry["hash"] = hashlib.sha256(entry_str.encode()).hexdigest()
+        self.entries.append(entry)
+        with self.path.open("a") as f:
+            f.write(json.dumps(entry) + "\n")
+        return entry
+
+    def verify(self) -> bool:
+        for i, entry in enumerate(self.entries):
+            prev = self.entries[i - 1]["hash"] if i > 0 else "0" * 64
+            if entry["prev_hash"] != prev:
+                return False
+            check = {k: v for k, v in entry.items() if k != "hash"}
+            expected = hashlib.sha256(json.dumps(check, sort_keys=True).encode()).hexdigest()
+            if entry["hash"] != expected:
+                return False
+        return True
+
+    def summary(self) -> dict:
+        return {
+            "total": len(self.entries),
+            "valid": self.verify(),
+            "last_action": self.entries[-1]["action"] if self.entries else None,
+        }

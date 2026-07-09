@@ -1,0 +1,80 @@
+{
+  "model_matrix": {
+    "gpt-4o-mini": [
+      "llm7"
+    ]
+  },
+  "top_per_provider": {
+    "assemblyai": [
+      {
+        "model": "best",
+        "score": 0,
+        "latency": 0
+      }
+    ],
+    "groq": [
+      {
+        "model": "",
+        "score": 0,
+        "latency": 46
+      },
+      {
+        "model": "llama-3.3-70b-versatile",
+        "score": 0,
+        "latency": 51
+      }
+    ],
+    "huggingface": [
+      {
+        "model": "meta-llama/Llama-3.3-70B-Instruct",
+        "score": 0,
+        "latency": 0
+      }
+    ],
+    "google": [
+      {
+        "model": "gemini-2.0-flash",
+        "score": 0,
+        "latency": 102
+      }
+    ],
+    "github": [
+      {
+        "model": "gpt-4o",
+        "score": 0,
+        "latency": 144
+      }
+    ],
+    "mistral": [
+      {
+        "model": "mistral-small-latest",
+        "score": 0,
+        "latency": 160
+      }
+    ],
+    "openrouter": [
+      {
+        "model": "meta-llama/llama-3.3-70b-instruct:free",
+        "score": 0,
+        "latency": 217
+      },
+      {
+        "model": "",
+        "score": 0,
+        "latency": 927
+      }
+    ],
+    "llm7": [
+      {
+        "model": "gpt-4o-mini",
+        "score": 63.9,
+        "latency": 1804
+      },
+      {
+        "model": "default",
+        "score": 0,
+        "latency": 1217
+      }
+    ]
+  }
+}

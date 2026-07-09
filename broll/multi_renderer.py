@@ -1,0 +1,507 @@
+"""
+Multi-Renderer — Turns one investigation into multiple output formats.
+
+The investigation is the computational substrate. The video is only
+one rendering of it. The same evidence graph can be rendered as:
+
+    video    → MP4 with scene graph + narration
+    report   → Markdown research report with citations
+    dataset  → JSONL dataset of claims, evidence, segments
+    slides   → Markdown slide deck (Reveal.js compatible)
+    podcast  → Narration script with timestamps for audio-only
+    api      → FastAPI app serving all artifacts as endpoints
+
+Each renderer produces a self-contained artifact from the same
+VideoLakeResult. No information is lost — only the surface changes.
+
+Usage:
+    from broll.multi_renderer import MultiRenderer
+    renderer = MultiRenderer()
+    artifacts = renderer.render_all(videolake_result, output_dir="out/")
+    # artifacts = {"report": "out/report.md", "dataset": "out/dataset.jsonl", ...}
+"""
+
+import hashlib
+import json
+import os
+import time
+from dataclasses import dataclass, field
+from typing import Optional
+
+
+@dataclass
+class RenderArtifact:
+    """A single rendered artifact."""
+    renderer: str = ""
+    filename: str = ""
+    path: str = ""
+    size_bytes: int = 0
+    content: str = ""
+    receipt_hash: str = ""
+
+    def to_dict(self) -> dict:
+        return {
+            "renderer": self.renderer,
+            "filename": self.filename,
+            "path": self.path,
+            "size_bytes": self.size_bytes,
+            "receipt_hash": self.receipt_hash,
+        }
+
+
+class ReportRenderer:
+    """Renders a VideoLakeResult as a Markdown research report."""
+
+    def render(self, videolake_result) -> RenderArtifact:
+        inv = videolake_result.investigation
+        mevf = videolake_result.mevf
+        vrap = videolake_result.vrap
+        artifact = RenderArtifact(renderer="report", filename="report.md")
+
+        lines = [
+            f"# {inv.question}" if inv else "# Investigation Report",
+            "",
+            f"**Trust Grade:** {mevf.trust_grade}" if mevf else "",
+            f"**Claims:** {len(inv.claims)}" if inv else "",
+            f"**Papers:** {len(inv.papers)}" if inv else "",
+            f"**Segments:** {len(mevf.segments)}" if mevf else "",
+            "",
+            "---",
+            "",
+            "## Executive Summary",
+            "",
+        ]
+
+        if inv:
+            verified = len(inv.get_verified_claims())
+            disputed = len(inv.get_disputed_claims())
+            lines.append(f"This investigation examined {len(inv.claims)} claims "
+                        f"across {len(inv.papers)} papers. "
+                        f"{verified} claims were verified, {disputed} were disputed.")
+        lines.append("")
+
+        # Claims section
+        if inv and inv.claims:
+            lines.append("## Claims")
+            lines.append("")
+            for i, claim in enumerate(inv.claims):
+                status_badge = {
+                    "verified": "[VERIFIED]",
+                    "disputed": "[DISPUTED]",
+                    "speculative": "[SPECULATIVE]",
+                    "unverified": "[UNVERIFIED]",
+                    "retracted": "[RETRACTED]",
+                    "replicated": "[REPLICATED]",
+                }.get(claim.status.value, f"[{claim.status.value.upper()}]")
+                lines.append(f"### Claim {i+1} {status_badge}")
+                lines.append(f"> {claim.claim_text}")
+                lines.append("")
+                lines.append(f"- **Confidence:** {claim.confidence:.3f}")
+                lines.append(f"- **Supporting papers:** {len(claim.supporting_papers)}")
+                lines.append(f"- **Counter papers:** {len(claim.counter_papers)}")
+                lines.append(f"- **Replications:** {claim.replications} "
+                            f"(failed: {claim.failed_replications})")
+                lines.append("")
+
+        # Evidence segments
+        if mevf and mevf.segments:
+            lines.append("## Visual Evidence Segments")
+            lines.append("")
+            for seg in mevf.segments:
+                lines.append(f"### {seg.segment_id}")
+                lines.append(f"- **Claim:** {seg.claim[:80]}")
+                lines.append(f"- **Visual:** {seg.visual_description[:80]}")
+                lines.append(f"- **Rights:** {seg.rights_status}")
+                lines.append(f"- **Buyability:** {seg.scores.machine_buyability_score:.3f}")
+                lines.append("")
+
+        # Citations
+        if inv and inv.papers:
+            lines.append("## References")
+            lines.append("")
+            for i, paper in enumerate(inv.papers):
+                peer = "peer-reviewed" if paper.is_peer_reviewed else "non-peer-reviewed"
+                lines.append(f"{i+1}. {paper.title} ({paper.year}) *{peer}* — {paper.source}")
+            lines.append("")
+
+        # Footer
+        lines.append("---")
+        lines.append(f"Receipt: {videolake_result.receipt_hash}")
+        lines.append("Generated by VideoLake Compiler — Research-to-Asset Compiler")
+        lines.append("The video is the human surface. The evidence graph is the asset.")
+
+        artifact.content = "\n".join(lines)
+        artifact.size_bytes = len(artifact.content.encode())
+        artifact.receipt_hash = f"sha256:{hashlib.sha256(artifact.content.encode()).hexdigest()[:16]}"
+        return artifact
+
+
+class DatasetRenderer:
+    """Renders a VideoLakeResult as a JSONL dataset."""
+
+    def render(self, videolake_result) -> RenderArtifact:
+        inv = videolake_result.investigation
+        mevf = videolake_result.mevf
+        artifact = RenderArtifact(renderer="dataset", filename="dataset.jsonl")
+
+        records = []
+
+        # Question record
+        records.append({
+            "type": "question",
+            "text": inv.question if inv else "",
+            "investigation_id": inv.investigation_id if inv else "",
+            "timestamp": time.time(),
+        })
+
+        # Claim records
+        if inv:
+            for i, claim in enumerate(inv.claims):
+                records.append({
+                    "type": "claim",
+                    "claim_id": f"claim_{i+1}",
+                    "text": claim.claim_text,
+                    "status": claim.status.value,
+                    "confidence": round(claim.confidence, 3),
+                    "supporting_papers": len(claim.supporting_papers),
+                    "counter_papers": len(claim.counter_papers),
+                    "replications": claim.replications,
+                    "failed_replications": claim.failed_replications,
+                })
+
+        # Paper records
+        if inv:
+            for paper in inv.papers:
+                records.append({
+                    "type": "paper",
+                    "title": paper.title,
+                    "year": paper.year,
+                    "source": paper.source,
+                    "citation_count": paper.citation_count,
+                    "peer_reviewed": paper.is_peer_reviewed,
+                    "doi": paper.doi,
+                })
+
+        # Segment records
+        if mevf:
+            for seg in mevf.segments:
+                records.append({
+                    "type": "evidence_segment",
+                    "segment_id": seg.segment_id,
+                    "claim": seg.claim[:100],
+                    "claim_status": seg.claim_status,
+                    "visual_type": seg.visual_type,
+                    "rights_status": seg.rights_status,
+                    "duration_seconds": seg.duration_seconds,
+                    "timestamp_in_video": seg.timestamp_in_video,
+                    "semantic_match_score": round(seg.scores.semantic_match_score, 3),
+                    "evidence_relevance_score": round(seg.scores.evidence_relevance_score, 3),
+                    "truth_safety_score": round(seg.scores.truth_safety_score, 3),
+                    "rights_safety_score": round(seg.scores.rights_safety_score, 3),
+                    "provenance_completeness_score": round(seg.scores.provenance_completeness_score, 3),
+                    "machine_buyability_score": round(seg.scores.machine_buyability_score, 3),
+                    "is_machine_buyable": seg.scores.is_machine_buyable,
+                })
+
+        # Scene records
+        for scene in videolake_result.scene_graph:
+            records.append({
+                "type": "scene",
+                "scene_id": scene.scene_id,
+                "timestamp": scene.timestamp,
+                "duration": scene.duration,
+                "scene_type": scene.scene_type,
+                "description": scene.description,
+                "mood": scene.mood,
+                "claim_ref": scene.claim_ref,
+            })
+
+        artifact.content = "\n".join(json.dumps(r) for r in records)
+        artifact.size_bytes = len(artifact.content.encode())
+        artifact.receipt_hash = f"sha256:{hashlib.sha256(artifact.content.encode()).hexdigest()[:16]}"
+        return artifact
+
+
+class SlidesRenderer:
+    """Renders a VideoLakeResult as a Markdown slide deck (Reveal.js compatible)."""
+
+    def render(self, videolake_result) -> RenderArtifact:
+        inv = videolake_result.investigation
+        mevf = videolake_result.mevf
+        artifact = RenderArtifact(renderer="slides", filename="slides.md")
+
+        lines = [
+            "---",
+            "theme: white",
+            "highlight: github",
+            "---",
+            "",
+            f"# {inv.question}" if inv else "# Investigation",
+            "",
+            f"Evidence-backed research | Grade: {mevf.trust_grade}" if mevf else "",
+            "",
+            "---",
+            "",
+        ]
+
+        # Summary slide
+        if inv:
+            lines.append("## Summary")
+            lines.append("")
+            lines.append(f"- {len(inv.claims)} claims investigated")
+            lines.append(f"- {len(inv.papers)} papers reviewed")
+            lines.append(f"- {len(inv.get_verified_claims())} verified")
+            lines.append(f"- {len(inv.get_disputed_claims())} disputed")
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+
+        # One slide per claim
+        if inv:
+            for i, claim in enumerate(inv.claims):
+                lines.append(f"## Claim {i+1}: {claim.status.value}")
+                lines.append("")
+                lines.append(f"> {claim.claim_text}")
+                lines.append("")
+                lines.append(f"- Confidence: {claim.confidence:.3f}")
+                lines.append(f"- Supporting: {len(claim.supporting_papers)} papers")
+                lines.append(f"- Counter: {len(claim.counter_papers)} papers")
+                if claim.replications > 0:
+                    lines.append(f"- Replications: {claim.replications} "
+                                f"(failed: {claim.failed_replications})")
+                lines.append("")
+                lines.append("---")
+                lines.append("")
+
+        # Evidence segments
+        if mevf:
+            lines.append("## Visual Evidence")
+            lines.append("")
+            for seg in mevf.segments:
+                lines.append(f"### {seg.segment_id}")
+                lines.append(f"- {seg.claim[:60]}")
+                lines.append(f"- Rights: {seg.rights_status}")
+                lines.append(f"- Buyability: {seg.scores.machine_buyability_score:.3f}")
+                lines.append("")
+            lines.append("---")
+            lines.append("")
+
+        # Conclusions
+        lines.append("## Conclusions")
+        lines.append("")
+        if mevf:
+            lines.append(f"- Trust Grade: {mevf.trust_grade}")
+            lines.append(f"- Machine Buyability: {mevf.avg_machine_buyability:.3f}")
+        lines.append("")
+        lines.append(f"Receipt: {videolake_result.receipt_hash}")
+        lines.append("")
+        lines.append("---")
+        lines.append("")
+        lines.append("## End")
+        lines.append("")
+        lines.append("Generated by VideoLake Compiler")
+
+        artifact.content = "\n".join(lines)
+        artifact.size_bytes = len(artifact.content.encode())
+        artifact.receipt_hash = f"sha256:{hashlib.sha256(artifact.content.encode()).hexdigest()[:16]}"
+        return artifact
+
+
+class PodcastRenderer:
+    """Renders a VideoLakeResult as a podcast script with timestamps."""
+
+    def render(self, videolake_result) -> RenderArtifact:
+        inv = videolake_result.investigation
+        mevf = videolake_result.mevf
+        scenes = videolake_result.scene_graph
+        artifact = RenderArtifact(renderer="podcast", filename="podcast_script.md")
+
+        lines = [
+            "# Podcast Script",
+            "",
+            f"**Topic:** {inv.question}" if inv else "",
+            f"**Duration:** ~{sum(s.duration for s in scenes)}s" if scenes else "",
+            "",
+            "---",
+            "",
+        ]
+
+        for i, scene in enumerate(scenes):
+            ts = scene.timestamp
+            m, s = int(ts // 60), int(ts % 60)
+            lines.append(f"## [{m:02d}:{s:02d}] Scene {i+1}: {scene.scene_type}")
+            lines.append("")
+            lines.append(f"**Mood:** {scene.mood}")
+            lines.append("")
+
+            if i == 0:
+                lines.append(f"Welcome. Today we're investigating: {inv.question}" if inv else "")
+                lines.append("Let's look at what the evidence actually says.")
+            elif i == len(scenes) - 1:
+                lines.append("That brings us to our conclusions.")
+                if mevf:
+                    lines.append(f"Our trust grade for this investigation: {mevf.trust_grade}.")
+                lines.append("Every claim has been sourced. Every status has been labeled.")
+                lines.append("The evidence graph is the asset.")
+            else:
+                lines.append(f"{scene.description}")
+                if scene.claim_ref:
+                    lines.append(f"Evidence segment: {scene.claim_ref}")
+
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+
+        artifact.content = "\n".join(lines)
+        artifact.size_bytes = len(artifact.content.encode())
+        artifact.receipt_hash = f"sha256:{hashlib.sha256(artifact.content.encode()).hexdigest()[:16]}"
+        return artifact
+
+
+class APIRenderer:
+    """Renders a VideoLakeResult as a FastAPI app specification."""
+
+    def render(self, videolake_result) -> RenderArtifact:
+        inv = videolake_result.investigation
+        mevf = videolake_result.mevf
+        vrap = videolake_result.vrap
+        artifact = RenderArtifact(renderer="api", filename="api_spec.json")
+
+        spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": f"Investigation API: {inv.question[:60]}" if inv else "Investigation API",
+                "version": "1.0.0",
+                "description": "Machine-consumable research video API",
+            },
+            "paths": {
+                "/question": {
+                    "get": {
+                        "summary": "Get the research question",
+                        "responses": {"200": {"description": "Question text"}},
+                    }
+                },
+                "/claims": {
+                    "get": {
+                        "summary": "Get all claims with status and confidence",
+                        "responses": {"200": {"description": "List of claims"}},
+                    }
+                },
+                "/claims/{claim_id}": {
+                    "get": {
+                        "summary": "Get a specific claim",
+                        "parameters": [{"name": "claim_id", "in": "path", "required": True}],
+                        "responses": {"200": {"description": "Claim detail"}},
+                    }
+                },
+                "/evidence-segments": {
+                    "get": {
+                        "summary": "Get all visual evidence segments with machine scores",
+                        "responses": {"200": {"description": "List of segments"}},
+                    }
+                },
+                "/scene-graph": {
+                    "get": {
+                        "summary": "Get the scene graph",
+                        "responses": {"200": {"description": "Scene graph"}},
+                    }
+                },
+                "/receipts": {
+                    "get": {
+                        "summary": "Get the tamper-evident receipt chain",
+                        "responses": {"200": {"description": "Receipt ledger"}},
+                    }
+                },
+                "/rights": {
+                    "get": {
+                        "summary": "Get rights and licensing status",
+                        "responses": {"200": {"description": "Rights graph"}},
+                    }
+                },
+                "/provenance": {
+                    "get": {
+                        "summary": "Get W3C PROV provenance",
+                        "responses": {"200": {"description": "Provenance graph"}},
+                    }
+                },
+                "/machine-query": {
+                    "get": {
+                        "summary": "Query segments by buyability, grade, rights, topic",
+                        "parameters": [
+                            {"name": "min_buyability", "in": "query", "schema": {"type": "number"}},
+                            {"name": "min_grade", "in": "query", "schema": {"type": "string"}},
+                            {"name": "rights", "in": "query", "schema": {"type": "string"}},
+                        ],
+                        "responses": {"200": {"description": "Filtered segments"}},
+                    }
+                },
+                "/manifest": {
+                    "get": {
+                        "summary": "Get the VRAP manifest",
+                        "responses": {"200": {"description": "Manifest"}},
+                    }
+                },
+            },
+            "x-videolake": {
+                "receipt_hash": videolake_result.receipt_hash,
+                "trust_grade": mevf.trust_grade if mevf else "",
+                "claim_count": len(inv.claims) if inv else 0,
+                "segment_count": len(mevf.segments) if mevf else 0,
+                "vrap_id": vrap.vrap_id if vrap else "",
+            },
+        }
+
+        artifact.content = json.dumps(spec, indent=2)
+        artifact.size_bytes = len(artifact.content.encode())
+        artifact.receipt_hash = f"sha256:{hashlib.sha256(artifact.content.encode()).hexdigest()[:16]}"
+        return artifact
+
+
+class MultiRenderer:
+    """
+    Renders a VideoLakeResult into multiple output formats.
+
+    The investigation is the computational substrate.
+    Each renderer is a different projection of the same evidence graph.
+
+    Usage:
+        mr = MultiRenderer()
+        artifacts = mr.render_all(result, output_dir="out/")
+        # {"report": RenderArtifact, "dataset": RenderArtifact, ...}
+    """
+
+    def __init__(self):
+        self.renderers = {
+            "report": ReportRenderer(),
+            "dataset": DatasetRenderer(),
+            "slides": SlidesRenderer(),
+            "podcast": PodcastRenderer(),
+            "api": APIRenderer(),
+        }
+
+    def render_all(self, videolake_result, output_dir: str = None) -> dict[str, RenderArtifact]:
+        """Render all formats and optionally write to disk."""
+        artifacts = {}
+        for name, renderer in self.renderers.items():
+            artifact = renderer.render(videolake_result)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
+                path = os.path.join(output_dir, artifact.filename)
+                with open(path, "w") as f:
+                    f.write(artifact.content)
+                artifact.path = path
+            artifacts[name] = artifact
+        return artifacts
+
+    def render_one(self, renderer_name: str, videolake_result, output_dir: str = None) -> RenderArtifact:
+        """Render a single format."""
+        if renderer_name not in self.renderers:
+            raise ValueError(f"Unknown renderer: {renderer_name}. Available: {list(self.renderers.keys())}")
+        artifact = self.renderers[renderer_name].render(videolake_result)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+            path = os.path.join(output_dir, artifact.filename)
+            with open(path, "w") as f:
+                f.write(artifact.content)
+            artifact.path = path
+        return artifact

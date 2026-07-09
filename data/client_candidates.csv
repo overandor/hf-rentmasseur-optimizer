@@ -1,0 +1,4 @@
+username,name,city,url,label,client_score,provider_score,net_client_score,confidence,lead_value,action
+Achingbod,Achingbod,,https://rentmasseur.com/Achingbod,client_possible,60,0,60,62,40,manual_review_client_possible
+DanitzHH,DanitzHH,,https://rentmasseur.com/DanitzHH,client_confirmed,140,0,140,94,80,contact_ready_platform_allowed
+Inneedofmassage,Inneedofmassage,,https://rentmasseur.com/Inneedofmassage,client_confirmed,105,45,60,90,50,do_not_contact

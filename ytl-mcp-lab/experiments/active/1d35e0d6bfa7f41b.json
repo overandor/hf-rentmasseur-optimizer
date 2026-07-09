@@ -1,0 +1,13 @@
+{
+  "experiment_id": "1d35e0d6bfa7f41b",
+  "hypothesis": "test",
+  "variant": "test",
+  "target_metric": "ctr",
+  "baseline": 0.05,
+  "start_date": "2026-06-23T18:37:40Z",
+  "end_date": null,
+  "measurement_window_days": 7,
+  "video_ids": [],
+  "status": "active",
+  "result": null
+}

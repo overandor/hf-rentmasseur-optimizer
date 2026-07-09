@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MIT
+// ============================================================================
+// ONEFILE ML TOKEN LAUNCHER — EVM TESTNET CONTRACT SPEC
+// ============================================================================
+// WARNING: This is a SPEC ONLY. Do not deploy to mainnet.
+// This contract has not been audited. Use only on testnet.
+// This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.
+// ============================================================================
+
+pragma solidity ^0.8.20;
+
+// NOTE: In production, use OpenZeppelin ERC-20 implementation:
+// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract LPTToken {
+    string public name = "LatentOS Proof Token";
+    string public symbol = "LPT";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000;
+
+    address public owner;
+    // WARNING: Owner/minter has mint control. Use multisig in production.
+    // Creator wallet (public address only): 0x0000000000000000000000000000000000000001
+
+    mapping(address => uint256) public balanceOf;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Mint(address indexed to, uint256 value);
+
+    // Proof grade: EXTERNALLY_VERIFIED
+    // Receipt hash: sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3
+    // Launch readiness: 0.647
+
+    constructor() {
+        owner = msg.sender;
+        balanceOf[owner] = totalSupply;
+        emit Transfer(address(0), owner, totalSupply);
+    }
+
+    // === TESTNET ONLY NOTICE ===
+    // Mainnet deployment requires:
+    //   1. Professional security audit
+    //   2. Legal/compliance review
+    //   3. Multisig ownership
+    //   4. Timelock on critical functions
+    //   5. Proof of utility and revenue
+}

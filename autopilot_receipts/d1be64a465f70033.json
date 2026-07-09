@@ -1,0 +1,21 @@
+{
+  "id": "d1be64a465f70033",
+  "stage": "scout",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T20:54:20.610039Z",
+  "concept": {
+    "name": "FocusBeam",
+    "category": "Productivity",
+    "description": "Focus timer with ambient sound and visual feedback",
+    "features": [
+      "Pomodoro timer",
+      "Ambient soundscapes",
+      "Focus score tracking",
+      "Daily report"
+    ],
+    "price_tier": "1.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 10
+}

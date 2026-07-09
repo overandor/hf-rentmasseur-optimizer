@@ -1,0 +1,14 @@
+{
+  "recipient": "gpt-4",
+  "expiry": 1782513149,
+  "query_rights": [
+    "sql",
+    "search",
+    "chunk",
+    "summary"
+  ],
+  "full_unfold": true,
+  "max_queries": 1000,
+  "totp_step": 30,
+  "totp_digits": 8
+}

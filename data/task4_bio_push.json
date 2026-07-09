@@ -1,0 +1,10 @@
+{
+  "status": "GREEN_REAL",
+  "bio_id": "controlled_wolf_v1",
+  "before_headline": "KARPATHIAN WOLF \u2014 targeted recovery in Manhattan.",
+  "after_headline": "KARPATHIAN WOLF \u2014 targeted recovery in Manhattan.",
+  "headline": "KARPATHIAN WOLF \u2014 targeted recovery in Manhattan.",
+  "description_len": 597,
+  "response": "{'status': 'ok', 'raw': '<br />\\n<b>Warning</b>:  Undefined array key \"isTextUnderReview\" in <b>/var/www/php/app/controllers/SettingsController.php</b> on line <b>148</b><br />\\n{\"message\":\"About Me Saved\",\"isTextUnderReview\":1}'}",
+  "ts": "2026-06-26T06:32:06Z"
+}

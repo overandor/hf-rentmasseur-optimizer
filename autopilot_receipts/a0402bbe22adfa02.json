@@ -1,0 +1,10 @@
+{
+  "id": "a0402bbe22adfa02",
+  "stage": "build",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T21:55:21.756659Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ReceiptVault/.build/release/ReceiptVault",
+  "binary_size": 91808,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ReceiptVault/build.log"
+}

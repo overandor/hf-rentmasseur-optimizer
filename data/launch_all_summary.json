@@ -1,0 +1,51 @@
+{
+  "total_tasks": 6,
+  "succeeded": 0,
+  "failed": 6,
+  "elapsed": 99.3,
+  "results": [
+    {
+      "task": "task1_visit_back",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "r, Gay massage i\n[task1] BRAZILPLEASURE: BRAZILPLEASURE - Male Masseur, Gay massa\n[task1] BehindtheClouds: BehindtheClouds | RentMasseur\n[task1] Big_Boy: Big_Boy | RentMasseur\n[task1] Bigadonismak: Bigadonismak | RentMasseur\n[task1] Bigtopuc: Bigtopuc | RentMasseur\n[task1] Blackcake: Blackcake | RentMasseur\n[task1] Brownbb: Brownbb | RentMasseur\n[task1] Calvinlau: Calvinlau | RentMasseur\n[task1] ChrisRestrepo: ChrisRestrepo - Male Masseur, Gay massag\n[task1] DAVIDMANXXX: DAVIDMANXXX - Male Masseur, Gay massage \n[task1] DanitzHH: DanitzHH - Looking for Male Massage Ther\n[task1] Davisit: Davisit | RentMasseur\n[task1] DeepSwedishSpa: DeepSwedishSpa - Male Masseur, Gay massa\n[task1] Fredericodedeus: Fredericodedeus - Male Masseur, Gay mass\n[task1] Ghenessis: Ghenessis - Male Masseur, Gay massage in\n[task1] Gokhankaan: Gokhankaan | RentMasseur\n[task1] Hardrein: \n[task1] Headsandtails: Headsandtails | RentMasseur\n[task1] Igor_Masseur: Igor_Masseur - Male Masseur, Gay massage\n[task1] Inneedofmassage: Inneedofmassage | RentMasseur\n[task1] InosukeTopXL: InosukeTopXL - Male Masseur, Gay massage\n[task1] Jodymuscle: Jodymuscle - Male Masseur, Gay massage i\n[task1] JoeUptownNYC: JoeUptownNYC | RentMasseur\n[task1] Joerocca: Joerocca | RentMasseur\n[task1] Ksander: Ksander - Male Masseur, Gay massage in M\n[task1] LeoAperol: LeoAperol | RentMasseur\n[task1] LuisNYC: LuisNYC - Male Masseur, Gay massage in N\n[task1] Luvsagoodmassage: Luvsagoodmassage | RentMasseur\n[task1] MJack: MJack - Male Masseur, Gay massage in New\n[task1] Mattlatino: Mattlatino - Male Masseur, Gay massage i\n[task1] Paulvazo: Paulvazo - Male Masseur, Gay massage in \n[task1] RyanRypped: RyanRypped - Male Masseur, Gay massage i\n[task1] Sheldonn: Sheldonn | RentMasseur\n[task1] Sobro: Sobro | RentMasseur\n[task1] Talleshbr: Talleshbr | RentMasseur\n[task1] Trek: Trek | RentMasseur\n[task1] Uwsnyc: \n[task1] Webmaster: Webmaster - Male Masseur, Gay massage in\n[task1] WenDylaTinoHot: WenDylaTinoHot - Male Masseur, Gay massa\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task1_visit_back.py\", line 65, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task1_visit_back.py\", line 58, in main\n    with open(\"data/task1_visit_back.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task1_visit_back.json'\n"
+    },
+    {
+      "task": "task2_blog_post",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "[task2] Opening blog editor...\n[task2] URL: https://rentmasseur.com/settings?blog=1\n[task2] Found 0 textareas, 3 inputs\n[task2] No save button found\n[task2] Buttons on page: ['EXTEND', 'ACCEPT ALL']\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task2_blog_post.py\", line 186, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task2_blog_post.py\", line 178, in main\n    with open(\"data/task2_blog_post.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task2_blog_post.json'\n"
+    },
+    {
+      "task": "task3_interview_post",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "[task3] Opening interview editor...\n[task3] URL: https://rentmasseur.com/settings?interview=1\n[task3] Found 0 textareas, 3 inputs, 2 buttons\n[task3] Filled 0/0 textareas\n[task3] No save button. Buttons: ['EXTEND', 'ACCEPT ALL']\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task3_interview_post.py\", line 144, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task3_interview_post.py\", line 136, in main\n    with open(\"data/task3_interview_post.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task3_interview_post.json'\n"
+    },
+    {
+      "task": "task4_bio_push",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "[task4] Loaded bio from /Users/alep/Downloads/MEMBRA::SURFACE=BUILD@LIVE/02_AI_Agents/rentmasseur-extension/content/bios/controlled_wolf_v1.md\n[task4] Bio pushed: KARPATHIAN WOLF \u2014 targeted recovery in Manhattan.\n[task4] Response: {'status': 'ok', 'raw': '<br />\\n<b>Warning</b>:  Undefined array key \"isTextUnderReview\" in <b>/var/www/php/app/controllers/SettingsController.php</b> on line <b>148</b><br />\\n{\"message\":\"About Me S\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task4_bio_push.py\", line 76, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task4_bio_push.py\", line 71, in main\n    with open(\"data/task4_bio_push.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task4_bio_push.json'\n"
+    },
+    {
+      "task": "task5_blog_optimize",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "[task5] Generating 3 optimized blog drafts...\n[task5] Why Sports Recovery Massage in Manhattan: What to : local_seo=0.39 marketing=1.00 risk=0.00\n[task5] Manhattan Guide to Travel Stiffness Relief for Fre: local_seo=0.23 marketing=1.00 risk=0.00\n[task5] What Why Do My Hips Hurt After Squats? A Manhattan: local_seo=0.15 marketing=0.80 risk=0.00\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task5_blog_optimize.py\", line 35, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task5_blog_optimize.py\", line 30, in main\n    with open(\"data/task5_blog_optimize.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task5_blog_optimize.json'\n"
+    },
+    {
+      "task": "task6_metrics_ingest",
+      "exit_code": 1,
+      "elapsed": 99.3,
+      "stdout": "[task6] Metrics: 2836 views, 135 clicks, 33 today\n[task6] Ingest response: 200 {\"ok\":true,\"ingested\":true,\"computed\":{\"contact_click_rate\":0.0476,\"email_rate\":0.0,\"contact_clicks_per_100_views\":4.76},\"decision\":{\"status\":\"READY_TO_TEST\",\"reason\":\"Baseline established. No active \n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task6_metrics_ingest.py\", line 60, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/alep/Downloads/windsurf-smoke/scripts/task6_metrics_ingest.py\", line 55, in main\n    with open(\"data/task6_metrics_ingest.json\", \"w\") as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'data/task6_metrics_ingest.json'\n"
+    }
+  ],
+  "ts": "2026-06-26T06:31:56Z"
+}

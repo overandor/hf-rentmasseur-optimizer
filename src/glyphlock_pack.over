@@ -1,0 +1,15 @@
+workflow: GlyphLockPack
+intent: pack a file into a GE² time-gated glyph envelope — encode, compress, encrypt, receipt, TOTP-wrap
+step 1: index file → file_meta
+step 2: glyph encode with dictionary → glyph_packet
+step 3: deflate compress glyph packet → compressed
+step 4: generate 256-bit payload key → payload_key
+step 5: generate TOTP secret → totp_secret
+step 6: aead encrypt compressed payload → ciphertext
+step 7: wrap payload key with TOTP-derived key → wrapped_key
+step 8: build antonymified public preview → blurred_preview
+step 9: write receipt with merkle root → signed_receipt
+step 10: emit glyphpack envelope → glyphpack
+artifact: glyphpack
+receipt: SHA256 chained from encode through TOTP wrap
+value: file becomes a puzzle whose solution is not intelligence but authorization

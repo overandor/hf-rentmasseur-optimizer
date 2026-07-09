@@ -1,0 +1,25 @@
+{
+  "file_id": "27ea8c43c8059c60",
+  "filename": "forge.py",
+  "size_bytes": 103166,
+  "merkle_root": "27ea8c43c8059c6061c36e3eb91bdaf35ff74db2ea26805166c22814c5a30fa6",
+  "pack_id": "27ea8c43c8059c60",
+  "glyph_encoded_size": 101049,
+  "compressed_size": 24295,
+  "encrypted_size": 24343,
+  "compression_ratio": 23.55,
+  "total_ratio": 23.6,
+  "dictionary_id": "c753247d04bdf52a3563ec141f80e86e982a3de3dc8f84bb41289f89ad6a5516",
+  "recipient": "gpt-4",
+  "expiry": 1782513149,
+  "created_at": 1782509549.1482282,
+  "capabilities": [
+    "sql",
+    "search",
+    "chunk",
+    "summary",
+    "meta",
+    "mcp"
+  ],
+  "blur_hash": "=0?0]0=0^0@0@0;0,0^0{0^0?0?0_0]0"
+}

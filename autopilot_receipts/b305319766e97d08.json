@@ -1,0 +1,15 @@
+{
+  "id": "b305319766e97d08",
+  "stage": "architect",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T22:44:06.482558Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/QuickLaunch",
+  "files": [
+    "Package.swift",
+    "Sources/QuickLaunch/QuickLaunchApp.swift",
+    "Sources/QuickLaunch/Info.plist",
+    "README.md"
+  ],
+  "icon": "wifi",
+  "bundle_id": "com.autopilot.quicklaunch"
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "hyperflow": {
+      "command": "python3",
+      "args": ["/Users/alep/Downloads/windsurf-smoke/mcp/mcp_unified.py", "serve"],
+      "transport": "stdio"
+    },
+    "hyperflow-http": {
+      "url": "http://127.0.0.1:8765",
+      "transport": "http"
+    }
+  }
+}

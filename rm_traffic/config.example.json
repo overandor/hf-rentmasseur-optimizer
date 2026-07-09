@@ -1,0 +1,16 @@
+{
+  "city": "manhattan-ny",
+  "mode": "guard",
+  "session_file": "rm_traffic/session.json",
+  "min_request_interval_seconds": 2.0,
+  "visibility_check_interval_minutes": 10,
+  "availability_check_interval_minutes": 30,
+  "traffic_snapshot_interval_minutes": 15,
+  "daily_draft_hour": 9,
+  "bio_change_cooldown_hours": 24,
+  "availability_refresh_threshold_minutes": 45,
+  "llm_provider": "ollama",
+  "llm_model": "llama3.2",
+  "allowed_auto_actions": ["visibility_repair", "stats_logging", "availability_refresh"],
+  "require_approval_for": ["bio_publish", "blog_publish", "interview_edit", "message_send", "payment"]
+}

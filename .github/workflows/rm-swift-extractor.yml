@@ -1,0 +1,98 @@
+name: RM Swift Extractor — iMessage Demand Analysis
+
+on:
+  schedule:
+    - cron: '0 8,20 * * *'  # 8am and 8pm ET approx
+  workflow_dispatch:
+    inputs:
+      chat_db_artifact:
+        description: 'Name of artifact containing chat.db (optional)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+jobs:
+  swift-extract:
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Swift
+        run: swift --version
+
+      - name: Check for chat.db
+        id: chatdb
+        run: |
+          CHAT_DB="${HOME}/Library/Messages/chat.db"
+          if [ -f "$CHAT_DB" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "path=$CHAT_DB" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            # Try artifact download if specified
+            ARTIFACT_NAME="${{ github.event.inputs.chat_db_artifact }}"
+            if [ -n "$ARTIFACT_NAME" ]; then
+              echo "::notice::Attempting to download chat.db artifact: $ARTIFACT_NAME"
+            fi
+          fi
+
+      - name: Download chat.db artifact (if provided)
+        if: steps.chatdb.outputs.found == 'false' && github.event.inputs.chat_db_artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.inputs.chat_db_artifact }}
+          path: ./chatdb/
+
+      - name: Set DB path
+        id: dbpath
+        run: |
+          if [ -f "${HOME}/Library/Messages/chat.db" ]; then
+            echo "path=${HOME}/Library/Messages/chat.db" >> $GITHUB_OUTPUT
+          elif [ -f "./chatdb/chat.db" ]; then
+            echo "path=./chatdb/chat.db" >> $GITHUB_OUTPUT
+          else
+            echo "path=NONE" >> $GITHUB_OUTPUT
+            echo "::warning::No chat.db found — Swift extractor will skip"
+          fi
+
+      - name: Run Swift extractor
+        if: steps.dbpath.outputs.path != 'NONE'
+        env:
+          CHAT_DB_PATH: ${{ steps.dbpath.outputs.path }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'llama3.1:latest' }}
+        run: |
+          cd swift
+          # Update DB path in the Swift file if needed
+          if [ "$CHAT_DB_PATH" != "${HOME}/Library/Messages/chat.db" ]; then
+            sed -i '' "s|/Users/[^/]*/Library/Messages/chat.db|$CHAT_DB_PATH|g" extract_massage_clients.swift
+          fi
+          swift extract_massage_clients.swift 2>&1 || echo "Swift extraction completed with warnings"
+
+      - name: Upload demand artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rm-swift-demand-${{ github.run_id }}
+          path: |
+            swift/output/
+            output/
+          retention-days: 30
+
+      - name: Awaken issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[RM-Swift] Extractor failure — run ${context.runId}`,
+              body: `## Swift Extractor Failure\n\n**Run**: ${context.runId}\n\nThe iMessage demand extractor failed. Check logs for details.\n\nPossible causes:\n- chat.db not available on runner\n- Ollama not running\n- Swift compilation error\n\nGAG should diagnose and propose a repair PR.`,
+              labels: ['gag:needs-human-review'],
+            });

@@ -1,0 +1,16 @@
+{
+  "project": "HashDiff",
+  "description": "A file integrity checker using SHA-256",
+  "stages": [
+    "IDEA",
+    "SPEC",
+    "ARCHITECT",
+    "CODE",
+    "BUILD",
+    "TEST",
+    "RECEIPT"
+  ],
+  "build_dir": "/Users/alep/Downloads/windsurf-smoke/relay/builds/hashdiff",
+  "timestamp": "2026-06-25T01:37:49Z",
+  "receipt_id": "814ea0a7-909"
+}

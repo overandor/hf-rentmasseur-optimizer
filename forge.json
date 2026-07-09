@@ -1,0 +1,11 @@
+{
+  "compiler": "glyphforge",
+  "version": "1.0.0",
+  "operator_ratio": 0.5233,
+  "sources": {
+    "glyph": "src/*.glyph",
+    "over": "src/*.over"
+  },
+  "output": "build/",
+  "receipts": "receipts/"
+}

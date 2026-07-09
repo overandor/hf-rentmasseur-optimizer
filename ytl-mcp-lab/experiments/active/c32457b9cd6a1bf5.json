@@ -1,0 +1,13 @@
+{
+  "experiment_id": "c32457b9cd6a1bf5",
+  "hypothesis": "Entity-dense titles improve CTR",
+  "variant": "high_entity_density",
+  "target_metric": "click_through_rate",
+  "baseline": 0.05,
+  "start_date": "2026-06-27T18:29:46Z",
+  "end_date": null,
+  "measurement_window_days": 7,
+  "video_ids": [],
+  "status": "active",
+  "result": null
+}

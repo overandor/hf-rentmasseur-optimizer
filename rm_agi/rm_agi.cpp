@@ -1,0 +1,1144 @@
+// rm_agi.cpp — RentMasseur AGI C++ Engine
+// Single binary: inspect, train, generate, score, evolve, select
+// Compile: g++ -O3 -std=c++17 rm_agi.cpp -o rm_agi
+//
+// Usage:
+//   ./rm_agi inspect    <real_bios.jsonl>
+//   ./rm_agi train      <real_bios.jsonl> [--label reviews|views_per_day] [--cv 5] [--walk-forward]
+//   ./rm_agi generate   --count 100000 --mode speech --out candidates.jsonl
+//   ./rm_agi score      <candidates.jsonl> --model model.bin --out scored.jsonl
+//   ./rm_agi evolve     <scored.jsonl> --population 10000 --generations 200 --elites 50
+//   ./rm_agi select     <evolved.jsonl> --top 100 --diversity 0.85 --max-risk 0.10
+
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <random>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// ─── JSONL parsing (minimal, no external deps) ───
+
+string extract_json_string(const string &json, const string &key) {
+    string search = "\"" + key + "\":\"";
+    size_t pos = json.find(search);
+    if (pos == string::npos) {
+        // Try with space after colon
+        search = "\"" + key + "\": \"";
+        pos = json.find(search);
+        if (pos == string::npos) return "";
+    }
+    pos += search.size();
+    string result;
+    while (pos < json.size() && json[pos] != '"') {
+        if (json[pos] == '\\' && pos + 1 < json.size()) {
+            char c = json[pos + 1];
+            if (c == 'n') result += '\n';
+            else if (c == 't') result += '\t';
+            else if (c == 'r') result += '\r';
+            else if (c == '"') result += '"';
+            else if (c == '\\') result += '\\';
+            else if (c == '/') result += '/';
+            else result += json[pos + 1];
+            pos += 2;
+        } else {
+            result += json[pos++];
+        }
+    }
+    return result;
+}
+
+double extract_json_number(const string &json, const string &key) {
+    string search = "\"" + key + "\":";
+    size_t pos = json.find(search);
+    if (pos == string::npos) return 0.0;
+    pos += search.size();
+    while (pos < json.size() && (json[pos] == ' ' || json[pos] == '\t')) pos++;
+    string num;
+    while (pos < json.size() && (isdigit(json[pos]) || json[pos] == '.' || json[pos] == '-' || json[pos] == '+' || json[pos] == 'e' || json[pos] == 'E')) {
+        num += json[pos++];
+    }
+    if (num.empty()) return 0.0;
+    try { return stod(num); } catch (...) { return 0.0; }
+}
+
+bool extract_json_bool(const string &json, const string &key) {
+    string search = "\"" + key + "\":";
+    size_t pos = json.find(search);
+    if (pos == string::npos) return false;
+    pos += search.size();
+    while (pos < json.size() && (json[pos] == ' ' || json[pos] == '\t')) pos++;
+    return (pos < json.size() && json[pos] == '1') ||
+           (json.substr(pos, 4) == "true");
+}
+
+string extract_json_array_as_string(const string &json, const string &key) {
+    string search = "\"" + key + "\":";
+    size_t pos = json.find(search);
+    if (pos == string::npos) return "";
+    pos += search.size();
+    while (pos < json.size() && json[pos] != '[') pos++;
+    if (pos >= json.size()) return "";
+    int depth = 0;
+    string result;
+    while (pos < json.size()) {
+        if (json[pos] == '[') depth++;
+        else if (json[pos] == ']') { depth--; if (depth == 0) break; }
+        result += json[pos++];
+    }
+    return result;
+}
+
+// ─── Bio struct ───
+
+struct Bio {
+    string username;
+    string city;
+    string headline;
+    string description;
+    double rating = 0;
+    int reviews = 0;
+    bool isGold = false;
+    bool isAvailable = false;
+    bool isCertified = false;
+    string services_str;
+    int visits = 0;
+    string member_since;
+    int days_online = 0;
+    double views_per_day = 0;
+    // features
+    vector<double> features;
+    double label = 0;
+};
+
+// ─── Feature extraction ───
+
+const int NUM_FEATURES = 24;
+
+// Keyword banks for feature detection
+vector<string> TRUST_WORDS = {"certified", "licensed", "trained", "professional", "discreet", "clean", "private", "respectful", "diploma", "certification"};
+vector<string> CTA_WORDS = {"text", "call", "message", "book", "contact", "reach", "email", "dm", "schedule", "appointment"};
+vector<string> URGENCY_WORDS = {"now", "today", "same-day", "available", "limited", "visiting", "this week", "slots", "hurry"};
+vector<string> DEEP_TISSUE_WORDS = {"deep tissue", "deep", "trigger point", "sports", "recovery", "athletic", "muscle", "knots"};
+vector<string> LOCATION_WORDS = {"manhattan", "bronx", "brooklyn", "nyc", "new york", "midtown", "chelsea", "hell's kitchen", "studio", "incall", "outcall", "travel"};
+vector<string> HUMOR_WORDS = {"wolf", "funny", "joke", "desk goblin", "posture", "laugh", "lol", "human reset", "body audit"};
+vector<string> HYGIENE_WORDS = {"clean", "shower", "hygiene", "safe", "sanitized", "fresh", "towels", "linens"};
+vector<string> PRICE_WORDS = {"$", "rate", "price", "fee", "cost", "donation", "special", "discount", "off"};
+vector<string> EXPLICIT_WORDS = {"naked", "nude", "sensual", "erotic", "sexual", "full service", "xxx"};
+vector<string> SPEECH_SIMPLE = {"the", "and", "but", "you", "your", "me", "my", "we", "is", "are", "was", "for", "with", "that", "this", "have", "will", "can", "do", "not"};
+
+bool contains_any(const string &text, const vector<string> &words) {
+    string lower = text;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    for (const auto &w : words) {
+        if (lower.find(w) != string::npos) return true;
+    }
+    return false;
+}
+
+int count_matches(const string &text, const vector<string> &words) {
+    string lower = text;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    int count = 0;
+    for (const auto &w : words) {
+        size_t pos = 0;
+        while ((pos = lower.find(w, pos)) != string::npos) {
+            count++;
+            pos += w.size();
+        }
+    }
+    return count;
+}
+
+int count_words(const string &text) {
+    int count = 0;
+    bool in_word = false;
+    for (char c : text) {
+        if (isalpha(c) || isdigit(c)) { if (!in_word) { count++; in_word = true; } }
+        else in_word = false;
+    }
+    return count;
+}
+
+int count_sentences(const string &text) {
+    int count = 0;
+    for (char c : text) if (c == '.' || c == '!' || c == '?') count++;
+    return max(1, count);
+}
+
+int count_paragraphs(const string &text) {
+    int count = 1;
+    for (size_t i = 0; i + 1 < text.size(); i++) {
+        if (text[i] == '\n' && text[i+1] == '\n') count++;
+    }
+    return count;
+}
+
+int count_emoji(const string &text) {
+    int count = 0;
+    for (size_t i = 0; i < text.size(); i++) {
+        unsigned char c = text[i];
+        if (c >= 0xF0) { count++; i += 3; }
+        else if (c >= 0xE0) { i += 2; }
+        else if (c >= 0xC0) { i += 1; }
+    }
+    return count;
+}
+
+int count_syllables(const string &word) {
+    string lower = word;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    int count = 0;
+    bool prev_vowel = false;
+    for (char c : lower) {
+        bool is_vowel = (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y');
+        if (is_vowel && !prev_vowel) count++;
+        prev_vowel = is_vowel;
+    }
+    if (lower.size() > 2 && lower.substr(lower.size()-2) == "es") count = max(1, count - 1);
+    if (lower.size() > 1 && lower.back() == 'e') count = max(1, count - 1);
+    return max(1, count);
+}
+
+double speech_score(const string &text) {
+    int words = count_words(text);
+    if (words == 0) return 0;
+    int sentences = count_sentences(text);
+    double avg_sentence_len = (double)words / sentences;
+    // simple word ratio
+    string lower = text;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    int simple_count = 0;
+    for (const auto &w : SPEECH_SIMPLE) {
+        size_t pos = 0;
+        while ((pos = lower.find(w, pos)) != string::npos) {
+            simple_count++;
+            pos += w.size();
+        }
+    }
+    double simple_ratio = (double)simple_count / words;
+    // syllable estimate
+    int total_syllables = 0;
+    string word;
+    stringstream ss(text);
+    while (ss >> word) total_syllables += count_syllables(word);
+    double avg_syllables = (double)total_syllables / words;
+    // composite: shorter sentences + simpler words + fewer syllables = higher speech score
+    double score = 0.4 * (1.0 / (1.0 + avg_sentence_len / 20.0))
+                 + 0.3 * min(1.0, simple_ratio * 3.0)
+                 + 0.3 * (1.0 / (1.0 + avg_syllables / 3.0));
+    return score;
+}
+
+vector<double> extract_features(const string &headline, const string &description) {
+    vector<double> f(NUM_FEATURES);
+    string full = headline + " " + description;
+
+    f[0] = (double)headline.size();                           // headline_len
+    f[1] = (double)description.size();                        // desc_len
+    f[2] = (double)count_words(full);                         // word_count
+    f[3] = (double)count_words(full) / count_sentences(full); // avg_sentence_len
+    f[4] = (double)count_paragraphs(description);             // paragraph_count
+    f[5] = (double)count_matches(full, {"?"});                // question_count
+    f[6] = (double)count_matches(full, {"!"});                // exclamation_count
+    f[7] = contains_any(full, LOCATION_WORDS) ? 1.0 : 0.0;   // location_score
+    f[8] = contains_any(full, DEEP_TISSUE_WORDS) ? 1.0 : 0.0;// service_score
+    f[9] = contains_any(full, CTA_WORDS) ? 1.0 : 0.0;        // cta_score
+    f[10] = (double)count_matches(full, TRUST_WORDS) / 5.0;  // trust_score
+    f[11] = (double)count_matches(full, HUMOR_WORDS) / 3.0;  // humor_score
+    f[12] = min(1.0, f[1] / 1000.0);                          // readability (longer = more info)
+    f[13] = speech_score(full);                               // speech_score
+    f[14] = (double)count_emoji(full);                        // emoji_count
+    f[15] = contains_any(full, PRICE_WORDS) ? 1.0 : 0.0;     // price_mentioned
+    f[16] = contains_any(full, URGENCY_WORDS) ? 1.0 : 0.0;   // urgency_score
+    f[17] = contains_any(full, HYGIENE_WORDS) ? 1.0 : 0.0;   // hygiene_score
+    f[18] = (double)count_matches(full, EXPLICIT_WORDS) / 3.0;// explicitness_score
+    f[19] = (double)count_words(headline);                    // headline_word_count
+    f[20] = (double)count_sentences(description);             // desc_sentence_count
+    f[21] = f[2] > 0 ? f[3] / f[2] : 0;                       // sentence_complexity
+    f[22] = min(1.0, (double)count_matches(full, TRUST_WORDS) / 3.0); // proof_score
+    f[23] = min(1.0, (double)count_matches(full, CTA_WORDS) / 2.0);   // cta_strength
+
+    return f;
+}
+
+double risk_score(const vector<double> &f) {
+    double risk = 0;
+    risk += f[18] * 0.4;  // explicitness
+    risk += (f[15] > 0 ? 0.1 : 0.0);  // price (mild risk)
+    risk += (f[10] > 0.5 && f[22] < 0.3 ? 0.15 : 0.0);  // trust claims without proof
+    return min(1.0, risk);
+}
+
+// ─── MLP with Adam optimizer ───
+
+class MLP {
+public:
+    int input_size, hidden1, hidden2, hidden3, output_size;
+    vector<vector<double>> W1, W2, W3, W4;
+    vector<double> b1, b2, b3, b4;
+    // Adam state
+    vector<vector<double>> mW1, vW1, mW2, vW2, mW3, vW3, mW4, vW4;
+    vector<double> mb1, vb1, mb2, vb2, mb3, vb3, mb4, vb4;
+    double lr = 0.001;
+    double beta1 = 0.9, beta2 = 0.999, eps = 1e-8;
+    int t = 0;
+
+    MLP(int in, int h1, int h2, int h3, int out, double learning_rate = 0.001)
+        : input_size(in), hidden1(h1), hidden2(h2), hidden3(h3), output_size(out), lr(learning_rate) {
+        mt19937 rng(42);
+        normal_distribution<double> dist(0, 0.02);
+        W1.resize(h1, vector<double>(in));
+        W2.resize(h2, vector<double>(h1));
+        W3.resize(h3, vector<double>(h2));
+        W4.resize(out, vector<double>(h3));
+        b1.resize(h1, 0); b2.resize(h2, 0); b3.resize(h3, 0); b4.resize(out, 0);
+        mW1 = vW1 = W1; mW2 = vW2 = W2; mW3 = vW3 = W3; mW4 = vW4 = W4;
+        mb1 = vb1 = b1; mb2 = vb2 = b2; mb3 = vb3 = b3; mb4 = vb4 = b4;
+        for (auto &row : W1) for (auto &v : row) v = dist(rng);
+        for (auto &row : W2) for (auto &v : row) v = dist(rng);
+        for (auto &row : W3) for (auto &v : row) v = dist(rng);
+        for (auto &row : W4) for (auto &v : row) v = dist(rng);
+    }
+
+    double relu(double x) { return x > 0 ? x : 0; }
+
+    vector<double> forward(const vector<double> &x, vector<double> *h1_out=nullptr, vector<double> *h2_out=nullptr, vector<double> *h3_out=nullptr) {
+        vector<double> h1(hidden1), h2(hidden2), h3(hidden3), out(output_size);
+        for (int i = 0; i < hidden1; i++) {
+            double s = b1[i];
+            for (int j = 0; j < input_size; j++) s += W1[i][j] * x[j];
+            h1[i] = relu(s);
+        }
+        for (int i = 0; i < hidden2; i++) {
+            double s = b2[i];
+            for (int j = 0; j < hidden1; j++) s += W2[i][j] * h1[j];
+            h2[i] = relu(s);
+        }
+        for (int i = 0; i < hidden3; i++) {
+            double s = b3[i];
+            for (int j = 0; j < hidden2; j++) s += W3[i][j] * h2[j];
+            h3[i] = relu(s);
+        }
+        for (int i = 0; i < output_size; i++) {
+            double s = b4[i];
+            for (int j = 0; j < hidden3; j++) s += W4[i][j] * h3[j];
+            out[i] = s; // linear output for regression
+        }
+        if (h1_out) *h1_out = h1;
+        if (h2_out) *h2_out = h2;
+        if (h3_out) *h3_out = h3;
+        return out;
+    }
+
+    void train_step(const vector<double> &x, const vector<double> &target) {
+        vector<double> h1, h2, h3;
+        vector<double> pred = forward(x, &h1, &h2, &h3);
+        t++;
+        // Backprop
+        vector<double> d_out(output_size);
+        for (int i = 0; i < output_size; i++) d_out[i] = pred[i] - target[i];
+        // dW4, db4
+        vector<double> d_h3(hidden3, 0);
+        for (int i = 0; i < output_size; i++) {
+            for (int j = 0; j < hidden3; j++) {
+                double grad = d_out[i] * h3[j];
+                mW4[i][j] = beta1 * mW4[i][j] + (1 - beta1) * grad;
+                vW4[i][j] = beta2 * vW4[i][j] + (1 - beta2) * grad * grad;
+                W4[i][j] -= lr * mW4[i][j] / (sqrt(vW4[i][j]) + eps);
+                d_h3[j] += d_out[i] * W4[i][j];
+            }
+            mb4[i] = beta1 * mb4[i] + (1 - beta1) * d_out[i];
+            vb4[i] = beta2 * vb4[i] + (1 - beta2) * d_out[i] * d_out[i];
+            b4[i] -= lr * mb4[i] / (sqrt(vb4[i]) + eps);
+        }
+        // dW3, db3
+        vector<double> d_h2(hidden2, 0);
+        for (int i = 0; i < hidden3; i++) {
+            double d = h3[i] > 0 ? d_h3[i] : 0;
+            for (int j = 0; j < hidden2; j++) {
+                double grad = d * h2[j];
+                mW3[i][j] = beta1 * mW3[i][j] + (1 - beta1) * grad;
+                vW3[i][j] = beta2 * vW3[i][j] + (1 - beta2) * grad * grad;
+                W3[i][j] -= lr * mW3[i][j] / (sqrt(vW3[i][j]) + eps);
+                d_h2[j] += d * W3[i][j];
+            }
+            mb3[i] = beta1 * mb3[i] + (1 - beta1) * d;
+            vb3[i] = beta2 * vb3[i] + (1 - beta2) * d * d;
+            b3[i] -= lr * mb3[i] / (sqrt(vb3[i]) + eps);
+        }
+        // dW2, db2
+        vector<double> d_h1(hidden1, 0);
+        for (int i = 0; i < hidden2; i++) {
+            double d = h2[i] > 0 ? d_h2[i] : 0;
+            for (int j = 0; j < hidden1; j++) {
+                double grad = d * h1[j];
+                mW2[i][j] = beta1 * mW2[i][j] + (1 - beta1) * grad;
+                vW2[i][j] = beta2 * vW2[i][j] + (1 - beta2) * grad * grad;
+                W2[i][j] -= lr * mW2[i][j] / (sqrt(vW2[i][j]) + eps);
+                d_h1[j] += d * W2[i][j];
+            }
+            mb2[i] = beta1 * mb2[i] + (1 - beta1) * d;
+            vb2[i] = beta2 * vb2[i] + (1 - beta2) * d * d;
+            b2[i] -= lr * mb2[i] / (sqrt(vb2[i]) + eps);
+        }
+        // dW1, db1
+        for (int i = 0; i < hidden1; i++) {
+            double d = h1[i] > 0 ? d_h1[i] : 0;
+            for (int j = 0; j < input_size; j++) {
+                double grad = d * x[j];
+                mW1[i][j] = beta1 * mW1[i][j] + (1 - beta1) * grad;
+                vW1[i][j] = beta2 * vW1[i][j] + (1 - beta2) * grad * grad;
+                W1[i][j] -= lr * mW1[i][j] / (sqrt(vW1[i][j]) + eps);
+            }
+            mb1[i] = beta1 * mb1[i] + (1 - beta1) * d;
+            vb1[i] = beta2 * vb1[i] + (1 - beta2) * d * d;
+            b1[i] -= lr * mb1[i] / (sqrt(vb1[i]) + eps);
+        }
+    }
+
+    void save(const string &path) {
+        FILE *f = fopen(path.c_str(), "wb");
+        if (!f) return;
+        fwrite(&input_size, sizeof(int), 1, f);
+        fwrite(&hidden1, sizeof(int), 1, f);
+        fwrite(&hidden2, sizeof(int), 1, f);
+        fwrite(&hidden3, sizeof(int), 1, f);
+        fwrite(&output_size, sizeof(int), 1, f);
+        for (auto &row : W1) fwrite(row.data(), sizeof(double), input_size, f);
+        for (auto &row : W2) fwrite(row.data(), sizeof(double), hidden1, f);
+        for (auto &row : W3) fwrite(row.data(), sizeof(double), hidden2, f);
+        for (auto &row : W4) fwrite(row.data(), sizeof(double), hidden3, f);
+        fwrite(b1.data(), sizeof(double), hidden1, f);
+        fwrite(b2.data(), sizeof(double), hidden2, f);
+        fwrite(b3.data(), sizeof(double), hidden3, f);
+        fwrite(b4.data(), sizeof(double), output_size, f);
+        fclose(f);
+    }
+
+    bool load(const string &path) {
+        FILE *f = fopen(path.c_str(), "rb");
+        if (!f) return false;
+        fread(&input_size, sizeof(int), 1, f);
+        fread(&hidden1, sizeof(int), 1, f);
+        fread(&hidden2, sizeof(int), 1, f);
+        fread(&hidden3, sizeof(int), 1, f);
+        fread(&output_size, sizeof(int), 1, f);
+        W1.resize(hidden1, vector<double>(input_size));
+        W2.resize(hidden2, vector<double>(hidden1));
+        W3.resize(hidden3, vector<double>(hidden2));
+        W4.resize(output_size, vector<double>(hidden3));
+        b1.resize(hidden1); b2.resize(hidden2); b3.resize(hidden3); b4.resize(output_size);
+        for (auto &row : W1) fread(row.data(), sizeof(double), input_size, f);
+        for (auto &row : W2) fread(row.data(), sizeof(double), hidden1, f);
+        for (auto &row : W3) fread(row.data(), sizeof(double), hidden2, f);
+        for (auto &row : W4) fread(row.data(), sizeof(double), hidden3, f);
+        fread(b1.data(), sizeof(double), hidden1, f);
+        fread(b2.data(), sizeof(double), hidden2, f);
+        fread(b3.data(), sizeof(double), hidden3, f);
+        fread(b4.data(), sizeof(double), output_size, f);
+        fclose(f);
+        return true;
+    }
+};
+
+// ─── Data loading ───
+
+vector<Bio> load_bios(const string &path) {
+    vector<Bio> bios;
+    ifstream f(path);
+    if (!f.is_open()) { cerr << "Cannot open " << path << endl; return bios; }
+    string line;
+    while (getline(f, line)) {
+        if (line.empty()) continue;
+        Bio b;
+        b.username = extract_json_string(line, "username");
+        b.city = extract_json_string(line, "city");
+        b.headline = extract_json_string(line, "headline");
+        b.description = extract_json_string(line, "description");
+        b.rating = extract_json_number(line, "ratingAverage");
+        if (b.rating == 0) {
+            // rating might be stored as string "5"
+            string rstr = extract_json_string(line, "ratingAverage");
+            if (!rstr.empty()) b.rating = atof(rstr.c_str());
+        }
+        b.reviews = (int)extract_json_number(line, "reviewsCount");
+        b.isGold = extract_json_bool(line, "isGold");
+        b.isAvailable = extract_json_bool(line, "isAvailable");
+        b.isCertified = extract_json_bool(line, "isCertified");
+        b.services_str = extract_json_array_as_string(line, "services");
+        b.visits = (int)extract_json_number(line, "visits");
+        b.member_since = extract_json_string(line, "member_since");
+        b.days_online = (int)extract_json_number(line, "days_online");
+        b.views_per_day = extract_json_number(line, "views_per_day");
+        b.features = extract_features(b.headline, b.description);
+        bios.push_back(b);
+    }
+    return bios;
+}
+
+// ─── Normalization ───
+
+void normalize_labels(vector<Bio> &bios, const string &label_name) {
+    if (label_name == "reviews") {
+        for (auto &b : bios) b.label = b.reviews;
+    } else if (label_name == "views_per_day") {
+        for (auto &b : bios) b.label = b.views_per_day;
+    } else if (label_name == "rating") {
+        for (auto &b : bios) b.label = b.rating;
+    } else {
+        for (auto &b : bios) b.label = b.reviews;
+    }
+    // log transform + normalize
+    double max_label = 0;
+    for (auto &b : bios) max_label = max(max_label, b.label);
+    if (max_label > 0) {
+        for (auto &b : bios) b.label = log1p(b.label) / log1p(max_label);
+    }
+}
+
+void normalize_features(vector<Bio> &bios) {
+    if (bios.empty()) return;
+    int n = NUM_FEATURES;
+    vector<double> mean(n, 0), sd(n, 0);
+    for (auto &b : bios) for (int i = 0; i < n; i++) mean[i] += b.features[i];
+    for (int i = 0; i < n; i++) mean[i] /= bios.size();
+    for (auto &b : bios) for (int i = 0; i < n; i++) sd[i] += (b.features[i] - mean[i]) * (b.features[i] - mean[i]);
+    for (int i = 0; i < n; i++) sd[i] = sqrt(sd[i] / bios.size());
+    for (int i = 0; i < n; i++) if (sd[i] < 1e-8) sd[i] = 1;
+    for (auto &b : bios) for (int i = 0; i < n; i++) b.features[i] = (b.features[i] - mean[i]) / sd[i];
+}
+
+// ─── Metrics ───
+
+struct Metrics { double mae, rmse, r2; };
+
+Metrics compute_metrics(const vector<double> &preds, const vector<double> &actuals) {
+    Metrics m = {0, 0, 0};
+    int n = preds.size();
+    if (n == 0) return m;
+    double sum_actual = 0;
+    for (int i = 0; i < n; i++) {
+        m.mae += abs(preds[i] - actuals[i]);
+        m.rmse += (preds[i] - actuals[i]) * (preds[i] - actuals[i]);
+        sum_actual += actuals[i];
+    }
+    m.mae /= n;
+    m.rmse = sqrt(m.rmse / n);
+    double mean_actual = sum_actual / n;
+    double ss_tot = 0, ss_res = 0;
+    for (int i = 0; i < n; i++) {
+        ss_tot += (actuals[i] - mean_actual) * (actuals[i] - mean_actual);
+        ss_res += (actuals[i] - preds[i]) * (actuals[i] - preds[i]);
+    }
+    m.r2 = ss_tot > 1e-12 ? 1 - ss_res / ss_tot : 0;
+    return m;
+}
+
+// ─── K-fold cross-validation ───
+
+Metrics k_fold_cv(vector<Bio> &bios, int k, int epochs, double lr, int batch_hidden) {
+    int n = bios.size();
+    vector<int> indices(n);
+    for (int i = 0; i < n; i++) indices[i] = i;
+    mt19937 rng(123);
+    shuffle(indices.begin(), indices.end(), rng);
+
+    vector<Metrics> fold_metrics;
+    int fold_size = n / k;
+
+    for (int fold = 0; fold < k; fold++) {
+        int start = fold * fold_size;
+        int end = (fold == k - 1) ? n : start + fold_size;
+        set<int> val_set(indices.begin() + start, indices.begin() + end);
+
+        MLP model(NUM_FEATURES, batch_hidden, batch_hidden / 2, batch_hidden / 4, 1, lr);
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            for (int i : indices) {
+                if (val_set.count(i)) continue;
+                model.train_step(bios[i].features, {bios[i].label});
+            }
+        }
+        vector<double> preds, actuals;
+        for (int i : val_set) {
+            preds.push_back(model.forward(bios[i].features)[0]);
+            actuals.push_back(bios[i].label);
+        }
+        fold_metrics.push_back(compute_metrics(preds, actuals));
+        printf("Fold %d — MAE=%.6f RMSE=%.6f R2=%.6f\n", fold, fold_metrics.back().mae, fold_metrics.back().rmse, fold_metrics.back().r2);
+    }
+    Metrics avg = {0, 0, 0};
+    for (auto &m : fold_metrics) { avg.mae += m.mae; avg.rmse += m.rmse; avg.r2 += m.r2; }
+    avg.mae /= k; avg.rmse /= k; avg.r2 /= k;
+    return avg;
+}
+
+// ─── Walk-forward validation ───
+
+Metrics walk_forward_validation(vector<Bio> &bios, int window, int epochs, double lr, int hidden) {
+    int n = bios.size();
+    if (n < window * 2) return {0, 0, 0};
+    vector<double> preds, actuals;
+    for (int start = 0; start + window < n; start += window / 2) {
+        int train_end = start + window;
+        MLP model(NUM_FEATURES, hidden, hidden / 2, hidden / 4, 1, lr);
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            for (int i = start; i < train_end; i++) {
+                model.train_step(bios[i].features, {bios[i].label});
+            }
+        }
+        int val_end = min(n, train_end + window / 2);
+        for (int i = train_end; i < val_end; i++) {
+            preds.push_back(model.forward(bios[i].features)[0]);
+            actuals.push_back(bios[i].label);
+        }
+        if (start == 0) printf("Epoch 0 train_loss=%.6f\n", bios[0].label);
+    }
+    return compute_metrics(preds, actuals);
+}
+
+// ─── Bio generator ───
+
+vector<string> HEADLINE_TEMPLATES = {
+    "Deep Tissue Recovery with the Wolf",
+    "Wolf-Level Sports Recovery in NYC",
+    "Desk Goblin Rescue by Karpathian Wolf",
+    "Strong Hands, Calm Energy, Wolf Focus",
+    "Karpathian Wolf: Deep Tissue & Recovery",
+    "Your Body Filed a Complaint. I'm the Wolf.",
+    "Wolf Recovery: Deep Tissue for Real Bodies",
+    "NYC Deep Tissue by the Karpathian Wolf",
+    "Posture Crimes? The Wolf Can Help",
+    "Gym Recovery with Wolf-Level Pressure",
+    "The Wolf Fixes What Your Desk Did",
+    "Deep Tissue Reset with Karpathian Wolf",
+    "Wolf Hands, Deep Pressure, Real Recovery",
+    "Karpathian Wolf: Sports Recovery Specialist",
+    "Tame the Tension with the Karpathian Wolf",
+};
+
+vector<string> OPENING_LINES = {
+    "You bring the stress. I bring the Wolf.",
+    "Your shoulders should not feel like they are storing tax documents from 2017.",
+    "I work with guys who train hard, sit too long, or carry New York City in their neck.",
+    "If your body filed a complaint, you are probably my kind of client.",
+    "Your posture has been writing letters to HR. I can help.",
+    "I work on the muscles that complain the loudest.",
+    "Most people wait until they cannot turn their head. You are smarter than that.",
+    "Your back has been asking for help. I am the Wolf that listens.",
+    "I do not do generic relaxation. I do targeted recovery.",
+    "The Wolf does not do gentle. The Wolf does effective.",
+};
+
+vector<string> TRUST_LINES = {
+    "Clean private setup. Respectful, discreet, no-rush energy.",
+    "Private studio, fresh linens, shower available, clear communication.",
+    "Years of hands-on experience with athletes, desk workers, and weekend warriors.",
+    "Professional space, professional pressure, professional respect.",
+    "Discreet location, clean environment, focused work.",
+    "Trained hands, specific pressure, real results.",
+};
+
+vector<string> SERVICE_LINES = {
+    "Deep tissue, sports recovery, Swedish flow, stretching, and pressure-forward bodywork.",
+    "Deep tissue, trigger point, sports massage, assisted stretching, and hot stone.",
+    "Slow, strong, focused deep tissue. Sports recovery. Targeted pressure where you need it.",
+    "Deep tissue, Swedish, hot stone, and stretching — all adjusted to your body.",
+    "Pressure-forward deep tissue and sports recovery. Tell me what hurts.",
+};
+
+vector<string> CLIENT_LINES = {
+    "If your shoulders live near your ears, you are my kind of client.",
+    "Desk workers, gym guys, runners, travelers — if you carry tension, I can help.",
+    "Whether you sit too much, train too hard, or travel too often, I have hands for that.",
+    "Guys who lift, guys who sit, guys who fly — your body needs this.",
+    "If you can feel yesterday's workout in today's body, message me.",
+};
+
+vector<string> CTA_LINES = {
+    "Message me with your focus areas and preferred time.",
+    "Text with what hurts and when you want to come in.",
+    "Message me: your focus areas, preferred time, and pressure preference.",
+    "Reach out with your preferred time and what needs work.",
+    "Text me your focus areas and I will find you a slot.",
+    "Send your preferred day, time, and what needs attention.",
+};
+
+vector<string> HUMOR_LINES = {
+    "If your posture had a Yelp review, it would not be flattering.",
+    "Your neck has been holding a grudge since 2023. Let's settle this.",
+    "I cannot fix your tax situation, but I can fix your trapezius.",
+    "Your back called. It said it is tired of your chair.",
+    "I am the Wolf your muscles asked for.",
+};
+
+vector<string> LOCATION_LINES = {
+    "Private space in NYC. Same-day appointments when available.",
+    "Clean private studio in NYC. In-call and out-call available.",
+    "Located in NYC. Shower available. Same-day when open.",
+    "Bronx-Manhattan area. Private setup. Easy to reach.",
+};
+
+struct GeneratedBio {
+    string headline;
+    string description;
+    vector<double> features;
+    double predicted_score = 0;
+    double risk = 0;
+    double novelty = 0;
+};
+
+string pick(const vector<string> &v, mt19937 &rng) {
+    return v[uniform_int_distribution<int>(0, v.size() - 1)(rng)];
+}
+
+string json_escape(const string &s) {
+    string out;
+    for (char c : s) {
+        if (c == '"') out += "\\\"";
+        else if (c == '\n') out += "\\n";
+        else if (c == '\r') out += "\\r";
+        else if (c == '\\') out += "\\\\";
+        else if (c == '\t') out += "\\t";
+        else out += c;
+    }
+    return out;
+}
+
+GeneratedBio generate_bio(mt19937 &rng) {
+    GeneratedBio b;
+    b.headline = pick(HEADLINE_TEMPLATES, rng);
+    string desc;
+    desc += pick(OPENING_LINES, rng) + "\n\n";
+    desc += pick(TRUST_LINES, rng) + "\n\n";
+    desc += pick(SERVICE_LINES, rng) + "\n\n";
+    desc += pick(CLIENT_LINES, rng) + "\n\n";
+    if (rng() % 2 == 0) desc += pick(HUMOR_LINES, rng) + "\n\n";
+    desc += pick(LOCATION_LINES, rng) + "\n\n";
+    desc += pick(CTA_LINES, rng);
+    b.description = desc;
+    b.features = extract_features(b.headline, b.description);
+    b.risk = risk_score(b.features);
+    return b;
+}
+
+// ─── ProfitBioScore ───
+
+double profit_bio_score(double predicted_views, double predicted_contacts, double predicted_emails,
+                        double novelty, double speech, double risk_val) {
+    return 0.30 * predicted_views
+         + 0.25 * predicted_contacts
+         + 0.20 * predicted_emails
+         + 0.05 * novelty
+         + 0.05 * speech
+         - 0.30 * risk_val;
+}
+
+// ─── Novelty scoring ───
+
+double novelty_score(const string &headline, const string &desc, const vector<Bio> &corpus) {
+    string h_lower = headline;
+    transform(h_lower.begin(), h_lower.end(), h_lower.begin(), ::tolower);
+    double max_sim = 0;
+    for (const auto &b : corpus) {
+        string bh = b.headline;
+        transform(bh.begin(), bh.end(), bh.begin(), ::tolower);
+        // Jaccard similarity on words
+        set<string> words_a, words_b;
+        stringstream sa(h_lower), sb(bh);
+        string w;
+        while (sa >> w) words_a.insert(w);
+        while (sb >> w) words_b.insert(w);
+        int intersection = 0;
+        for (auto &x : words_a) if (words_b.count(x)) intersection++;
+        int uni = words_a.size() + words_b.size() - intersection;
+        double sim = uni > 0 ? (double)intersection / uni : 0;
+        max_sim = max(max_sim, sim);
+    }
+    return 1.0 - max_sim;
+}
+
+// ─── CLI commands ───
+
+void cmd_inspect(const string &path) {
+    auto bios = load_bios(path);
+    if (bios.empty()) { cerr << "No bios loaded." << endl; return; }
+    printf("REAL CORPUS LOADED\n");
+    printf("────────────────────────────────────\n");
+    printf("Bios parsed:                 %zu\n", bios.size());
+    int gold = 0, avail = 0, cert = 0, cta = 0, price = 0, urgent = 0, humor = 0;
+    int deep_tissue = 0, hygiene = 0, logistics = 0;
+    double total_desc_len = 0, total_headline_len = 0;
+    map<string, int> city_counts;
+    map<string, int> service_counts;
+    double total_rating = 0;
+    int max_reviews = 0;
+    double total_reviews = 0;
+    for (const auto &b : bios) {
+        if (b.isGold) gold++;
+        if (b.isAvailable) avail++;
+        if (b.isCertified) cert++;
+        string full = b.headline + " " + b.description;
+        transform(full.begin(), full.end(), full.begin(), ::tolower);
+        if (contains_any(full, CTA_WORDS)) cta++;
+        if (contains_any(full, PRICE_WORDS)) price++;
+        if (contains_any(full, URGENCY_WORDS)) urgent++;
+        if (contains_any(full, HUMOR_WORDS)) humor++;
+        if (contains_any(full, DEEP_TISSUE_WORDS)) deep_tissue++;
+        if (contains_any(full, HYGIENE_WORDS)) hygiene++;
+        if (contains_any(full, LOCATION_WORDS)) logistics++;
+        total_desc_len += b.description.size();
+        total_headline_len += b.headline.size();
+        city_counts[b.city]++;
+        total_rating += b.rating;
+        total_reviews += b.reviews;
+        max_reviews = max(max_reviews, b.reviews);
+    }
+    printf("Cities represented:          %zu\n", city_counts.size());
+    printf("Gold profiles:               %d / %zu = %.1f%%\n", gold, bios.size(), 100.0 * gold / bios.size());
+    printf("Available profiles:          %d / %zu = %.1f%%\n", avail, bios.size(), 100.0 * avail / bios.size());
+    printf("Platform certified flag:     %d / %zu = %.1f%%\n", cert, bios.size(), 100.0 * cert / bios.size());
+    printf("CTA keyword present:         %d / %zu = %.1f%%\n", cta, bios.size(), 100.0 * cta / bios.size());
+    printf("Price/rate keyword present:  %d / %zu = %.1f%%\n", price, bios.size(), 100.0 * price / bios.size());
+    printf("Urgency keyword present:     %d / %zu = %.1f%%\n", urgent, bios.size(), 100.0 * urgent / bios.size());
+    printf("Deep tissue mentioned:       %d / %zu = %.1f%%\n", deep_tissue, bios.size(), 100.0 * deep_tissue / bios.size());
+    printf("Hygiene/clean mentioned:     %d / %zu = %.1f%%\n", hygiene, bios.size(), 100.0 * hygiene / bios.size());
+    printf("Logistics mentioned:         %d / %zu = %.1f%%\n", logistics, bios.size(), 100.0 * logistics / bios.size());
+    printf("Humor/wolf terms:            %d / %zu = %.1f%%\n", humor, bios.size(), 100.0 * humor / bios.size());
+    printf("Average description length:  %.0f chars\n", total_desc_len / bios.size());
+    printf("Average headline length:     %.1f chars\n", total_headline_len / bios.size());
+    printf("Average rating:              %.2f\n", total_rating / bios.size());
+    printf("Average reviews:             %.1f\n", total_reviews / bios.size());
+    printf("Max reviews:                 %d\n", max_reviews);
+    printf("\nTop cities:\n");
+    vector<pair<int, string>> cities_sorted;
+    for (auto &p : city_counts) cities_sorted.push_back({p.second, p.first});
+    sort(cities_sorted.rbegin(), cities_sorted.rend());
+    for (int i = 0; i < min((int)cities_sorted.size(), 15); i++)
+        printf("  %-25s %d\n", cities_sorted[i].second.c_str(), cities_sorted[i].first);
+    // Top 10 by reviews
+    printf("\nTop 10 by reviews:\n");
+    auto sorted_bios = bios;
+    sort(sorted_bios.begin(), sorted_bios.end(), [](const Bio &a, const Bio &b) { return a.reviews > b.reviews; });
+    for (int i = 0; i < min(10, (int)sorted_bios.size()); i++) {
+        printf("  #%d %-22s %-18s rev=%-4d R=%.0f  %s\n", i+1, sorted_bios[i].username.c_str(),
+               sorted_bios[i].city.c_str(), sorted_bios[i].reviews, sorted_bios[i].rating,
+               sorted_bios[i].headline.c_str());
+    }
+    // Views/day if available
+    int has_vpd = 0;
+    for (auto &b : bios) if (b.views_per_day > 0) has_vpd++;
+    if (has_vpd > 0) {
+        printf("\nProfiles with views/day:    %d / %zu\n", has_vpd, bios.size());
+        sort(sorted_bios.begin(), sorted_bios.end(), [](const Bio &a, const Bio &b) { return a.views_per_day > b.views_per_day; });
+        printf("Top 10 by views/day:\n");
+        for (int i = 0; i < min(10, (int)sorted_bios.size()); i++) {
+            if (sorted_bios[i].views_per_day <= 0) break;
+            printf("  #%d %-22s v/day=%.1f visits=%d days=%d  %s\n", i+1,
+                   sorted_bios[i].username.c_str(), sorted_bios[i].views_per_day,
+                   sorted_bios[i].visits, sorted_bios[i].days_online,
+                   sorted_bios[i].headline.c_str());
+        }
+    } else {
+        printf("\nViews/day: NOT AVAILABLE (need public profile enrichment)\n");
+    }
+}
+
+void cmd_train(const string &path, const string &label, int cv_folds, bool do_walk_forward, int epochs, double lr, int hidden) {
+    auto bios = load_bios(path);
+    if (bios.empty()) { cerr << "No bios loaded." << endl; return; }
+    printf("Loaded %zu bios from %s\n", bios.size(), path.c_str());
+    printf("Label: %s\n", label.c_str());
+    normalize_labels(bios, label);
+    normalize_features(bios);
+    // K-fold CV
+    if (cv_folds > 0) {
+        printf("\n─── %d-Fold Cross-Validation ───\n", cv_folds);
+        Metrics cv = k_fold_cv(bios, cv_folds, epochs, lr, hidden);
+        printf("CV mean — MAE=%.6f RMSE=%.6f R2=%.6f\n", cv.mae, cv.rmse, cv.r2);
+    }
+    // Walk-forward
+    if (do_walk_forward) {
+        printf("\n─── Walk-Forward Validation ───\n");
+        int window = max(50, (int)bios.size() / 10);
+        Metrics wf = walk_forward_validation(bios, window, epochs, lr, hidden);
+        printf("Walk-forward — MAE=%.6f RMSE=%.6f R2=%.6f\n", wf.mae, wf.rmse, wf.r2);
+    }
+    // Train final model on all data
+    printf("\n─── Training Final Model ───\n");
+    MLP model(NUM_FEATURES, hidden, hidden / 2, hidden / 4, 1, lr);
+    for (int epoch = 0; epoch < epochs; epoch++) {
+        double loss = 0;
+        for (auto &b : bios) {
+            auto pred = model.forward(b.features);
+            model.train_step(b.features, {b.label});
+            loss += abs(pred[0] - b.label);
+        }
+        if (epoch % 20 == 0) printf("Epoch %d — avg_loss=%.6f\n", epoch, loss / bios.size());
+    }
+    string model_path = "rm_agi/data/models/bio_model.bin";
+    model.save(model_path);
+    printf("Model saved to %s\n", model_path.c_str());
+}
+
+void cmd_generate(int count, const string &mode, const string &out_path) {
+    mt19937 rng(time(nullptr));
+    ofstream out(out_path);
+    if (!out.is_open()) { cerr << "Cannot write to " << out_path << endl; return; }
+    auto t0 = clock();
+    for (int i = 0; i < count; i++) {
+        auto b = generate_bio(rng);
+        out << "{\"headline\":\"" << json_escape(b.headline) << "\",\"description\":\""
+            << json_escape(b.description) << "\",\"risk\":" << b.risk << "}\n";
+    }
+    out.close();
+    double elapsed = (double)(clock() - t0) / CLOCKS_PER_SEC;
+    printf("Generated %d bios in %.3fs (%.0f bios/sec)\n", count, elapsed, count / elapsed);
+    printf("Saved to %s\n", out_path.c_str());
+}
+
+void cmd_score(const string &candidates_path, const string &model_path, const string &out_path) {
+    MLP model(NUM_FEATURES, 64, 32, 16, 1, 0.001);
+    if (!model.load(model_path)) { cerr << "Cannot load model from " << model_path << endl; return; }
+    ifstream in(candidates_path);
+    if (!in.is_open()) { cerr << "Cannot open " << candidates_path << endl; return; }
+    ofstream out(out_path);
+    string line;
+    int count = 0;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        string headline = extract_json_string(line, "headline");
+        string desc = extract_json_string(line, "description");
+        auto feats = extract_features(headline, desc);
+        double pred = model.forward(feats)[0];
+        double risk = risk_score(feats);
+        out << "{\"headline\":\"" << json_escape(headline) << "\",\"description\":\"" << json_escape(desc)
+            << "\",\"predicted_score\":" << pred << ",\"risk\":" << risk << "}\n";
+        count++;
+    }
+    out.close();
+    printf("Scored %d candidates. Saved to %s\n", count, out_path.c_str());
+}
+
+void cmd_evolve(const string &scored_path, int population, int generations, int elites) {
+    // Load scored candidates
+    ifstream in(scored_path);
+    if (!in.is_open()) { cerr << "Cannot open " << scored_path << endl; return; }
+    struct Candidate {
+        string headline, description;
+        double score, risk;
+        vector<double> features;
+    };
+    vector<Candidate> candidates;
+    string line;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        Candidate c;
+        c.headline = extract_json_string(line, "headline");
+        c.description = extract_json_string(line, "description");
+        c.score = extract_json_number(line, "predicted_score");
+        c.risk = extract_json_number(line, "risk");
+        c.features = extract_features(c.headline, c.description);
+        candidates.push_back(c);
+    }
+    if (candidates.empty()) { cerr << "No candidates loaded." << endl; return; }
+    printf("Loaded %zu candidates\n", candidates.size());
+    // Sort by score
+    sort(candidates.begin(), candidates.end(), [](const Candidate &a, const Candidate &b) {
+        return a.score - a.risk * 0.3 > b.score - b.risk * 0.3;
+    });
+    // Keep top population
+    if ((int)candidates.size() > population) candidates.resize(population);
+    mt19937 rng(time(nullptr));
+    // GA loop
+    for (int gen = 0; gen < generations; gen++) {
+        // Mutation: swap headline or append a line
+        for (int i = elites; i < (int)candidates.size(); i++) {
+            if (rng() % 100 < 30) {
+                // Mutate headline
+                candidates[i].headline = pick(HEADLINE_TEMPLATES, rng);
+            }
+            if (rng() % 100 < 20) {
+                // Mutate description by regenerating
+                auto b = generate_bio(rng);
+                candidates[i].description = b.description;
+            }
+            candidates[i].features = extract_features(candidates[i].headline, candidates[i].description);
+            candidates[i].risk = risk_score(candidates[i].features);
+        }
+        // Crossover: mix headline from one with desc from another
+        for (int i = elites; i < (int)candidates.size(); i += 2) {
+            if (i + 1 < (int)candidates.size() && rng() % 100 < 40) {
+                string tmp = candidates[i].headline;
+                candidates[i].headline = candidates[i+1].headline;
+                candidates[i+1].headline = tmp;
+                candidates[i].features = extract_features(candidates[i].headline, candidates[i].description);
+                candidates[i+1].features = extract_features(candidates[i+1].headline, candidates[i+1].description);
+            }
+        }
+        // Re-sort
+        sort(candidates.begin(), candidates.end(), [](const Candidate &a, const Candidate &b) {
+            return a.score - a.risk * 0.3 > b.score - b.risk * 0.3;
+        });
+        if (gen % 50 == 0) {
+            printf("Gen %d — top score=%.4f (risk=%.4f): %s\n", gen,
+                   candidates[0].score, candidates[0].risk, candidates[0].headline.c_str());
+        }
+    }
+    // Save elites
+    string out_path = "rm_agi/data/candidates/ga_elites.jsonl";
+    ofstream out(out_path);
+    for (int i = 0; i < min(elites * 2, (int)candidates.size()); i++) {
+        out << "{\"headline\":\"" << json_escape(candidates[i].headline) << "\",\"description\":\""
+            << json_escape(candidates[i].description) << "\",\"score\":" << candidates[i].score
+            << ",\"risk\":" << candidates[i].risk << "}\n";
+    }
+    out.close();
+    printf("GA done. Saved %d elites to %s\n", min(elites * 2, (int)candidates.size()), out_path.c_str());
+}
+
+void cmd_select(const string &evolved_path, int top_n, double min_diversity, double max_risk) {
+    ifstream in(evolved_path);
+    if (!in.is_open()) { cerr << "Cannot open " << evolved_path << endl; return; }
+    struct Final {
+        string headline, description;
+        double score, risk;
+    };
+    vector<Final> all;
+    string line;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        Final f;
+        f.headline = extract_json_string(line, "headline");
+        f.description = extract_json_string(line, "description");
+        f.score = extract_json_number(line, "score");
+        f.risk = extract_json_number(line, "risk");
+        if (f.risk <= max_risk) all.push_back(f);
+    }
+    sort(all.begin(), all.end(), [](const Final &a, const Final &b) { return a.score > b.score; });
+    // Diversity filter: avoid near-duplicate headlines
+    vector<Final> selected;
+    set<string> seen_words;
+    for (auto &f : all) {
+        if ((int)selected.size() >= top_n) break;
+        string h_lower = f.headline;
+        transform(h_lower.begin(), h_lower.end(), h_lower.begin(), ::tolower);
+        set<string> words;
+        stringstream ss(h_lower);
+        string w;
+        while (ss >> w) words.insert(w);
+        int overlap = 0;
+        for (auto &x : words) if (seen_words.count(x)) overlap++;
+        double diversity = 1.0 - (double)overlap / max(1, (int)words.size());
+        if (diversity >= min_diversity || selected.empty()) {
+            selected.push_back(f);
+            for (auto &x : words) seen_words.insert(x);
+        }
+    }
+    string out_path = "rm_agi/data/candidates/top_" + to_string(top_n) + ".jsonl";
+    ofstream out(out_path);
+    for (int i = 0; i < (int)selected.size(); i++) {
+        out << "{\"rank\":" << i+1 << ",\"headline\":\"" << json_escape(selected[i].headline)
+            << "\",\"description\":\"" << json_escape(selected[i].description)
+            << "\",\"score\":" << selected[i].score
+            << ",\"risk\":" << selected[i].risk << "}\n";
+    }
+    out.close();
+    printf("Selected %zu diverse candidates (risk <= %.2f). Saved to %s\n",
+           selected.size(), max_risk, out_path.c_str());
+    printf("\nTop %d:\n", (int)selected.size());
+    for (int i = 0; i < min(10, (int)selected.size()); i++) {
+        printf("  #%d score=%.4f risk=%.4f | %s\n", i+1, selected[i].score, selected[i].risk, selected[i].headline.c_str());
+    }
+}
+
+// ─── Main ───
+
+void print_usage() {
+    printf("RentMasseur AGI — C++ Engine\n");
+    printf("Usage:\n");
+    printf("  ./rm_agi inspect    <real_bios.jsonl>\n");
+    printf("  ./rm_agi train      <real_bios.jsonl> [--label reviews|views_per_day] [--cv 5] [--walk-forward] [--epochs 100] [--lr 0.001] [--hidden 64]\n");
+    printf("  ./rm_agi generate   --count 100000 --mode speech --out candidates.jsonl\n");
+    printf("  ./rm_agi score      <candidates.jsonl> --model model.bin --out scored.jsonl\n");
+    printf("  ./rm_agi evolve     <scored.jsonl> --population 10000 --generations 200 --elites 50\n");
+    printf("  ./rm_agi select     <evolved.jsonl> --top 100 --diversity 0.85 --max-risk 0.10\n");
+}
+
+int main(int argc, char **argv) {
+    if (argc < 2) { print_usage(); return 1; }
+    string cmd = argv[1];
+    // Parse args
+    map<string, string> args;
+    for (int i = 2; i < argc; i++) {
+        string a = argv[i];
+        if (a.substr(0, 2) == "--" && i + 1 < argc) {
+            args[a.substr(2)] = argv[++i];
+        } else if (a.substr(0, 2) == "--") {
+            args[a.substr(2)] = "true";
+        }
+    }
+    auto get_arg = [&](const string &key, const string &def) -> string {
+        auto it = args.find(key);
+        return it != args.end() ? it->second : def;
+    };
+    auto get_int = [&](const string &key, int def) -> int {
+        string v = get_arg(key, "");
+        return v.empty() ? def : atoi(v.c_str());
+    };
+    auto get_double = [&](const string &key, double def) -> double {
+        string v = get_arg(key, "");
+        return v.empty() ? def : atof(v.c_str());
+    };
+
+    if (cmd == "inspect") {
+        if (argc < 3) { cerr << "Need file path" << endl; return 1; }
+        cmd_inspect(argv[2]);
+    } else if (cmd == "train") {
+        if (argc < 3) { cerr << "Need file path" << endl; return 1; }
+        string label = get_arg("label", "reviews");
+        int cv = get_int("cv", 5);
+        bool wf = args.count("walk-forward");
+        int epochs = get_int("epochs", 100);
+        double lr = get_double("lr", 0.001);
+        int hidden = get_int("hidden", 64);
+        cmd_train(argv[2], label, cv, wf, epochs, lr, hidden);
+    } else if (cmd == "generate") {
+        int count = get_int("count", 100000);
+        string mode = get_arg("mode", "speech");
+        string out = get_arg("out", "rm_agi/data/candidates/candidates.jsonl");
+        cmd_generate(count, mode, out);
+    } else if (cmd == "score") {
+        if (argc < 3) { cerr << "Need candidates file" << endl; return 1; }
+        string model_path = get_arg("model", "rm_agi/data/models/bio_model.bin");
+        string out = get_arg("out", "rm_agi/data/candidates/scored.jsonl");
+        cmd_score(argv[2], model_path, out);
+    } else if (cmd == "evolve") {
+        if (argc < 3) { cerr << "Need scored file" << endl; return 1; }
+        int pop = get_int("population", 10000);
+        int gens = get_int("generations", 200);
+        int elites = get_int("elites", 50);
+        cmd_evolve(argv[2], pop, gens, elites);
+    } else if (cmd == "select") {
+        if (argc < 3) { cerr << "Need evolved file" << endl; return 1; }
+        int top = get_int("top", 100);
+        double div = get_double("diversity", 0.85);
+        double risk = get_double("max-risk", 0.10);
+        cmd_select(argv[2], top, div, risk);
+    } else {
+        print_usage();
+        return 1;
+    }
+    return 0;
+}

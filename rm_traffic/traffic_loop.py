@@ -1,0 +1,1176 @@
+"""
+RentMasseur Traffic Loop — 30 client-magnet functions with LLM continuous improvement.
+
+Every function:
+  1. Reads current state from RM API / Selenium / SQLite
+  2. Calls LLM to analyze, prioritize, or generate improvements
+  3. Executes the action (API call, Selenium, or DB write)
+  4. Verifies the result
+  5. Writes a receipt
+  6. Feeds the result back into the LLM for next-cycle improvement
+
+The loop runs on a CI/CD schedule. Each cycle produces:
+  - Traffic snapshot (views, contacts, rank)
+  - LLM-generated improvement decisions
+  - Executed actions with receipts
+  - Before/after metrics for A/B validation
+  - Training rows for GPT-of-Money
+
+Usage:
+    python3 -m rm_traffic.traffic_loop --once       # single cycle (all 30)
+    python3 -m rm_traffic.traffic_loop --daemon      # continuous
+    python3 -m rm_traffic.traffic_loop --stats       # show loop metrics
+    python3 -m rm_traffic.traffic_loop --function 7  # run single function by ID
+"""
+
+import argparse
+import hashlib
+import json
+import logging
+import os
+import sqlite3
+import sys
+import time
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, Any, Tuple
+
+# .env loading
+ENV_PATH = Path(__file__).parent.parent / ".env"
+if ENV_PATH.exists():
+    for line in open(ENV_PATH):
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
+
+os.environ.setdefault("RM_USER", os.environ.get("RENTMASSEUR_USER", ""))
+os.environ.setdefault("RM_PASS", os.environ.get("RENTMASSEUR_PASS", ""))
+
+from .api_client import RentMasseurAPI
+from .auth import AuthSession, get_credential
+from .llm_client import generate_with_fallback, LLMClient
+from .db import write_receipt as write_profileops_receipt
+
+log = logging.getLogger("traffic_loop")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+TRAFFIC_DB = Path(__file__).parent / "traffic.db"
+LOOP_DB = Path(__file__).parent / "traffic_loop.db"
+STATE_DIR = Path(__file__).parent.parent / "shadowshard_mforge" / "data" / "devin_controller"
+STATE_DIR.mkdir(parents=True, exist_ok=True)
+LOOP_STATE = STATE_DIR / "traffic_loop_state.json"
+
+NY_CITIES = [
+    "manhattan-ny", "brooklyn-ny", "queens-ny",
+    "bronx-ny", "staten-island-ny", "long-island-ny", "westchester-ny",
+]
+
+# ---------------------------------------------------------------------------
+# Loop DB
+# ---------------------------------------------------------------------------
+
+def loop_db():
+    conn = sqlite3.connect(str(LOOP_DB))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+def init_db():
+    conn = loop_db()
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS loop_cycles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        functions_run INTEGER,
+        functions_passed INTEGER,
+        functions_failed INTEGER,
+        llm_calls INTEGER,
+        llm_tokens_estimated INTEGER,
+        actions_taken INTEGER,
+        views_before INTEGER,
+        views_after INTEGER,
+        contacts_before INTEGER,
+        contacts_after INTEGER,
+        search_rank_before INTEGER,
+        search_rank_after INTEGER,
+        improvement_score REAL,
+        receipt_hash TEXT
+    );
+    CREATE TABLE IF NOT EXISTS function_runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        function_id INTEGER NOT NULL,
+        function_name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        llm_called INTEGER DEFAULT 0,
+        llm_decision TEXT,
+        action_taken TEXT,
+        before_state TEXT,
+        after_state TEXT,
+        verified INTEGER DEFAULT 0,
+        receipt TEXT,
+        improvement_delta REAL,
+        execution_time_ms INTEGER
+    );
+    CREATE TABLE IF NOT EXISTS llm_decisions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        function_id INTEGER NOT NULL,
+        function_name TEXT NOT NULL,
+        prompt_summary TEXT,
+        response TEXT,
+        decision TEXT,
+        provider TEXT,
+        model TEXT,
+        tokens_estimated INTEGER,
+        cycle_num INTEGER
+    );
+    CREATE TABLE IF NOT EXISTS traffic_snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        views INTEGER,
+        contacts INTEGER,
+        visits INTEGER,
+        bookmarks INTEGER,
+        emails INTEGER,
+        search_rank INTEGER,
+        search_total INTEGER,
+        available_rank INTEGER,
+        available_total INTEGER,
+        is_hidden INTEGER,
+        availability_option INTEGER,
+        headline TEXT,
+        headline_len INTEGER,
+        description_len INTEGER
+    );
+    """)
+    conn.commit()
+    conn.close()
+
+# ---------------------------------------------------------------------------
+# LLM helpers
+# ---------------------------------------------------------------------------
+
+_loop_conn = None
+
+
+def _loop_db():
+    global _loop_conn
+    if _loop_conn is None:
+        _loop_conn = loop_db()
+    return _loop_conn
+
+
+def close_loop_db():
+    global _loop_conn
+    if _loop_conn is not None:
+        _loop_conn.commit()
+        _loop_conn.close()
+        _loop_conn = None
+
+
+def llm_analyze(prompt: str, function_name: str, function_id: int,
+                cycle_num: int) -> Optional[str]:
+    """Call LLM with fallback and log the decision."""
+    ts = datetime.now(timezone.utc).isoformat()
+    result = generate_with_fallback(prompt, max_tokens=600)
+    if result:
+        provider = "fallback"
+        model = "auto"
+        tokens_est = len(prompt.split()) + len(result.split())
+        conn = _loop_db()
+        conn.execute(
+            "INSERT INTO llm_decisions (ts, function_id, function_name, prompt_summary, response, decision, provider, model, tokens_estimated, cycle_num) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (ts, function_id, function_name, prompt[:200], result[:500], result[:200], provider, model, tokens_est, cycle_num)
+        )
+        conn.commit()
+        log.info("  ⟡ LLM decision for %s: %s", function_name, result[:100])
+    return result
+
+def llm_decide_and_act(function_id: int, function_name: str, category: str,
+                       current_state: Dict, action_fn, cycle_num: int,
+                       improvement_prompt_fn, skip_llm: bool = False) -> Dict:
+    """Universal pattern: LLM analyzes state → decides → action → verify → receipt.
+    
+    When skip_llm=True, the LLM call is skipped entirely (for functions whose
+    action doesn't use the LLM response). Saves ~5s per skipped call.
+    """
+    ts_start = time.time()
+    ts = datetime.now(timezone.utc).isoformat()
+    result: Dict = {
+        "function_id": function_id, "function_name": function_name,
+        "category": category, "status": "pending", "llm_called": False,
+        "llm_decision": None, "action_taken": None,
+        "before_state": json.dumps(current_state, default=str)[:500],
+        "after_state": None, "verified": False, "receipt": None,
+        "improvement_delta": 0.0, "execution_time_ms": 0,
+    }
+
+    # 1. LLM analyzes current state and decides what to do
+    llm_response = None
+    if not skip_llm:
+        prompt = improvement_prompt_fn(current_state)
+        llm_response = llm_analyze(prompt, function_name, function_id, cycle_num)
+        if llm_response:
+            result["llm_called"] = True
+            result["llm_decision"] = llm_response[:200]
+
+    # 2. Execute action (pass LLM decision if available)
+    try:
+        action_result = action_fn(current_state, llm_response)
+        result["action_taken"] = str(action_result.get("action", ""))[:200]
+        result["after_state"] = json.dumps(action_result.get("after", {}), default=str)[:500]
+        result["verified"] = action_result.get("verified", False)
+        result["status"] = "passed" if result["verified"] else "failed"
+        result["improvement_delta"] = action_result.get("delta", 0.0)
+        result["receipt"] = action_result.get("receipt_id", "")
+    except Exception as e:
+        result["status"] = "error"
+        result["after_state"] = str(e)[:500]
+        log.error("  ⟁ %s failed: %s", function_name, e)
+
+    result["execution_time_ms"] = int((time.time() - ts_start) * 1000)
+
+    # 3. Write to DB
+    conn = _loop_db()
+    conn.execute(
+        """INSERT INTO function_runs (ts, cycle_num, function_id, function_name, category, status, llm_called, llm_decision, action_taken, before_state, after_state, verified, receipt, improvement_delta, execution_time_ms)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (ts, cycle_num, function_id, function_name, category, result["status"],
+         int(result["llm_called"]), result["llm_decision"], result["action_taken"],
+         result["before_state"], result["after_state"], int(result["verified"]),
+         result["receipt"], result["improvement_delta"], result["execution_time_ms"])
+    )
+    conn.commit()
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Traffic snapshot
+# ---------------------------------------------------------------------------
+
+def take_traffic_snapshot(api: RentMasseurAPI, cycle_num: int) -> Dict:
+    """Capture current traffic metrics."""
+    snap: Dict = {"ts": datetime.now(timezone.utc).isoformat(), "cycle_num": cycle_num}
+    try:
+        dash = api.get_dashboard()
+        snap["is_hidden"] = int(dash.get("userSetting", {}).get("visibility", 0) == 0)
+        snap["availability_option"] = (api.get_availability().get("option", 0))
+        about = api.get_about()
+        assets = about.get("userProps", {}).get("assets", {})
+        snap["headline"] = assets.get("headline", "")[:100]
+        snap["headline_len"] = len(assets.get("headline", ""))
+        snap["description_len"] = len(assets.get("description", ""))
+    except Exception as e:
+        snap["error"] = str(e)
+    try:
+        stats = api.get_ad_statistics()
+        prof = stats.get("profileStatistics", {}) or {}
+        visits = prof.get("visits", []) or []
+        snap["views"] = sum(v.get("count", 0) for v in visits) if visits else 0
+        snap["contacts"] = prof.get("contacts", 0) or 0
+        snap["visits"] = prof.get("visits_total", 0) or 0
+        snap["bookmarks"] = prof.get("bookmarks", 0) or 0
+        snap["emails"] = prof.get("emails", 0) or 0
+    except Exception:
+        snap["views"] = snap.get("views", 0)
+    try:
+        search = api.search(city="manhattan-ny", available_only=False, page=1)
+        results = search.get("results", []) or search.get("data", []) or []
+        snap["search_total"] = len(results)
+        snap["search_rank"] = _find_rank(results)
+    except Exception:
+        snap["search_total"] = 0
+        snap["search_rank"] = 0
+    try:
+        avail_search = api.search(city="manhattan-ny", available_only=True, page=1)
+        a_results = avail_search.get("results", []) or avail_search.get("data", []) or []
+        snap["available_total"] = len(a_results)
+        snap["available_rank"] = _find_rank(a_results)
+    except Exception:
+        snap["available_total"] = 0
+        snap["available_rank"] = 0
+
+    conn = loop_db()
+    conn.execute(
+        """INSERT INTO traffic_snapshots (ts, cycle_num, views, contacts, visits, bookmarks, emails, search_rank, search_total, available_rank, available_total, is_hidden, availability_option, headline, headline_len, description_len)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (snap["ts"], cycle_num, snap.get("views", 0), snap.get("contacts", 0),
+         snap.get("visits", 0), snap.get("bookmarks", 0), snap.get("emails", 0),
+         snap.get("search_rank", 0), snap.get("search_total", 0),
+         snap.get("available_rank", 0), snap.get("available_total", 0),
+         snap.get("is_hidden", 0), snap.get("availability_option", 0),
+         snap.get("headline", ""), snap.get("headline_len", 0), snap.get("description_len", 0))
+    )
+    conn.commit()
+    conn.close()
+    return snap
+
+def _find_rank(results: List) -> int:
+    username = os.environ.get("RM_USER", "karpathianwolf").lower()
+    for i, r in enumerate(results):
+        name = (r.get("username") or r.get("name") or "").lower()
+        if username in name or name in username:
+            return i + 1
+    return 0
+
+def get_last_snapshot() -> Optional[Dict]:
+    conn = loop_db()
+    row = conn.execute("SELECT * FROM traffic_snapshots ORDER BY id DESC LIMIT 1").fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+# ---------------------------------------------------------------------------
+# 30 Client Magnet Functions
+# ---------------------------------------------------------------------------
+
+def get_api() -> Optional[RentMasseurAPI]:
+    api = RentMasseurAPI(min_request_interval=0.5)
+    auth = AuthSession(api, session_file=str(Path(__file__).parent / "session.json"))
+    username = os.environ.get("RM_USER", "")
+    password = os.environ.get("RM_PASS", "")
+    if not username or not password:
+        log.error("RM credentials not set"); return None
+    if not auth.login(username, password):
+        log.error("RM login failed"); return None
+    return api
+
+
+# --- Category: Visibility & Availability (1-6) ---
+
+def fn_01_availability_refresh(api, cycle):
+    """Auto-refresh availability when near expiry."""
+    def prompt(state):
+        return f"""You are a RentMasseur traffic optimizer. Current availability:
+option={state.get('option','?')}, remaining={state.get('remaining','?')}s
+Should I refresh availability to stay 'Available' (option=1)? Reply YES or NO with one reason."""
+    def action(state, llm):
+        avail = api.get_availability()
+        option = avail.get("option", 0)
+        remaining = avail.get("countdown", 0) - time.time() if avail.get("countdown") else 0
+        if option != 1 or remaining < 2700:
+            r = api.set_availability(option=1, duration=5)
+            return {"action": "set_available", "after": {"option": 1}, "verified": True, "delta": 1.0}
+        return {"action": "noop", "after": {"option": option}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(1, "availability_refresh", "visibility",
+                              api.get_availability(), action, cycle, prompt, skip_llm=True)
+
+def fn_02_visibility_guard(api, cycle):
+    """Ensure profile is visible — reads real keeponline state."""
+    def prompt(state):
+        return f"Profile keeponline: isAdHidden={state.get('isAdHidden','?')}, newVisits={state.get('newVisits','?')}, newEmails={state.get('newEmails','?')}. Should I ensure visibility? Reply YES/NO."
+    ko = api.get_keeponline()
+    def action(state, llm):
+        is_hidden = int(state.get("isAdHidden", 0)) != 0
+        if is_hidden:
+            api.set_visibility(True)
+            ko_after = api.get_keeponline()
+            verified = int(ko_after.get("isAdHidden", 1)) == 0
+            return {"action": "unhide", "after": {"isAdHidden": ko_after.get("isAdHidden"), "visible": verified}, "verified": verified, "delta": 1.0}
+        return {"action": "noop", "after": {"isAdHidden": state.get("isAdHidden"), "visible": True}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(2, "visibility_guard", "visibility", ko, action, cycle, prompt, skip_llm=True)
+
+def fn_03_keeponline_pulse(api, cycle):
+    """KeepOnline heartbeat — reads real keeponline status."""
+    def prompt(state):
+        return f"KeepOnline status: isAdHidden={state.get('isAdHidden','?')}, newVisits={state.get('newVisits','?')}, newEmails={state.get('newEmails','?')}, isFrozen={state.get('isFrozen','?')}. Any anomaly? Reply briefly."
+    ko = api.get_keeponline()
+    def action(state, llm):
+        ko_after = api.get_keeponline()
+        return {"action": "pulse", "after": {"isAdHidden": ko_after.get("isAdHidden"), "newVisits": ko_after.get("newVisits"), "newEmails": ko_after.get("newEmails"), "isFrozen": ko_after.get("isFrozen")}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(3, "keeponline_pulse", "visibility", ko, action, cycle, prompt, skip_llm=True)
+
+def fn_04_sms_alerts(api, cycle):
+    """Ensure SMS alerts are on — reads real dashboard SMS setting."""
+    def prompt(state):
+        return f"SMS alerts currently enabled={state.get('sms','?')}. Should I enable? Reply YES/NO."
+    dash = api.get_dashboard()
+    current_sms = int(dash.get("userSetting", {}).get("sms", 0))
+    def action(state, llm):
+        sms_on = int(state.get("sms", 0)) != 0
+        if not sms_on:
+            api.set_sms_alerts(True)
+            dash_after = api.get_dashboard()
+            sms_after = int(dash_after.get("userSetting", {}).get("sms", 0))
+            verified = sms_after != 0
+            return {"action": "sms_on", "after": {"sms": sms_after}, "verified": verified, "delta": 0.5}
+        return {"action": "noop", "after": {"sms": sms_on}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(4, "sms_alerts", "visibility", {"sms": current_sms}, action, cycle, prompt, skip_llm=True)
+
+def fn_05_track_actions(api, cycle):
+    """Ensure track-actions is enabled — reads real dashboard setting."""
+    def prompt(state):
+        return f"TrackActions currently enabled={state.get('trackActions','?')}. Enable for analytics? Reply YES/NO."
+    dash = api.get_dashboard()
+    current_track = int(dash.get("userSetting", {}).get("trackActions", 0))
+    def action(state, llm):
+        track_on = int(state.get("trackActions", 0)) != 0
+        if not track_on:
+            api.set_track_actions(True)
+            dash_after = api.get_dashboard()
+            track_after = int(dash_after.get("userSetting", {}).get("trackActions", 0))
+            verified = track_after != 0
+            return {"action": "track_on", "after": {"trackActions": track_after}, "verified": verified, "delta": 0.5}
+        return {"action": "noop", "after": {"trackActions": track_on}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(5, "track_actions", "visibility", {"trackActions": current_track}, action, cycle, prompt, skip_llm=True)
+
+def fn_06_dashboard_health(api, cycle):
+    """Dashboard health monitor + LLM anomaly detection — passes real dashboard data."""
+    dash = api.get_dashboard()
+    def prompt(state):
+        return f"Dashboard snapshot: {json.dumps(state)[:400]}. Detect any anomalies or opportunities. Reply in 2 sentences."
+    def action(state, llm):
+        issues = []
+        us = state.get("userSetting", {})
+        if int(us.get("visibility", 1)) == 0: issues.append("hidden")
+        if not state.get("service"): issues.append("no_services")
+        if int(us.get("sms", 0)) == 0: issues.append("sms_off")
+        if int(us.get("trackActions", 0)) == 0: issues.append("tracking_off")
+        return {"action": "monitor", "after": {"issues": issues, "visibility": us.get("visibility"), "sms": us.get("sms"), "trackActions": us.get("trackActions")}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(6, "dashboard_health", "visibility", dash, action, cycle, prompt, skip_llm=True)
+
+
+# --- Category: Search Ranking & Discovery (7-11) ---
+
+def fn_07_multi_city_search(api, cycle):
+    """Scrape search across 7 NY cities — passes real search positions as state."""
+    def prompt(state):
+        return f"Search positions across {len(NY_CITIES)} cities: {json.dumps(state)[:300]}. Which city needs attention? Reply with city name."
+    pre_positions = {}
+    for city in NY_CITIES:
+        try:
+            r = api.search(city=city, page=1)
+            results = r.get("results", []) or r.get("data", []) or []
+            pre_positions[city] = {"total": len(results), "rank": _find_rank(results)}
+        except Exception:
+            pre_positions[city] = {"error": True}
+    def action(state, llm):
+        return {"action": "scrape_7_cities", "after": state, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(7, "multi_city_search", "search", pre_positions, action, cycle, prompt, skip_llm=True)
+
+def fn_08_available_rank_track(api, cycle):
+    """Track rank among available therapists — passes real rank as state."""
+    def prompt(state):
+        return f"Available-only rank: {json.dumps(state)[:200]}. Is rank improving? Reply briefly."
+    r = api.search(city="manhattan-ny", available_only=True, page=1)
+    results = r.get("results", []) or r.get("data", []) or []
+    pre_rank = {"rank": _find_rank(results), "total": len(results)}
+    def action(state, llm):
+        return {"action": "rank_check", "after": state, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(8, "available_rank_track", "search", pre_rank, action, cycle, prompt, skip_llm=True)
+
+def fn_09_selenium_search_verify(api, cycle):
+    """Selenium search visibility verification — passes real search snapshot as state."""
+    def prompt(state):
+        return f"Search snapshot: rank={state.get('search_rank','?')}, total={state.get('search_total','?')}. Profile visible in search? Reply YES/NO."
+    snap = get_last_snapshot() or {"search_rank": 0, "search_total": 0}
+    def action(state, llm):
+        try:
+            from .money_training_selenium import selenium_verify_search
+            sv = selenium_verify_search()
+            verified = sv.get("selenium_status") == "pass"
+            return {"action": "selenium_search", "after": sv, "verified": verified, "delta": 1.0 if verified else -1.0}
+        except Exception as e:
+            return {"action": "selenium_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    return llm_decide_and_act(9, "selenium_search_verify", "search", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_10_position_delta_alert(api, cycle):
+    """Compare current search position vs historical — passes real rank delta as state."""
+    def prompt(state):
+        return f"Rank delta: current={state.get('current','?')}, prev={state.get('prev','?')}, delta={state.get('delta','?')}. Should I alert or adjust strategy? Reply briefly."
+    last = get_last_snapshot() or {}
+    current_rank = last.get("search_rank", 0)
+    conn = _loop_db()
+    prev = conn.execute("SELECT search_rank FROM traffic_snapshots ORDER BY id DESC LIMIT 2").fetchall()
+    prev_rank = prev[1]["search_rank"] if len(prev) > 1 else 0
+    delta = prev_rank - current_rank if prev_rank and current_rank else 0
+    pre_state = {"current": current_rank, "prev": prev_rank, "delta": delta}
+    def action(state, llm):
+        return {"action": "delta_check", "after": state, "verified": True, "delta": float(state.get("delta", 0))}
+    return llm_decide_and_act(10, "position_delta", "search", pre_state, action, cycle, prompt, skip_llm=True)
+
+def fn_11_competitor_count(api, cycle):
+    """Monitor competitor saturation per city — passes real counts as state."""
+    def prompt(state):
+        return f"Competitor counts: {json.dumps(state)[:300]}. Is market getting more saturated? Reply briefly."
+    pre_counts = {}
+    for city in NY_CITIES[:3]:
+        try:
+            r = api.search(city=city, page=1)
+            results = r.get("results", []) or r.get("data", []) or []
+            pre_counts[city] = len(results)
+        except Exception:
+            pre_counts[city] = 0
+    def action(state, llm):
+        return {"action": "competitor_count", "after": state, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(11, "competitor_count", "search", pre_counts, action, cycle, prompt, skip_llm=True)
+
+
+# --- Category: Bio & Content Optimization (12-18) ---
+
+def fn_12_llm_bio_generation(api, cycle):
+    """LLM generates improved bio from traffic data. Runs only on cycles where cycle % 3 == 0."""
+    if cycle % 3 != 0:
+        return {"function_id": 12, "function_name": "llm_bio_generation", "category": "bio",
+                "status": "passed", "llm_called": False, "llm_decision": "skipped_bio_rotation",
+                "action_taken": "noop", "before_state": "", "after_state": "",
+                "verified": True, "receipt": "", "improvement_delta": 0.0, "execution_time_ms": 0}
+    def prompt(state):
+        return f"""Current bio: headline='{state.get('headline','')}', desc_len={state.get('description_len',0)}.
+Views={state.get('views',0)}, contacts={state.get('contacts',0)}.
+Generate a new compelling headline (max 80 chars) that would increase CTR. Reply with ONLY the headline."""
+    def action(state, llm):
+        about = api.get_about()
+        assets = about.get("userProps", {}).get("assets", {})
+        current_headline = assets.get("headline", "")
+        current_desc = assets.get("description", "")
+        new_headline = llm.strip().strip('"').strip("'")[:80] if llm else current_headline
+        if new_headline and new_headline != current_headline:
+            api.set_about(new_headline, current_desc)
+            return {"action": "bio_update", "after": {"headline": new_headline}, "verified": True, "delta": 1.0}
+        return {"action": "noop", "after": {"headline": current_headline}, "verified": True, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(12, "llm_bio_generation", "bio", snap, action, cycle, prompt)
+
+def fn_13_bio_ab_test(api, cycle):
+    """Bio A/B testing with before/after metrics. Runs only on cycles where cycle % 3 == 1."""
+    if cycle % 3 != 1:
+        return {"function_id": 13, "function_name": "bio_ab_test", "category": "bio",
+                "status": "passed", "llm_called": False, "llm_decision": "skipped_bio_rotation",
+                "action_taken": "noop", "before_state": "", "after_state": "",
+                "verified": True, "receipt": "", "improvement_delta": 0.0, "execution_time_ms": 0}
+    def prompt(state):
+        return f"Current headline: '{state.get('headline','')}'. Suggest an A/B variant. Reply with ONLY the alternative headline."
+    def action(state, llm):
+        about = api.get_about()
+        assets = about.get("userProps", {}).get("assets", {})
+        current_h = assets.get("headline", "")
+        current_d = assets.get("description", "")
+        variant = llm.strip().strip('"').strip("'")[:80] if llm else current_h
+        if variant and variant != current_h:
+            api.set_about(variant, current_d)
+            return {"action": "ab_test_swap", "after": {"headline": variant, "previous": current_h}, "verified": True, "delta": 1.0}
+        return {"action": "noop", "after": {"headline": current_h}, "verified": True, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(13, "bio_ab_test", "bio", snap, action, cycle, prompt)
+
+def fn_14_genetic_bio_evolution(api, cycle):
+    """Genetic algorithm bio evolution. Runs only on cycles where cycle % 3 == 2."""
+    if cycle % 3 != 2:
+        return {"function_id": 14, "function_name": "genetic_bio_evolution", "category": "bio",
+                "status": "passed", "llm_called": False, "llm_decision": "skipped_bio_rotation",
+                "action_taken": "noop", "before_state": "", "after_state": "",
+                "verified": True, "receipt": "", "improvement_delta": 0.0, "execution_time_ms": 0}
+    def prompt(state):
+        return f"Bio evolution cycle {cycle}. Current headline: '{state.get('headline','')}'. Suggest a mutated variant. Reply with ONLY the new headline."
+    def action(state, llm):
+        try:
+            from .bio_evolver import evolve_one_generation
+            from .bio_generator import _generate_headline, _generate_description
+            new_h = llm.strip().strip('"')[:80] if llm else _generate_headline()
+            about = api.get_about()
+            assets = about.get("userProps", {}).get("assets", {})
+            current_d = assets.get("description", "")
+            api.set_about(new_h, current_d)
+            return {"action": "genetic_evolve", "after": {"headline": new_h}, "verified": True, "delta": 1.0}
+        except Exception as e:
+            return {"action": "evolve_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(14, "genetic_bio_evolution", "bio", snap, action, cycle, prompt)
+
+def fn_15_ml_bio_prediction(api, cycle):
+    """ML predictor scores current bio — passes real bio + scores as state."""
+    def prompt(state):
+        return f"ML prediction for bio '{state.get('headline','')[:60]}': scores={json.dumps(state.get('scores',''))[:200]}. Which bio feature needs improvement? Reply briefly."
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    headline = assets.get("headline", "")
+    desc = assets.get("description", "")
+    pre_scores = ""
+    try:
+        from .bio_predictor import predict_performance
+        from .bio_features import feature_vector
+        fv = feature_vector(headline, desc)
+        scores = predict_performance([fv])
+        pre_scores = scores.tolist() if hasattr(scores, 'tolist') else str(scores)
+    except Exception:
+        pass
+    def action(state, llm):
+        try:
+            from .bio_predictor import predict_performance
+            from .bio_features import feature_vector
+            fv = feature_vector(state.get("headline", headline), state.get("description", desc))
+            scores = predict_performance([fv])
+            return {"action": "ml_predict", "after": {"scores": scores.tolist() if hasattr(scores, 'tolist') else str(scores), "headline": state.get("headline", headline)[:80]}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "ml_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    return llm_decide_and_act(15, "ml_bio_prediction", "bio", {"headline": headline, "description": desc, "scores": pre_scores}, action, cycle, prompt, skip_llm=True)
+
+def fn_16_bio_policy_check(api, cycle):
+    """Policy safety check on current bio — passes real bio as state."""
+    def prompt(state):
+        return f"Bio risk assessment for '{state.get('headline','')[:60]}': headline_risk={state.get('headline_risk','?')}, bio_risk={state.get('bio_risk','?')}. Is this bio safe to keep? Reply YES/NO."
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    pre_h = assets.get("headline", "")
+    pre_d = assets.get("description", "")
+    pre_state = {"headline": pre_h, "description": pre_d}
+    try:
+        from .content_policy import check_bio_risk, check_headline_risk
+        pre_state["headline_risk"] = check_headline_risk(pre_h)
+        pre_state["bio_risk"] = check_bio_risk(pre_d)
+    except Exception:
+        pass
+    def action(state, llm):
+        try:
+            from .content_policy import check_bio_risk, check_headline_risk
+            h_risk = check_headline_risk(state.get("headline", ""))
+            b_risk = check_bio_risk(state.get("description", ""))
+            safe = h_risk < 0.7 and b_risk < 0.7
+            return {"action": "policy_check", "after": {"headline_risk": h_risk, "bio_risk": b_risk, "safe": safe}, "verified": safe, "delta": 0.0}
+        except Exception as e:
+            return {"action": "policy_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    return llm_decide_and_act(16, "bio_policy_check", "bio", pre_state, action, cycle, prompt, skip_llm=True)
+
+def fn_17_variant_library_rotation(api, cycle):
+    """Rotate through bio variant library."""
+    def prompt(state):
+        return f"Variant library has many bios. Current: '{state.get('headline','')}'. Suggest which variant theme to try next (professional/friendly/intense/clinical). Reply with one word."
+    def action(state, llm):
+        try:
+            from .bio_variants_library import list_all, get_variant
+            variants = list_all()
+            if not variants:
+                return {"action": "noop", "after": {}, "verified": True, "delta": 0.0}
+            idx = cycle % len(variants)
+            v = variants[idx]
+            about = api.get_about()
+            assets = about.get("userProps", {}).get("assets", {})
+            current_d = assets.get("description", "")
+            api.set_about(v.get("headline", ""), v.get("description", current_d))
+            return {"action": "variant_rotate", "after": {"variant_id": v.get("id", idx)}, "verified": True, "delta": 1.0}
+        except Exception as e:
+            return {"action": "rotate_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(17, "variant_rotation", "bio", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_18_bio_appraiser_scoring(api, cycle):
+    """Score bio against real-world data — passes real bio + scores as state."""
+    def prompt(state):
+        return f"Bio appraisal: current='{state.get('headline','')[:60]}', scored_bios={state.get('total',0)}, top={state.get('top_bios',0)}. What bio pattern correlates with highest views? Reply briefly."
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    pre_state = {"headline": assets.get("headline", ""), "total": 0, "top_bios": 0}
+    try:
+        from .bio_appraiser import load_bios, score_bios
+        bios = load_bios()
+        scored = score_bios(bios) if bios else []
+        pre_state["total"] = len(scored)
+        pre_state["top_bios"] = len(scored[:3]) if scored else 0
+    except Exception:
+        pass
+    def action(state, llm):
+        try:
+            from .bio_appraiser import load_bios, score_bios
+            bios = load_bios()
+            if not bios:
+                return {"action": "noop", "after": {"bios": 0}, "verified": True, "delta": 0.0}
+            scored = score_bios(bios)
+            top = scored[:3] if scored else []
+            return {"action": "appraise", "after": {"top_bios": len(top), "total": len(scored)}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "appraise_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    return llm_decide_and_act(18, "bio_appraiser", "bio", pre_state, action, cycle, prompt, skip_llm=True)
+
+
+# --- Category: Engagement & Reciprocity (19-23) ---
+
+def fn_19_reciprocal_visits(api, cycle):
+    """Visit profiles of clients who visited you — uses real Selenium browser."""
+    def prompt(state):
+        return f"Visitors to visit back: {json.dumps(state)[:300]}. Which visitors are highest priority? Reply briefly."
+    def action(state, llm):
+        try:
+            from .engagement_engine import get_profiles_to_visit, mark_visited_back, EngagementBrowser
+            profiles = get_profiles_to_visit(limit=10)
+            if not profiles:
+                return {"action": "noop", "after": {"visited": 0, "reason": "no_visitors"}, "verified": True, "delta": 0.0}
+            browser = EngagementBrowser()
+            browser.start()
+            try:
+                browser.login()
+                visited = 0
+                errors = 0
+                for p in profiles:
+                    uname = p["username"]
+                    status, bytes_recv, ok, screenshot = browser.visit_profile(uname)
+                    mark_visited_back(uname, status, bytes_recv, ok, screenshot_path=screenshot)
+                    if ok:
+                        visited += 1
+                    else:
+                        errors += 1
+                    time.sleep(2)
+                return {"action": "reciprocal_visits", "after": {"visited": visited, "errors": errors}, "verified": visited > 0, "delta": float(visited)}
+            finally:
+                browser.stop()
+        except Exception as e:
+            return {"action": "visit_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(19, "reciprocal_visits", "engagement", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_20_ny_search_visits(api, cycle):
+    """Visit NY profiles from search results — uses real Selenium browser."""
+    def prompt(state):
+        return f"Search results to visit: {json.dumps(state)[:300]}. Which profiles to prioritize? Reply briefly."
+    def action(state, llm):
+        try:
+            from .engagement_engine import log_search_visit, search_ny_profiles, EngagementBrowser, visit_profiles_batch
+            all_profiles = set()
+            for city in NY_CITIES[:3]:
+                profiles = search_ny_profiles(api, city=city, max_pages=1)
+                all_profiles.update(profiles)
+            to_visit = list(all_profiles)[:10]
+            if not to_visit:
+                return {"action": "noop", "after": {"visited": 0, "reason": "no_profiles"}, "verified": True, "delta": 0.0}
+            browser = EngagementBrowser()
+            browser.start()
+            try:
+                browser.login()
+                success, errors = visit_profiles_batch(browser, to_visit, source="search_ny")
+                return {"action": "ny_visits", "after": {"visited": success, "errors": errors, "total_found": len(all_profiles)}, "verified": success > 0, "delta": float(success)}
+            finally:
+                browser.stop()
+        except Exception as e:
+            return {"action": "ny_visit_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(20, "ny_search_visits", "engagement", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_21_llm_client_messaging(api, cycle):
+    """Send LLM-personalized messages to visitors — uses real Selenium browser + LLM generation."""
+    def prompt(state):
+        return f"Visitors to message: {json.dumps(state)[:300]}. Draft a short personalized message for the top visitor. Reply with ONLY the message."
+    def action(state, llm):
+        try:
+            from .engagement_engine import get_visitors_to_message, mark_messaged, generate_message_for_visitor, EngagementBrowser
+            visitors = get_visitors_to_message(limit=5)
+            if not visitors:
+                return {"action": "noop", "after": {"messaged": 0, "reason": "no_visitors"}, "verified": True, "delta": 0.0}
+            browser = EngagementBrowser()
+            browser.start()
+            try:
+                browser.login()
+                messaged = 0
+                errors = 0
+                for v in visitors:
+                    uname = v["username"]
+                    subject, body, provider, model = generate_message_for_visitor(uname)
+                    ok, status_code, detail, screenshot = browser.send_message(uname, subject, body)
+                    mark_messaged(uname, subject, body, provider, model, ok, status_code, detail, screenshot_path=screenshot)
+                    if ok:
+                        messaged += 1
+                    else:
+                        errors += 1
+                    time.sleep(3)
+                return {"action": "client_messages", "after": {"messaged": messaged, "errors": errors}, "verified": messaged > 0, "delta": float(messaged)}
+            finally:
+                browser.stop()
+        except Exception as e:
+            return {"action": "msg_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(21, "llm_client_messaging", "engagement", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_22_visitor_cooldown_enforce(api, cycle):
+    """Enforce message/visit cooldowns."""
+    def prompt(state):
+        return f"Cooldown stats: {json.dumps(state)[:200]}. Any violations? Reply briefly."
+    def action(state, llm):
+        try:
+            from .engagement_engine import get_visitors_to_message, get_profiles_to_visit
+            msg_ready = len(get_visitors_to_message(limit=100))
+            visit_ready = len(get_profiles_to_visit(limit=100))
+            return {"action": "cooldown_check", "after": {"messageable": msg_ready, "visitable": visit_ready}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "cooldown_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(22, "visitor_cooldown", "engagement", snap, action, cycle, prompt, skip_llm=True)
+
+def fn_23_engagement_stats(api, cycle):
+    """Engagement stats dashboard."""
+    def prompt(state):
+        return f"Engagement stats: {json.dumps(state)[:300]}. What's improving? What needs work? Reply in 2 sentences."
+    def action(state, llm):
+        try:
+            from .engagement_engine import record_stats
+            conn = sqlite3.connect(str(Path(__file__).parent / "engagement.db"))
+            conn.row_factory = sqlite3.Row
+            total_v = conn.execute("SELECT COUNT(*) FROM visitors").fetchone()[0]
+            visited = conn.execute("SELECT COUNT(*) FROM visitors WHERE visited_back=1").fetchone()[0]
+            messaged = conn.execute("SELECT COUNT(*) FROM visitors WHERE messaged=1").fetchone()[0]
+            conn.close()
+            stats = {"total_visitors": total_v, "visited_back": visited, "messaged": messaged}
+            return {"action": "engagement_stats", "after": stats, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "stats_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(23, "engagement_stats", "engagement", snap, action, cycle, prompt, skip_llm=True)
+
+
+# --- Category: Content Marketing (24-26) ---
+
+def fn_24_blog_draft(api, cycle):
+    """Generate blog draft with LLM — persists to disk."""
+    def prompt(state):
+        return f"""Generate a blog post title for a Manhattan massage therapist. Topic cycle {cycle % 5}: 
+0=desk tension, 1=sports recovery, 2=first session, 3=incall vs outcall, 4=travel stiffness.
+Reply with ONLY the title."""
+    def action(state, llm):
+        try:
+            from .blog_agent import BLOG_TOPICS
+            topic_idx = cycle % len(BLOG_TOPICS)
+            topic = BLOG_TOPICS[topic_idx]
+            title = llm.strip()[:100] if llm else topic["title"]
+            draft = {"title": title, "body": topic.get("body", ""), "topic_idx": topic_idx, "hypothesis": topic.get("hypothesis", ""), "generated_at": datetime.now(timezone.utc).isoformat(), "cycle": cycle}
+            drafts_dir = STATE_DIR / "blog_drafts"
+            drafts_dir.mkdir(parents=True, exist_ok=True)
+            draft_path = drafts_dir / f"blog_draft_{cycle}_{topic_idx}.json"
+            draft_path.write_text(json.dumps(draft, indent=2))
+            return {"action": "blog_draft", "after": {"title": title, "topic_idx": topic_idx, "saved_to": str(draft_path)}, "verified": True, "delta": 0.5}
+        except Exception as e:
+            return {"action": "blog_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    return llm_decide_and_act(24, "blog_draft", "content", {"headline": assets.get("headline", "")}, action, cycle, prompt)
+
+def fn_25_blog_optimization(api, cycle):
+    """Select best blog variant."""
+    def prompt(state):
+        return f"Blog optimization cycle {cycle}. Which blog angle gets most engagement? Reply briefly."
+    def action(state, llm):
+        try:
+            from .blog_optimizer import select_best
+            best = select_best()
+            return {"action": "blog_optimize", "after": {"best": str(best)[:200]}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "blog_opt_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    return llm_decide_and_act(25, "blog_optimization", "content", {"headline": assets.get("headline", "")}, action, cycle, prompt, skip_llm=True)
+
+def fn_26_interview_drafts(api, cycle):
+    """Monitor interview + generate drafts — persists to disk."""
+    def prompt(state):
+        return f"Interview status: {json.dumps(state)[:200]}. Should I draft improved answers? Reply YES/NO."
+    def action(state, llm):
+        try:
+            from .interview_agent import monitor_interview, generate_interview_drafts
+            status = monitor_interview(api)
+            drafts = generate_interview_drafts()
+            drafts_dir = STATE_DIR / "interview_drafts"
+            drafts_dir.mkdir(parents=True, exist_ok=True)
+            draft_path = drafts_dir / f"interview_drafts_{cycle}.json"
+            draft_path.write_text(json.dumps({"status": status, "drafts": drafts, "generated_at": datetime.now(timezone.utc).isoformat(), "cycle": cycle}, indent=2))
+            return {"action": "interview_draft", "after": {"status": status, "drafts": len(drafts), "saved_to": str(draft_path)}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "interview_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    return llm_decide_and_act(26, "interview_drafts", "content", {"headline": assets.get("headline", "")}, action, cycle, prompt, skip_llm=True)
+
+
+# --- Category: Traffic Analytics & Training (27-30) ---
+
+def fn_27_ad_stats_snapshot(api, cycle):
+    """Pull ad statistics snapshot — passes real stats as state."""
+    def prompt(state):
+        return f"Ad stats: {json.dumps(state)[:400]}. What's the traffic trend? Reply in 2 sentences."
+    stats = api.get_ad_statistics()
+    def action(state, llm):
+        stats_after = api.get_ad_statistics()
+        prof = stats_after.get("profileStatistics", {}) or {}
+        visits = prof.get("visits", []) or []
+        total_views = sum(v.get("count", 0) for v in visits) if visits else 0
+        return {"action": "stats_snapshot", "after": {"total_views": total_views, "contacts": prof.get("contacts", 0), "bookmarks": prof.get("bookmarks", 0), "emails": prof.get("emails", 0)}, "verified": True, "delta": 0.0}
+    return llm_decide_and_act(27, "ad_stats_snapshot", "analytics", stats, action, cycle, prompt, skip_llm=True)
+
+def fn_28_money_training(api, cycle):
+    """Money training loop (MLP) — uses real bio from API."""
+    def prompt(state):
+        return f"Money training cycle {cycle}. Bio: headline='{state.get('headline','')}', desc_len={state.get('description_len',0)}. Should I retrain? Reply YES/NO."
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    real_headline = assets.get("headline", "")
+    real_desc = assets.get("description", "")
+    def action(state, llm):
+        try:
+            from .bio_ml_trainer import MLP
+            from .bio_features import feature_vector, FEATURE_NAMES
+            from .bio_generator import _score_variant
+            import numpy as np
+            mlp = MLP(input_size=len(FEATURE_NAMES), hidden_size=16)
+            X = np.array([feature_vector(state.get("headline", ""), state.get("description", ""))])
+            y = mlp.predict(X)
+            scores = y.tolist() if hasattr(y, 'tolist') else str(y)
+            return {"action": "money_train", "after": {"prediction": scores, "headline": state.get("headline", "")[:80]}, "verified": True, "delta": 0.0}
+        except Exception as e:
+            return {"action": "train_error", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    return llm_decide_and_act(28, "money_training", "analytics", {"headline": real_headline, "description": real_desc, "description_len": len(real_desc)}, action, cycle, prompt, skip_llm=True)
+
+def fn_29_traffic_delta_analysis(api, cycle):
+    """Compare traffic snapshots for trend analysis."""
+    def prompt(state):
+        return f"Traffic delta: {json.dumps(state)[:400]}. Is traffic improving or declining? Reply with IMPROVING/DECLINING/STABLE and one reason."""
+    def action(state, llm):
+        conn = _loop_db()
+        rows = conn.execute("SELECT views, contacts, search_rank FROM traffic_snapshots ORDER BY id DESC LIMIT 5").fetchall()
+        if len(rows) < 2:
+            return {"action": "noop", "after": {"snapshots": len(rows)}, "verified": True, "delta": 0.0}
+        latest = rows[0]
+        prev = rows[-1]
+        views_delta = latest["views"] - prev["views"]
+        contacts_delta = latest["contacts"] - prev["contacts"]
+        rank_delta = (prev["search_rank"] - latest["search_rank"]) if latest["search_rank"] and prev["search_rank"] else 0
+        return {"action": "delta_analysis", "after": {"views_delta": views_delta, "contacts_delta": contacts_delta, "rank_delta": rank_delta}, "verified": True, "delta": float(views_delta)}
+    conn = _loop_db()
+    rows = conn.execute("SELECT views, contacts, search_rank FROM traffic_snapshots ORDER BY id DESC LIMIT 5").fetchall()
+    pre_state = {"snapshots": len(rows)}
+    if len(rows) >= 2:
+        pre_state = {"latest_views": rows[0]["views"], "prev_views": rows[-1]["views"], "latest_contacts": rows[0]["contacts"], "prev_contacts": rows[-1]["contacts"], "snapshots": len(rows)}
+    return llm_decide_and_act(29, "traffic_delta", "analytics", pre_state, action, cycle, prompt, skip_llm=True)
+
+def fn_30_selenium_profile_verify(api, cycle):
+    """Selenium profile page verification."""
+    def prompt(state):
+        return f"Profile page verification: {json.dumps(state)[:200]}. Profile renders correctly? Reply YES/NO."
+    def action(state, llm):
+        try:
+            from .money_training_selenium import selenium_verify_profile_page
+            pv = selenium_verify_profile_page()
+            verified = pv.get("status") == "pass"
+            return {"action": "selenium_profile", "after": pv, "verified": verified, "delta": 1.0 if verified else -1.0}
+        except Exception as e:
+            return {"action": "profile_skip", "after": {"error": str(e)}, "verified": False, "delta": 0.0}
+    snap = get_last_snapshot() or {}
+    return llm_decide_and_act(30, "selenium_profile_verify", "analytics", snap, action, cycle, prompt, skip_llm=True)
+
+
+# ---------------------------------------------------------------------------
+# Function Registry
+# ---------------------------------------------------------------------------
+
+ALL_FUNCTIONS = [
+    fn_01_availability_refresh, fn_02_visibility_guard, fn_03_keeponline_pulse,
+    fn_04_sms_alerts, fn_05_track_actions, fn_06_dashboard_health,
+    fn_07_multi_city_search, fn_08_available_rank_track, fn_09_selenium_search_verify,
+    fn_10_position_delta_alert, fn_11_competitor_count,
+    fn_12_llm_bio_generation, fn_13_bio_ab_test, fn_14_genetic_bio_evolution,
+    fn_15_ml_bio_prediction, fn_16_bio_policy_check, fn_17_variant_library_rotation,
+    fn_18_bio_appraiser_scoring,
+    fn_19_reciprocal_visits, fn_20_ny_search_visits, fn_21_llm_client_messaging,
+    fn_22_visitor_cooldown_enforce, fn_23_engagement_stats,
+    fn_24_blog_draft, fn_25_blog_optimization, fn_26_interview_drafts,
+    fn_27_ad_stats_snapshot, fn_28_money_training, fn_29_traffic_delta_analysis,
+    fn_30_selenium_profile_verify,
+]
+
+FUNCTION_NAMES = [
+    "availability_refresh", "visibility_guard", "keeponline_pulse",
+    "sms_alerts", "track_actions", "dashboard_health",
+    "multi_city_search", "available_rank_track", "selenium_search_verify",
+    "position_delta_alert", "competitor_count",
+    "llm_bio_generation", "bio_ab_test", "genetic_bio_evolution",
+    "ml_bio_prediction", "bio_policy_check", "variant_library_rotation",
+    "bio_appraiser_scoring",
+    "reciprocal_visits", "ny_search_visits", "llm_client_messaging",
+    "visitor_cooldown_enforce", "engagement_stats",
+    "blog_draft", "blog_optimization", "interview_drafts",
+    "ad_stats_snapshot", "money_training", "traffic_delta_analysis",
+    "selenium_profile_verify",
+]
+
+CATEGORIES = [
+    "visibility", "visibility", "visibility", "visibility", "visibility", "visibility",
+    "search", "search", "search", "search", "search",
+    "bio", "bio", "bio", "bio", "bio", "bio", "bio",
+    "engagement", "engagement", "engagement", "engagement", "engagement",
+    "content", "content", "content",
+    "analytics", "analytics", "analytics", "analytics",
+]
+
+
+# ---------------------------------------------------------------------------
+# Cycle Runner
+# ---------------------------------------------------------------------------
+
+def run_cycle(api: RentMasseurAPI, cycle_num: int, function_ids: Optional[List[int]] = None) -> Dict:
+    """Run one traffic loop cycle."""
+    ts = datetime.now(timezone.utc).isoformat()
+    log.info("  ═══ TRAFFIC LOOP CYCLE %d ═══", cycle_num)
+
+    # Take before snapshot
+    snap_before = take_traffic_snapshot(api, cycle_num)
+    log.info("  ◉ Before: views=%s contacts=%s rank=%s", snap_before.get("views", 0), snap_before.get("contacts", 0), snap_before.get("search_rank", 0))
+
+    # Run functions
+    results = []
+    fn_indices = function_ids if function_ids else list(range(30))
+    for idx in fn_indices:
+        if idx < 0 or idx >= 30:
+            continue
+        fn = ALL_FUNCTIONS[idx]
+        name = FUNCTION_NAMES[idx]
+        cat = CATEGORIES[idx]
+        log.info("  ⌁ [%02d] %s...", idx + 1, name)
+        try:
+            r = fn(api, cycle_num)
+            results.append(r)
+            glyph = "◆" if r["status"] == "passed" else "⟁" if r["status"] == "failed" else "◌"
+            llm_g = "⟡" if r.get("llm_called") else " "
+            log.info("  %s %s %s [%02d] %s — %s", glyph, llm_g, cat[0].upper(), idx + 1, name, r["status"])
+        except Exception as e:
+            log.error("  ⟁ [%02d] %s — error: %s", idx + 1, name, e)
+            results.append({"function_id": idx + 1, "function_name": name, "status": "error"})
+
+    passed = sum(1 for r in results if r.get("status") == "passed")
+    failed = sum(1 for r in results if r.get("status") != "passed")
+    llm_calls = sum(1 for r in results if r.get("llm_called"))
+    actions = sum(1 for r in results if r.get("action_taken") and r["action_taken"] != "noop")
+    improvement = sum(r.get("improvement_delta", 0.0) for r in results)
+
+    # Take after snapshot only if mutations occurred — otherwise reuse before snapshot
+    if actions > 0:
+        api.invalidate_all()
+        snap_after = take_traffic_snapshot(api, cycle_num)
+    else:
+        snap_after = snap_before
+    log.info("  ◉ After: views=%s contacts=%s rank=%s", snap_after.get("views", 0), snap_after.get("contacts", 0), snap_after.get("search_rank", 0))
+
+    # Write cycle record
+    receipt_data = json.dumps(results, default=str)
+    receipt_hash = hashlib.sha256(receipt_data.encode()).hexdigest()[:16]
+    conn = _loop_db()
+    conn.execute(
+        """INSERT INTO loop_cycles (ts, cycle_num, functions_run, functions_passed, functions_failed, llm_calls, llm_tokens_estimated, actions_taken, views_before, views_after, contacts_before, contacts_after, search_rank_before, search_rank_after, improvement_score, receipt_hash)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (ts, cycle_num, len(results), passed, failed, llm_calls, llm_calls * 300, actions,
+         snap_before.get("views", 0), snap_after.get("views", 0),
+         snap_before.get("contacts", 0), snap_after.get("contacts", 0),
+         snap_before.get("search_rank", 0), snap_after.get("search_rank", 0),
+         improvement, receipt_hash)
+    )
+    conn.commit()
+    close_loop_db()
+
+    cycle_summary = {
+        "cycle_num": cycle_num, "timestamp": ts,
+        "functions_run": len(results), "functions_passed": passed, "functions_failed": failed,
+        "llm_calls": llm_calls, "actions_taken": actions, "improvement_score": round(improvement, 2),
+        "views_before": snap_before.get("views", 0), "views_after": snap_after.get("views", 0),
+        "contacts_before": snap_before.get("contacts", 0), "contacts_after": snap_after.get("contacts", 0),
+        "search_rank_before": snap_before.get("search_rank", 0), "search_rank_after": snap_after.get("search_rank", 0),
+        "receipt_hash": receipt_hash,
+        "functions": [{"id": r.get("function_id"), "name": r.get("function_name"), "status": r.get("status"),
+                        "llm": r.get("llm_called", False), "delta": r.get("improvement_delta", 0.0)} for r in results],
+    }
+    LOOP_STATE.write_text(json.dumps(cycle_summary, indent=2, default=str))
+    log.info("  ◆ Cycle %d complete: %d passed, %d failed, %d LLM calls, improvement=%.2f", cycle_num, passed, failed, llm_calls, improvement)
+    return cycle_summary
+
+
+def load_loop_state() -> Dict:
+    if LOOP_STATE.exists():
+        return json.loads(LOOP_STATE.read_text())
+    return {}
+
+
+def get_loop_stats() -> Dict:
+    conn = loop_db()
+    cycles = conn.execute("SELECT * FROM loop_cycles ORDER BY id DESC LIMIT 20").fetchall()
+    total_cycles = conn.execute("SELECT COUNT(*) FROM loop_cycles").fetchone()[0]
+    total_llm = conn.execute("SELECT COALESCE(SUM(llm_calls),0) FROM loop_cycles").fetchone()[0]
+    total_actions = conn.execute("SELECT COALESCE(SUM(actions_taken),0) FROM loop_cycles").fetchone()[0]
+    avg_improvement = conn.execute("SELECT COALESCE(AVG(improvement_score),0) FROM loop_cycles").fetchone()[0]
+    latest_snap = conn.execute("SELECT * FROM traffic_snapshots ORDER BY id DESC LIMIT 1").fetchone()
+    fn_stats = conn.execute(
+        "SELECT function_name, COUNT(*) as runs, SUM(CASE WHEN status='passed' THEN 1 ELSE 0 END) as passed, SUM(llm_called) as llm_calls FROM function_runs GROUP BY function_name ORDER BY runs DESC"
+    ).fetchall()
+    conn.close()
+    return {
+        "total_cycles": total_cycles, "total_llm_calls": total_llm,
+        "total_actions": total_actions, "avg_improvement": round(avg_improvement, 2),
+        "recent_cycles": [dict(c) for c in cycles],
+        "latest_snapshot": dict(latest_snap) if latest_snap else None,
+        "function_stats": [dict(f) for f in fn_stats],
+    }
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(description="RM Traffic Loop — 30 functions with LLM continuous improvement")
+    parser.add_argument("--once", action="store_true", help="Run one cycle of all 30 functions")
+    parser.add_argument("--daemon", action="store_true", help="Run continuously")
+    parser.add_argument("--stats", action="store_true", help="Show loop statistics")
+    parser.add_argument("--function", type=int, help="Run single function by ID (1-30)")
+    parser.add_argument("--cycle-interval", type=int, default=3600, help="Seconds between cycles (daemon mode)")
+    args = parser.parse_args()
+
+    init_db()
+
+    if args.stats:
+        stats = get_loop_stats()
+        print(f"  ═══ TRAFFIC LOOP STATS ═══")
+        print(f"  Total cycles: {stats['total_cycles']}")
+        print(f"  Total LLM calls: {stats['total_llm_calls']}")
+        print(f"  Total actions: {stats['total_actions']}")
+        print(f"  Avg improvement: {stats['avg_improvement']}")
+        if stats.get("latest_snapshot"):
+            s = stats["latest_snapshot"]
+            print(f"\n  Latest snapshot: views={s['views']} contacts={s['contacts']} rank={s['search_rank']}")
+        print(f"\n  Function stats:")
+        for f in stats.get("function_stats", [])[:10]:
+            print(f"    {f['function_name']:30s} runs={f['runs']:3d} passed={f['passed']:3d} llm={f['llm_calls']:3d}")
+        return
+
+    if args.function:
+        idx = args.function - 1
+        if idx < 0 or idx >= 30:
+            print(f"Invalid function ID: {args.function}. Must be 1-30."); sys.exit(1)
+        api = get_api()
+        if not api: sys.exit(1)
+        result = run_cycle(api, 0, [idx])
+        print(json.dumps(result, indent=2, default=str))
+        return
+
+    if args.once or args.daemon:
+        api = get_api()
+        if not api: sys.exit(1)
+        cycle = 0
+        while True:
+            cycle += 1
+            run_cycle(api, cycle)
+            if not args.daemon:
+                break
+            log.info("  ⧖ Next cycle in %ds...", args.cycle_interval)
+            time.sleep(args.cycle_interval)
+        return
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,9 @@
+{
+  "id": "bio_003",
+  "name": "Recovery Athlete Hook",
+  "status": "approved",
+  "text": "Recovery-focused massage therapist in NYC. Helping athletes and professionals perform at their peak. 5 years experience. Swedish, deep tissue, sports massage. Available Mon-Fri 9am-7pm. $120/hour.",
+  "hypothesis": "Athletic recovery framing attracts higher-intent clients",
+  "frozen_variables": ["photos", "price", "services", "availability", "external_link"],
+  "created": "2026-06-27T00:00:00Z"
+}

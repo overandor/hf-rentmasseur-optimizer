@@ -1,0 +1,9 @@
+{
+  "id": "bio_002",
+  "name": "Stress Relief Hook",
+  "status": "approved",
+  "text": "NYC massage therapist specializing in stress relief and recovery. 5 years helping clients feel their best. Swedish, deep tissue, sports massage. Available Mon-Fri 9am-7pm. $120/hour.",
+  "hypothesis": "Stress-focused hook increases contact rate by addressing client pain point",
+  "frozen_variables": ["photos", "price", "services", "availability", "external_link"],
+  "created": "2026-06-27T00:00:00Z"
+}

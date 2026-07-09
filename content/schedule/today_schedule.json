@@ -1,0 +1,71 @@
+{
+  "generated": "2026-06-27T17:41:26.630573+00:00",
+  "programs": [
+    {
+      "id": "c4fb33f9",
+      "module": "risk",
+      "name": "risk_0300",
+      "wake_time": "2026-06-27T03:00:00+00:00",
+      "retire_time": "2026-06-27T04:30:00+00:00",
+      "priority": 1,
+      "flex": 0.3,
+      "status": "dormant",
+      "co_operates_with": []
+    },
+    {
+      "id": "7e6f1ae6",
+      "module": "receipts",
+      "name": "receipts_0715",
+      "wake_time": "2026-06-27T07:15:00+00:00",
+      "retire_time": "2026-06-27T07:30:00+00:00",
+      "priority": 4,
+      "flex": 1.900680998574259,
+      "status": "dormant",
+      "co_operates_with": []
+    },
+    {
+      "id": "67c8f1c1",
+      "module": "virality",
+      "name": "virality_0815",
+      "wake_time": "2026-06-27T08:15:00+00:00",
+      "retire_time": "2026-06-27T08:30:00+00:00",
+      "priority": 3,
+      "flex": 3.0,
+      "status": "dormant",
+      "co_operates_with": []
+    },
+    {
+      "id": "5702d603",
+      "module": "trust",
+      "name": "trust_1015",
+      "wake_time": "2026-06-27T10:15:00+00:00",
+      "retire_time": "2026-06-27T10:45:00+00:00",
+      "priority": 8,
+      "flex": 0.3,
+      "status": "dormant",
+      "co_operates_with": []
+    },
+    {
+      "id": "cc1034bb",
+      "module": "receipts",
+      "name": "receipts_1115",
+      "wake_time": "2026-06-27T11:15:00+00:00",
+      "retire_time": "2026-06-27T11:45:00+00:00",
+      "priority": 9,
+      "flex": 1.9362859811331798,
+      "status": "dormant",
+      "co_operates_with": []
+    },
+    {
+      "id": "eb11e7f9",
+      "module": "bios",
+      "name": "bios_1245",
+      "wake_time": "2026-06-27T12:45:00+00:00",
+      "retire_time": "2026-06-27T14:15:00+00:00",
+      "priority": 2,
+      "flex": 2.4828869922475287,
+      "status": "dormant",
+      "co_operates_with": []
+    }
+  ]
+}

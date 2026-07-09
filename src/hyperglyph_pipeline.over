@@ -1,0 +1,23 @@
+# OverLanguage: HyperGlyph ML Pipeline — full supervisor workflow
+# Compiles glyph traces → features → PCA → clusters → ensemble → receipt
+
+workflow: HyperGlyphSupervisor
+intent: turn verbose AI work traces into compact glyph-state vectors, then use shared ML supervisor to control many app policies without spawning many heavy runtimes
+
+step 1: capture glyph trace from production events → glyph_trace
+step 2: convert glyph trace to numeric vectors (counts, topology, entropy, operator ratio) → feature_vector
+step 3: PCA compress high-dimensional behavior → state_vector
+step 4: KMeans cluster recurring machine states → cluster_id
+step 5: SVM vote on policy outcome → svm_vote
+step 6: RandomForest vote on policy outcome → rf_vote
+step 7: GradientBoosting vote on policy outcome → gb_vote
+step 8: XGBoost vote on policy outcome → xgb_vote
+step 9: ensemble combine votes → policy_decision
+step 10: emit JSON snapshot with model votes, confidence, RAM/CPU budget → policy_snapshot
+step 11: compute SHA256 checksum → receipt_hash
+step 12: write chained receipt → signed_receipt
+
+artifact: policy_snapshot
+artifact: signed_receipt
+receipt: SHA256 chained from step 1 to step 12, merkle root over all artifacts
+value: shared supervisor controls 30 app policies with one runtime, verified dry-run/apply separation, reproducible release checksums

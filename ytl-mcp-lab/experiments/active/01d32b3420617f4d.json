@@ -1,0 +1,13 @@
+{
+  "experiment_id": "01d32b3420617f4d",
+  "hypothesis": "Shorter titles improve CTR",
+  "variant": "title_under_40_chars",
+  "target_metric": "click_through_rate",
+  "baseline": 0.05,
+  "start_date": "2026-06-27T18:29:46Z",
+  "end_date": null,
+  "measurement_window_days": 7,
+  "video_ids": [],
+  "status": "active",
+  "result": null
+}

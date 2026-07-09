@@ -1,0 +1,15 @@
+{
+  "id": "3848d14fb4d83851",
+  "stage": "architect",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T20:11:44.149494Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/CleanSweep",
+  "files": [
+    "Package.swift",
+    "Sources/CleanSweep/CleanSweepApp.swift",
+    "Sources/CleanSweep/Info.plist",
+    "README.md"
+  ],
+  "icon": "doc.text",
+  "bundle_id": "com.autopilot.cleansweep"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "a84f2e66f9ad0f2b",
+  "timestamp": "2026-07-09T04:28:30.894153+00:00",
+  "data": {
+    "cycle": 69,
+    "timestamp": "2026-07-09T04:28:30.361277+00:00",
+    "platforms": "reddit",
+    "posts_scraped": 0,
+    "leads_stored": 0,
+    "leads_classified": 0,
+    "high_intent": 0,
+    "responses_generated": 0,
+    "duplicates_skipped": 0,
+    "errors": 0,
+    "by_platform": {
+      "reddit": 0
+    },
+    "by_intent": {}
+  }
+}

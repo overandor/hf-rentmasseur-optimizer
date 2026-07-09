@@ -1,0 +1,8 @@
+{
+  "id": "c4cd3a742b537383",
+  "stage": "codesign",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T21:38:06.979644Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/DimLight/DimLight.app']' timed out after 60 seconds"
+}

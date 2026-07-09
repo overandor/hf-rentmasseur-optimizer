@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+    id="http://overagent.io/realitywall"
+    version="1.0.0"
+    viewmodes="fullscreen">
+  <access origin="*" subdomains="true"/>
+  <tizen:application id="rwIOreality.wall" package="rwIOreality" required_version="5.5"/>
+  <tizen:metadata key="http://tizen.org/metadata/preference" value="preference/reality-wall.pref"/>
+  <tizen:profile name="TV"/>
+  <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable"/>
+  <content src="index.html"/>
+  <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+  <feature name="http://tizen.org/feature/network.wifi"/>
+  <icon src="icon.png"/>
+  <name>Reality Wall</name>
+  <author href="https://overagent.io">OverAgent</author>
+  <description>Proof dashboard, receipt chain, KPI wall, and live artifact ledger for Samsung TV</description>
+</widget>

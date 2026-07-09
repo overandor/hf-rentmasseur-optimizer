@@ -1,0 +1,62 @@
+[
+  {
+    "username": "RelaxwithNick",
+    "phone": null,
+    "email": "RelaxwithNick@rentmasseur.com",
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  },
+  {
+    "username": "comerelaxtodayla",
+    "phone": null,
+    "email": "comerelaxtodayla@rentmasseur.com",
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  },
+  {
+    "username": "relaxandrestore",
+    "phone": null,
+    "email": "relaxandrestore@rentmasseur.com",
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  },
+  {
+    "username": "CArelax",
+    "phone": null,
+    "email": "CArelax@rentmasseur.com",
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  },
+  {
+    "username": "relaxinstyle",
+    "phone": null,
+    "email": "relaxinstyle@rentmasseur.com",
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  },
+  {
+    "username": "darrellsbody",
+    "phone": null,
+    "email": null,
+    "role": "provider",
+    "city": "Manhattan, NY",
+    "confidence": 0.8,
+    "success": true,
+    "error": null
+  }
+]

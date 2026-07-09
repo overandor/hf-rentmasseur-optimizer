@@ -1,0 +1,16 @@
+{
+  "id": "4a8d1c432b154302",
+  "stage": "verify",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T22:56:32.934125Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

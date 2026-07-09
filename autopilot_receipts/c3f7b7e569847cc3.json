@@ -1,0 +1,10 @@
+{
+  "id": "c3f7b7e569847cc3",
+  "stage": "build",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T22:56:30.915823Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/CleanSweep/.build/release/CleanSweep",
+  "binary_size": 91624,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/CleanSweep/build.log"
+}

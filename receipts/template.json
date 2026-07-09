@@ -1,0 +1,14 @@
+{
+  "receipt_id": "TEMPLATE-00000000-0000-0000-0000-000000000000",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "agent": "SystemAgent",
+  "action": "template",
+  "artifact_path": null,
+  "artifact_hash": null,
+  "commands_run": [],
+  "result": "success",
+  "details": {
+    "note": "This is a template receipt. Copy this structure for real receipts."
+  },
+  "previous_receipt": null
+}

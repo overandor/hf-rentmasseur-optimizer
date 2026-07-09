@@ -1,0 +1,10 @@
+{
+  "id": "c34d22f8dde96876",
+  "stage": "build",
+  "app": "NetSignal",
+  "timestamp": "2026-06-27T20:05:42.034164Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/NetSignal/.build/release/NetSignal",
+  "binary_size": 91480,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/NetSignal/build.log"
+}

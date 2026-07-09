@@ -1,0 +1,8 @@
+{
+  "id": "62b90a25f7ef9e70",
+  "stage": "codesign",
+  "app": "ScreenPulse",
+  "timestamp": "2026-06-27T22:14:42.002130Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ScreenPulse/ScreenPulse.app']' timed out after 60 seconds"
+}

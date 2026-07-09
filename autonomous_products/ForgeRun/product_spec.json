@@ -1,0 +1,22 @@
+{
+  "product_name": "ForgeRun",
+  "raw_response": "Thought for a couple of seconds\n\nSelf-selling answer:\n\nPain: Teams lose track of which commits produced which experiment results, causing duplicate work, weak QA receipts,\nand unclear deployment decisions.\n\nMechanism: ForgeRun watches commit metadata, indexes experiment runs, and lets users search by repo, branch,\ncommit hash, status, metric, or failure reason.\n\nProof: Minimal FastAPI product shape with one app entrypoint, SQLite-backed db module, and tests.\n\nDelta: Reduces “what changed and did it work?\" lookup time from manual repojlog digging to one searchable API call.\nNext action: Build the scaffold below.\n\nBoundary: This is a product design spec, not yet a working implementation.\n\nScore from 0-10: 8\n\n1. Product name: ForgeRun\n2. Three core features:\n\n‘Commit monitor: Watches recent Git commits and stores repo, branch, hash, author, timestamp, and message.\nExperiment registry: Records each experiment linked to a commit with status, metrics, artifact path, and notes.\n\n‘Search API: Searches commits and experiments by keyword, commit hash, metric name, status, branch, or date range.\n\n3. Tech stack: FastAPI + SQLite + Python\n4, File structure:\n\nPlain text O Copy\nforgerun/\n\nmain.py # FastAPI app: endpoints for commits, experiments, and search\n\ndb.py # SQLite connection, schema creation, insert/query helpers\n\nmodels. py # Pydantic request/response models\n\ntests/\n\ntest_api.py # API tests for create/search flows\nREADME .md # Setup, run commands, and example API calls\n\n5. What problem it solves:\n\nForgeRun solves the missing link between code changes and experiment outcomes. Instead of guessing which commit\ncaused a model, script, endpoint, or workflow to improve or fail, ForgeRun creates a searchable ledger where every\n‘commit can be tied to experiment evidence. It is useful for Al teams, research engineers, and product builders who need\nlightweight proof of what changed, what ran, and what worked.\n\navd ge\n",
+  "features": [
+    "Product name: ForgeRun",
+    "Three core features:",
+    "Tech stack: FastAPI + SQLite + Python",
+    "What problem it solves:"
+  ],
+  "files": [
+    "main.py",
+    "test_api.py",
+    "db.py"
+  ],
+  "tech_stack": [
+    "Python",
+    "SQLite",
+    "FastAPI"
+  ],
+  "parsed_at": "2026-06-24T19:54:08.534641Z",
+  "iteration": 3
+}

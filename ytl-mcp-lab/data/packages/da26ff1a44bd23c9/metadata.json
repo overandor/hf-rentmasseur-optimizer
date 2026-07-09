@@ -1,0 +1,46 @@
+{
+  "script_id": "b2c3adcd3720b1a8",
+  "title_variants": [
+    "The Truth About AI Coding",
+    "AI Coding: What Nobody Tells You",
+    "Why AI Coding Changes Everything",
+    "The AI Coding Experiment",
+    "AI Coding \u2014 Tested and Proven"
+  ],
+  "description_template": "In this video, we test: AI Coding\n\nChapters:\n0:00 Introduction\n0:07 Context\n0:27 Evidence\n1:27 Implications\n1:57 Payoff\n2:12 Next Steps",
+  "tags": [
+    "ai coding",
+    "research",
+    "experiment",
+    "analysis",
+    "evidence"
+  ],
+  "chapters": [
+    {
+      "time": "0:00",
+      "title": "Introduction"
+    },
+    {
+      "time": "0:07",
+      "title": "Context"
+    },
+    {
+      "time": "0:27",
+      "title": "Evidence"
+    },
+    {
+      "time": "1:27",
+      "title": "Implications"
+    },
+    {
+      "time": "1:57",
+      "title": "Payoff"
+    },
+    {
+      "time": "2:12",
+      "title": "Next Steps"
+    }
+  ],
+  "pinned_comment_draft": "What's your experience with AI Coding? Let us know below.",
+  "generated_at": "2026-06-23T18:48:05Z"
+}

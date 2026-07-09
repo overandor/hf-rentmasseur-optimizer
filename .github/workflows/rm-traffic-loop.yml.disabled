@@ -1,0 +1,395 @@
+name: RM Traffic Loop
+
+on:
+  schedule:
+    # ── 15-minute tier: availability, visibility, keeponline, dashboard, stats ──
+    - cron: '*/15 * * * *'
+    # ── 30-minute tier: search scrape, available rank, position delta, competitor count ──
+    - cron: '*/30 * * * *'
+    # ── 2-hour tier: reciprocal visits, NY search visits, engagement stats ──
+    - cron: '0 */2 * * *'
+    # ── 4-hour tier: client messaging, visitor cooldown enforcement ──
+    - cron: '0 */4 * * *'
+    # ── 6-hour tier: selenium search, selenium profile, track actions ──
+    - cron: '0 */6 * * *'
+    # ── 24-hour tier: LLM bio, A/B test, genetic evolution, ML prediction, variant rotation ──
+    - cron: '0 0 * * *'
+    # ── Weekly tier: blog draft, blog optimization, interview drafts ──
+    - cron: '0 0 * * 0'
+  push:
+    branches: [main]
+    paths:
+      - 'rm_traffic/**'
+      - 'scripts/devin_controller.py'
+      - '.github/workflows/rm-traffic-loop.yml'
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Which frequency tier to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - 15min
+          - 30min
+          - 2h
+          - 4h
+          - 6h
+          - 24h
+          - weekly
+          - on-demand
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 15 minutes — Functions #1, #2, #3, #6, #27
+  # ═══════════════════════════════════════════════════════════════
+  rm-15min:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '*/15 * * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '15min') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+      RM_PHONE: ${{ secrets.RM_PHONE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 15-min tier (availability + visibility + keeponline + dashboard + stats)
+        run: python3 scripts/devin_controller.py rm-loop 15min 2>&1 | tee rm_15min_output.txt
+      - name: Validate receipts
+        run: |
+          python3 -c "
+          import json, glob, sys
+          receipts = glob.glob('shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json')
+          if not receipts:
+              print('WARNING: No RM receipts'); sys.exit(0)
+          for r in receipts:
+              d = json.load(open(r))
+              for f in ['task_id','project','agent','timestamp','compliance_score']:
+                  if f not in d:
+                      print(f'FAIL: {r} missing {f}'); sys.exit(1)
+          print(f'OK: {len(receipts)} receipts valid')
+          "
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-15min-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_15min_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 30 minutes — Functions #7, #8, #10, #11
+  # ═══════════════════════════════════════════════════════════════
+  rm-30min:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '*/30 * * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '30min') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 30-min tier (multi-city search + available rank + position delta + competitor count)
+        run: python3 scripts/devin_controller.py rm-loop 30min 2>&1 | tee rm_30min_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-30min-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_30min_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 2 hours — Functions #19, #20, #23
+  # ═══════════════════════════════════════════════════════════════
+  rm-2h:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '0 */2 * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '2h') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 2h tier (reciprocal visits + NY search visits + engagement stats)
+        run: python3 scripts/devin_controller.py rm-loop 2h 2>&1 | tee rm_2h_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-2h-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_2h_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 4 hours — Functions #21, #22
+  # ═══════════════════════════════════════════════════════════════
+  rm-4h:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '0 */4 * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '4h') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 4h tier (LLM client messaging + visitor cooldown enforcement)
+        run: python3 scripts/devin_controller.py rm-loop 4h 2>&1 | tee rm_4h_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-4h-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_4h_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 6 hours — Functions #9, #30, #5
+  # ═══════════════════════════════════════════════════════════════
+  rm-6h:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '0 */6 * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '6h') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 6h tier (selenium search + selenium profile + track actions opt-in)
+        run: python3 scripts/devin_controller.py rm-loop 6h 2>&1 | tee rm_6h_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-6h-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            shadowshard_mforge/data/devin_controller/rm/selenium_verify.json
+            rm_6h_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: 24 hours — Functions #12, #13, #14, #15, #17
+  # ═══════════════════════════════════════════════════════════════
+  rm-24h:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '0 0 * * *' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == '24h') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+      LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest numpy 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run 24h tier (LLM bio + A/B test + genetic evolution + ML prediction + variant rotation)
+        run: python3 scripts/devin_controller.py rm-loop 24h 2>&1 | tee rm_24h_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-24h-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            shadowshard_mforge/data/substrate/packets/rm_packet_*.json
+            rm_24h_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: Weekly — Functions #24, #25, #26
+  # ═══════════════════════════════════════════════════════════════
+  rm-weekly:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    if: |
+      github.event_name == 'schedule' &&
+      github.event.schedule == '0 0 * * 0' ||
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == 'weekly') ||
+      github.event_name == 'push'
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run weekly tier (blog draft + blog optimization + interview drafts)
+        run: python3 scripts/devin_controller.py rm-loop weekly 2>&1 | tee rm_weekly_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-weekly-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_weekly_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Tier: On-demand — Functions #4, #16, #18, #28, #29
+  # ═══════════════════════════════════════════════════════════════
+  rm-on-demand:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.tier == 'all' || github.event.inputs.tier == 'on-demand')
+    env:
+      RM_USER: ${{ secrets.RENTMASSEUR_USER }}
+      RM_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install requests selenium pytest numpy 2>/dev/null || true
+          pip install -r requirements.txt 2>/dev/null || true
+      - name: Run on-demand tier (SMS toggle + policy check + bio appraiser + money training + traffic delta)
+        run: python3 scripts/devin_controller.py rm-loop on-demand 2>&1 | tee rm_ondemand_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-ondemand-artifacts
+          path: |
+            shadowshard_mforge/data/devin_controller/
+            shadowshard_mforge/data/substrate/receipts/receipt_rm_*.json
+            rm_ondemand_output.txt
+
+  # ═══════════════════════════════════════════════════════════════
+  # Controller state validation (runs after any tier)
+  # ═══════════════════════════════════════════════════════════════
+  validate-state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: [rm-15min, rm-30min, rm-2h, rm-4h, rm-6h, rm-24h, rm-weekly]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Validate controller state + receipt integrity
+        run: |
+          python3 -c "
+          import json, glob, sys
+          from pathlib import Path
+
+          # Find controller state
+          state_files = list(Path('artifacts').rglob('controller_state.json'))
+          if not state_files:
+              print('WARNING: No controller_state.json found'); sys.exit(0)
+
+          state = json.load(open(state_files[0]))
+          rm = state.get('rm') or {}
+          errors = rm.get('errors', [])
+
+          print(f'RM logged_in: {rm.get(\"logged_in\")}')
+          print(f'RM hidden: {rm.get(\"is_hidden\")}')
+          print(f'RM available: {rm.get(\"availability_option\")}')
+          print(f'RM selenium_search: {rm.get(\"selenium_search_status\")}')
+          print(f'RM selenium_profile: {rm.get(\"selenium_profile_status\")}')
+          print(f'RM packets: {len(state.get(\"pending_packets\", []))}')
+          print(f'RM receipts: {state.get(\"receipts_count\", 0)}')
+
+          if errors:
+              print(f'WARNING: {len(errors)} API errors:')
+              for e in errors[:5]:
+                  print(f'  ⟁ {e}')
+
+          # Validate all receipts
+          receipts = list(Path('artifacts').rglob('receipt_rm_*.json'))
+          print(f'\\nValidating {len(receipts)} receipts...')
+          for r in receipts:
+              d = json.load(open(r))
+              for f in ['task_id','project','agent','timestamp','compliance_score']:
+                  if f not in d:
+                      print(f'FAIL: {r.name} missing {f}'); sys.exit(1)
+          print(f'All {len(receipts)} receipts valid')
+          print('Controller state validation complete')
+          "

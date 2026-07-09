@@ -1,0 +1,13 @@
+# Hugging Face Space — Production Requirements
+# Runtime only. No browser automation. No dev tools.
+# Browser automation (Selenium/Playwright/pyppeteer) belongs in requirements_dev.txt
+
+fastapi>=0.104
+uvicorn>=0.24
+requests>=2.31
+httpx>=0.25
+aiohttp>=3.9
+python-multipart>=0.0.6
+pydantic>=2.0.0
+beautifulsoup4>=4.12
+urllib3>=2.0

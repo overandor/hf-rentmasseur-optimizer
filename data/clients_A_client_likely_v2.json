@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-06-27T06:27:20.165276+00:00",
+  "count": 1,
+  "profiles": [
+    {
+      "username": "DanitzHH",
+      "status": "visited",
+      "title": "DanitzHH - Looking for Male Massage Ther",
+      "source": "visited",
+      "classification": {
+        "username": "DanitzHH",
+        "url": null,
+        "city": null,
+        "title": "DanitzHH - Looking for Male Massage Ther",
+        "client_score": 160,
+        "label": "client_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "client_title:looking for male massage:80",
+          "client_title:looking for male massage ther:80"
+        ],
+        "next_action": "export_to_A_clients_review",
+        "has_body_evidence": false,
+        "body_length": 0
+      },
+      "body_evidence": {}
+    }
+  ]
+}

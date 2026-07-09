@@ -1,0 +1,14 @@
+{
+  "id": "ead14fd70a8bf8cc",
+  "stage": "govern",
+  "app": "CleanSweep",
+  "timestamp": "2026-06-27T22:08:35.362825Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

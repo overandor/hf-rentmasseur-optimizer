@@ -1,0 +1,15 @@
+{
+  "id": "1ec81bb66f9812aa",
+  "stage": "architect",
+  "app": "SnapBarrier",
+  "timestamp": "2026-06-27T18:57:12.981759Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/SnapBarrier",
+  "files": [
+    "Package.swift",
+    "Sources/SnapBarrier/SnapBarrierApp.swift",
+    "Sources/SnapBarrier/Info.plist",
+    "README.md"
+  ],
+  "icon": "timer",
+  "bundle_id": "com.autopilot.snapbarrier"
+}

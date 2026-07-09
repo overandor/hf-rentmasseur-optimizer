@@ -1,0 +1,16 @@
+{
+  "id": "62884d06f2559d41",
+  "stage": "verify",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T19:53:33.484910Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

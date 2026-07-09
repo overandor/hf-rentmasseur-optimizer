@@ -1,0 +1,21 @@
+{
+  "id": "06d7f3d95328e9de",
+  "stage": "scout",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T22:01:23.869883Z",
+  "concept": {
+    "name": "GlyphBoard",
+    "category": "Utility",
+    "description": "Unicode glyph picker with custom collections",
+    "features": [
+      "Search 5000+ glyphs",
+      "Custom collections",
+      "Keyboard shortcut",
+      "Recently used"
+    ],
+    "price_tier": "0.99",
+    "entitlements": [],
+    "min_os": "14.0"
+  },
+  "selected_from": 9
+}

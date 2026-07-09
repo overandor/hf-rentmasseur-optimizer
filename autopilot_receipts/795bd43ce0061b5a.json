@@ -1,0 +1,14 @@
+{
+  "id": "795bd43ce0061b5a",
+  "stage": "govern",
+  "app": "ReceiptVault",
+  "timestamp": "2026-06-27T20:37:10.206021Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

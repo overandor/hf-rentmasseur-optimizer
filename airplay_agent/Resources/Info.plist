@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>AirPlay Agent</string>
+    <key>CFBundleDisplayName</key>
+    <string>AirPlay Agent</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.local.airplay-agent</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>AirPlayAgent</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2026. All rights reserved.</string>
+    <key>NSAirPlayUsageDescription</key>
+    <string>Stream agent output to your TV via AirPlay.</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Capture screen content for agent display.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Microphone access for voice delegation.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Connect to local Ollama server for LLM inference.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+</dict>
+</plist>

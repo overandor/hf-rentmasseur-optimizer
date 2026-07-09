@@ -1,0 +1,3846 @@
+{
+  "timestamp": "2026-06-27T06:18:13.089058+00:00",
+  "count": 313,
+  "profiles": [
+    {
+      "username": "Karpathianwolf",
+      "name": "Karpathianwolf",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Karpathianwolf",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GentletouchNYC",
+      "name": "GentletouchNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/GentletouchNYC",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "FirmTouch",
+      "name": "FirmTouch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/FirmTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "Alex_NYC",
+      "name": "Alex_NYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alex_NYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HotHandsNYC",
+      "name": "HotHandsNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HotHandsNYC",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Klaus",
+      "name": "Klaus",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Klaus",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DrewMassageNyc",
+      "name": "DrewMassageNyc",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DrewMassageNyc",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "magichandsnyc",
+      "name": "magichandsnyc",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/magichandsnyc",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "ColombiaMarco",
+      "name": "ColombiaMarco",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ColombiaMarco",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DominanteAlfa",
+      "name": "DominanteAlfa",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DominanteAlfa",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jesuscolombia",
+      "name": "Jesuscolombia",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jesuscolombia",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BKKmassage",
+      "name": "BKKmassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BKKmassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "ITACOUPLE",
+      "name": "ITACOUPLE",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ITACOUPLE",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "LeoVALNOIR",
+      "name": "LeoVALNOIR",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LeoVALNOIR",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "TimAngel",
+      "name": "TimAngel",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/TimAngel",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "CamiloCOLOMBIANO",
+      "name": "CamiloCOLOMBIANO",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CamiloCOLOMBIANO",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Toony",
+      "name": "Toony",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Toony",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Arjun",
+      "name": "Arjun",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Arjun",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JohnFitness",
+      "name": "JohnFitness",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JohnFitness",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SirIvan",
+      "name": "SirIvan",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SirIvan",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "LuizCarlosNYC",
+      "name": "LuizCarlosNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LuizCarlosNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Hotmassage_man",
+      "name": "Hotmassage_man",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Hotmassage_man",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "BullLatin",
+      "name": "BullLatin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BullLatin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GoodVibesGuy",
+      "name": "GoodVibesGuy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/GoodVibesGuy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Billymonterohot",
+      "name": "Billymonterohot",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Billymonterohot",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DrewArmyVet",
+      "name": "DrewArmyVet",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DrewArmyVet",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RodrigoDiPietro",
+      "name": "RodrigoDiPietro",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RodrigoDiPietro",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "XXLMICHAELLFOX",
+      "name": "XXLMICHAELLFOX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/XXLMICHAELLFOX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jefferesongunz",
+      "name": "Jefferesongunz",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jefferesongunz",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Euroguy_Madrid",
+      "name": "Euroguy_Madrid",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Euroguy_Madrid",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Davidlatinhands",
+      "name": "Davidlatinhands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Davidlatinhands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "DavisTopBrazil",
+      "name": "DavisTopBrazil",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DavisTopBrazil",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SugarBoyX",
+      "name": "SugarBoyX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SugarBoyX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ColbyRyan",
+      "name": "ColbyRyan",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ColbyRyan",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "OneofaKai",
+      "name": "OneofaKai",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/OneofaKai",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AngelStrong",
+      "name": "AngelStrong",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AngelStrong",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "WenDylaTinoHot",
+      "name": "WenDylaTinoHot",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/WenDylaTinoHot",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "nicolatinomasseu",
+      "name": "nicolatinomasseu",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/nicolatinomasseu",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "loganmagichands",
+      "name": "loganmagichands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/loganmagichands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Dancoltop",
+      "name": "Dancoltop",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Dancoltop",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Asian_greathands",
+      "name": "Asian_greathands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Asian_greathands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Passionateisaac",
+      "name": "Passionateisaac",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Passionateisaac",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AdrianNYC",
+      "name": "AdrianNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AdrianNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "COCOTAZO",
+      "name": "COCOTAZO",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/COCOTAZO",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "EricMantoMan",
+      "name": "EricMantoMan",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/EricMantoMan",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ItalianHeat",
+      "name": "ItalianHeat",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ItalianHeat",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RoyalTreatment",
+      "name": "RoyalTreatment",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RoyalTreatment",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Cristofe",
+      "name": "Cristofe",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Cristofe",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Wolfnew",
+      "name": "Wolfnew",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Wolfnew",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AlejandroFlores",
+      "name": "AlejandroFlores",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AlejandroFlores",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "relaxing_touch",
+      "name": "relaxing_touch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxing_touch",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "Anndy",
+      "name": "Anndy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Anndy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "VelvetConcierge",
+      "name": "VelvetConcierge",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/VelvetConcierge",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Stronghandsman",
+      "name": "Stronghandsman",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Stronghandsman",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Alexfitfun",
+      "name": "Alexfitfun",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alexfitfun",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Igor_Masseur",
+      "name": "Igor_Masseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Igor_Masseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "TRANscendentTuch",
+      "name": "TRANscendentTuch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/TRANscendentTuch",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SantiagoNYC",
+      "name": "SantiagoNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SantiagoNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Essentiall",
+      "name": "Essentiall",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Essentiall",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JonasLatin",
+      "name": "JonasLatin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JonasLatin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Michael_fit",
+      "name": "Michael_fit",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Michael_fit",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Dys",
+      "name": "Dys",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Dys",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Starstarstarstar",
+      "name": "Starstarstarstar",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Starstarstarstar",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Kellythai",
+      "name": "Kellythai",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Kellythai",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MarcoPoloBig",
+      "name": "MarcoPoloBig",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MarcoPoloBig",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Valentinoxxx",
+      "name": "Valentinoxxx",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Valentinoxxx",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "NYC_AsianBill",
+      "name": "NYC_AsianBill",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NYC_AsianBill",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AlvenH",
+      "name": "AlvenH",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AlvenH",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Polohands",
+      "name": "Polohands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Polohands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Benyou",
+      "name": "Benyou",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Benyou",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HeavyHanded",
+      "name": "HeavyHanded",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HeavyHanded",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Cubanangel",
+      "name": "Cubanangel",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Cubanangel",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jordanlatin",
+      "name": "Jordanlatin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jordanlatin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "FutureDILF",
+      "name": "FutureDILF",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/FutureDILF",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "VladBrazilian",
+      "name": "VladBrazilian",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/VladBrazilian",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DeepTantricman",
+      "name": "DeepTantricman",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DeepTantricman",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:deep"
+      ]
+    },
+    {
+      "username": "CamiloAndres",
+      "name": "CamiloAndres",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CamiloAndres",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Joshuamasc",
+      "name": "Joshuamasc",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Joshuamasc",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Matthew",
+      "name": "Matthew",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Matthew",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Cristopherbu",
+      "name": "Cristopherbu",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Cristopherbu",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "NatesXscape",
+      "name": "NatesXscape",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NatesXscape",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "KevinOS",
+      "name": "KevinOS",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/KevinOS",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Paulo_Col",
+      "name": "Paulo_Col",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Paulo_Col",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GabesTwink",
+      "name": "GabesTwink",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/GabesTwink",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "NikolasNY",
+      "name": "NikolasNY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NikolasNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SportsMassageNYC",
+      "name": "SportsMassageNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SportsMassageNYC",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "NikNik",
+      "name": "NikNik",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NikNik",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "EthanX",
+      "name": "EthanX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/EthanX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "dongdongdedian",
+      "name": "dongdongdedian",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/dongdongdedian",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DeviantHands",
+      "name": "DeviantHands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DeviantHands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Samuelmassage",
+      "name": "Samuelmassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Samuelmassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Jesu",
+      "name": "Jesu",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jesu",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JThai",
+      "name": "JThai",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JThai",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AJMassaging",
+      "name": "AJMassaging",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AJMassaging",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "EvanBedfordNYC",
+      "name": "EvanBedfordNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/EvanBedfordNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "LatinMiddleEast",
+      "name": "LatinMiddleEast",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LatinMiddleEast",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "REJUVIbes",
+      "name": "REJUVIbes",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/REJUVIbes",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Davidmills",
+      "name": "Davidmills",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Davidmills",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Manhattanhotboy",
+      "name": "Manhattanhotboy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Manhattanhotboy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BIGMANMASSAGE",
+      "name": "BIGMANMASSAGE",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BIGMANMASSAGE",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "joneslatinhot",
+      "name": "joneslatinhot",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/joneslatinhot",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "LucasNY",
+      "name": "LucasNY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LucasNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Nick_Massage",
+      "name": "Nick_Massage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Nick_Massage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Will_Xavier",
+      "name": "Will_Xavier",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Will_Xavier",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "LucasNJ",
+      "name": "LucasNJ",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LucasNJ",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "latinofit",
+      "name": "latinofit",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/latinofit",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Aliwong",
+      "name": "Aliwong",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Aliwong",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Faraon",
+      "name": "Faraon",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Faraon",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Michael_V",
+      "name": "Michael_V",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Michael_V",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RelaxwithNick",
+      "name": "RelaxwithNick",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RelaxwithNick",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ByAlexxx",
+      "name": "ByAlexxx",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ByAlexxx",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Samgl",
+      "name": "Samgl",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Samgl",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JamesUnspoken",
+      "name": "JamesUnspoken",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JamesUnspoken",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BreatheOutNYC",
+      "name": "BreatheOutNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BreatheOutNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "comerelaxtodayla",
+      "name": "comerelaxtodayla",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/comerelaxtodayla",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "StrongManlyTouch",
+      "name": "StrongManlyTouch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/StrongManlyTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "MasseurJeremy",
+      "name": "MasseurJeremy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MasseurJeremy",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "EIMARLATINN",
+      "name": "EIMARLATINN",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/EIMARLATINN",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HandsAndBody",
+      "name": "HandsAndBody",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HandsAndBody",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "CuteSmoothBobby",
+      "name": "CuteSmoothBobby",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CuteSmoothBobby",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BRAZILPLEASURE",
+      "name": "BRAZILPLEASURE",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BRAZILPLEASURE",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Dantee",
+      "name": "Dantee",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Dantee",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Mxmao",
+      "name": "Mxmao",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Mxmao",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MilitarGuy",
+      "name": "MilitarGuy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MilitarGuy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Alexis_atl",
+      "name": "Alexis_atl",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alexis_atl",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Gorgeousxxx",
+      "name": "Gorgeousxxx",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Gorgeousxxx",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AnderNYCmasseur",
+      "name": "AnderNYCmasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AnderNYCmasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "Hungarabic",
+      "name": "Hungarabic",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Hungarabic",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AsianMuscleTouch",
+      "name": "AsianMuscleTouch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AsianMuscleTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "RMSKN",
+      "name": "RMSKN",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RMSKN",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "StrongStrokes",
+      "name": "StrongStrokes",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/StrongStrokes",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Igor",
+      "name": "Igor",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Igor",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "OmarCures",
+      "name": "OmarCures",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/OmarCures",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Sebas_fit",
+      "name": "Sebas_fit",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Sebas_fit",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Elicarmelo",
+      "name": "Elicarmelo",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Elicarmelo",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "jacobomasseur",
+      "name": "jacobomasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/jacobomasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "LatinoUcXL",
+      "name": "LatinoUcXL",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LatinoUcXL",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Southernjock",
+      "name": "Southernjock",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Southernjock",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MattyMagicHands",
+      "name": "MattyMagicHands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MattyMagicHands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Kekh",
+      "name": "Kekh",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Kekh",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JayFit",
+      "name": "JayFit",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JayFit",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Onyxforu",
+      "name": "Onyxforu",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Onyxforu",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Giomassage",
+      "name": "Giomassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Giomassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Mike_XL",
+      "name": "Mike_XL",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Mike_XL",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DiegoX",
+      "name": "DiegoX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DiegoX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HenryAtwood",
+      "name": "HenryAtwood",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HenryAtwood",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Alex_muscles",
+      "name": "Alex_muscles",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alex_muscles",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ROMEROLATINBOY",
+      "name": "ROMEROLATINBOY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ROMEROLATINBOY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Ksander",
+      "name": "Ksander",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Ksander",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "relaxandrestore",
+      "name": "relaxandrestore",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxandrestore",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Tylerwinchester",
+      "name": "Tylerwinchester",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Tylerwinchester",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Fredericodedeus",
+      "name": "Fredericodedeus",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Fredericodedeus",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Nickhalden",
+      "name": "Nickhalden",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Nickhalden",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "TantricRitualNYC",
+      "name": "TantricRitualNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/TantricRitualNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "TonyMassage",
+      "name": "TonyMassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/TonyMassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Paulo_Jatoba",
+      "name": "Paulo_Jatoba",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Paulo_Jatoba",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Tiagogato",
+      "name": "Tiagogato",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Tiagogato",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Gabrielsp",
+      "name": "Gabrielsp",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Gabrielsp",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JoshFransua",
+      "name": "JoshFransua",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JoshFransua",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "UnionSqSkater",
+      "name": "UnionSqSkater",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/UnionSqSkater",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "NicoNice",
+      "name": "NicoNice",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NicoNice",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Hermesii",
+      "name": "Hermesii",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Hermesii",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DieterNY",
+      "name": "DieterNY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DieterNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Healingsanctuary",
+      "name": "Healingsanctuary",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Healingsanctuary",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:healing"
+      ]
+    },
+    {
+      "username": "MaXXL",
+      "name": "MaXXL",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MaXXL",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BodyworkByAlexi",
+      "name": "BodyworkByAlexi",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BodyworkByAlexi",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:bodywork"
+      ]
+    },
+    {
+      "username": "Andresfelipee",
+      "name": "Andresfelipee",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Andresfelipee",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Maxxnum",
+      "name": "Maxxnum",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Maxxnum",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Rockmiao",
+      "name": "Rockmiao",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Rockmiao",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "KevinDevin",
+      "name": "KevinDevin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/KevinDevin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RussianHands",
+      "name": "RussianHands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RussianHands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "LAs_Finest",
+      "name": "LAs_Finest",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/LAs_Finest",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Blessings",
+      "name": "Blessings",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Blessings",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HandsomeASN",
+      "name": "HandsomeASN",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HandsomeASN",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Burk",
+      "name": "Burk",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Burk",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Johnsport",
+      "name": "Johnsport",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Johnsport",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GoldenHand",
+      "name": "GoldenHand",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/GoldenHand",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AndresNYC",
+      "name": "AndresNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AndresNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ProMassuer",
+      "name": "ProMassuer",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ProMassuer",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Alexandr_Moscow",
+      "name": "Alexandr_Moscow",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alexandr_Moscow",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Lucasking",
+      "name": "Lucasking",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Lucasking",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HOTMEDITERRANEAN",
+      "name": "HOTMEDITERRANEAN",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HOTMEDITERRANEAN",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "StudFR",
+      "name": "StudFR",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/StudFR",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SensualMasseurNJ",
+      "name": "SensualMasseurNJ",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SensualMasseurNJ",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "Froy",
+      "name": "Froy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Froy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "PaoloX",
+      "name": "PaoloX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/PaoloX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Papito_X",
+      "name": "Papito_X",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Papito_X",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "CArelax",
+      "name": "CArelax",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CArelax",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "XxxAlexandroXl",
+      "name": "XxxAlexandroXl",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/XxxAlexandroXl",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jerrylin",
+      "name": "Jerrylin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jerrylin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Goodvibeguy",
+      "name": "Goodvibeguy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Goodvibeguy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JhondDl",
+      "name": "JhondDl",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JhondDl",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RubOneHK",
+      "name": "RubOneHK",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RubOneHK",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Kennethz",
+      "name": "Kennethz",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Kennethz",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Antoniomassage",
+      "name": "Antoniomassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Antoniomassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "HARRILUIS",
+      "name": "HARRILUIS",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HARRILUIS",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "relaxinstyle",
+      "name": "relaxinstyle",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/relaxinstyle",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MarcusNYC",
+      "name": "MarcusNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MarcusNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Mattlatino",
+      "name": "Mattlatino",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Mattlatino",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "sensestwo",
+      "name": "sensestwo",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/sensestwo",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Alexfeels",
+      "name": "Alexfeels",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Alexfeels",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Oliverlatin",
+      "name": "Oliverlatin",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Oliverlatin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jake_NYC",
+      "name": "Jake_NYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Jake_NYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "KingdelRey",
+      "name": "KingdelRey",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/KingdelRey",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Arthurb",
+      "name": "Arthurb",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Arthurb",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AnthonyNYC",
+      "name": "AnthonyNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AnthonyNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "bbBodywork",
+      "name": "bbBodywork",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/bbBodywork",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:bodywork"
+      ]
+    },
+    {
+      "username": "MindfulMasseur",
+      "name": "MindfulMasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MindfulMasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "Levioxxx",
+      "name": "Levioxxx",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Levioxxx",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Henrynyc",
+      "name": "Henrynyc",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Henrynyc",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DiegoSilvaX",
+      "name": "DiegoSilvaX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DiegoSilvaX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Luiggyhands",
+      "name": "Luiggyhands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Luiggyhands",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "handstoremember",
+      "name": "handstoremember",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/handstoremember",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Ro_Park",
+      "name": "Ro_Park",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Ro_Park",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RickyXl",
+      "name": "RickyXl",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RickyXl",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "johnNYlatinmass",
+      "name": "johnNYlatinmass",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/johnNYlatinmass",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "tomyyX",
+      "name": "tomyyX",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/tomyyX",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ThePlayBoy",
+      "name": "ThePlayBoy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/ThePlayBoy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AndyNY",
+      "name": "AndyNY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AndyNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "darrellsbody",
+      "name": "darrellsbody",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/darrellsbody",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DominicNYC",
+      "name": "DominicNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DominicNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Ssunshinee",
+      "name": "Ssunshinee",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Ssunshinee",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "STRONGM",
+      "name": "STRONGM",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/STRONGM",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Peterkooler",
+      "name": "Peterkooler",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Peterkooler",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AZNSensualTouch",
+      "name": "AZNSensualTouch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AZNSensualTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "NathanSensation",
+      "name": "NathanSensation",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/NathanSensation",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RicoNY",
+      "name": "RicoNY",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/RicoNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MercuryRising",
+      "name": "MercuryRising",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MercuryRising",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Mascnyctop",
+      "name": "Mascnyctop",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Mascnyctop",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "YULIAN",
+      "name": "YULIAN",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/YULIAN",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Ken_NYC",
+      "name": "Ken_NYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Ken_NYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HelioStretch",
+      "name": "HelioStretch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HelioStretch",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "CodyNYC",
+      "name": "CodyNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/CodyNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BestBodyworkNYC",
+      "name": "BestBodyworkNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BestBodyworkNYC",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:bodywork"
+      ]
+    },
+    {
+      "username": "Geofabrazio",
+      "name": "Geofabrazio",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Geofabrazio",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Pavlik",
+      "name": "Pavlik",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Pavlik",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Dannyfuntouch",
+      "name": "Dannyfuntouch",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Dannyfuntouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "XaviersTouch",
+      "name": "XaviersTouch",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/XaviersTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "jormasseur",
+      "name": "jormasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/jormasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "Mentouch",
+      "name": "Mentouch",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/Mentouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "PepeMasseur",
+      "name": "PepeMasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/PepeMasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "GonzaloMasseur",
+      "name": "GonzaloMasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/GonzaloMasseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "AngelNYCBoy",
+      "name": "AngelNYCBoy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/AngelNYCBoy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Hotlatinoalfa",
+      "name": "Hotlatinoalfa",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Hotlatinoalfa",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Nycmasculine",
+      "name": "Nycmasculine",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Nycmasculine",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jhoss",
+      "name": "Jhoss",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Jhoss",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Yogi_Ray",
+      "name": "Yogi_Ray",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Yogi_Ray",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Zev",
+      "name": "Zev",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Zev",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BuffStallion",
+      "name": "BuffStallion",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BuffStallion",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Angelcolombiano",
+      "name": "Angelcolombiano",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Angelcolombiano",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Enzos_Touch",
+      "name": "Enzos_Touch",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Enzos_Touch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "ChrisRestrepo",
+      "name": "ChrisRestrepo",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/ChrisRestrepo",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "PromasseurMax",
+      "name": "PromasseurMax",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/PromasseurMax",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "samwilliamsam",
+      "name": "samwilliamsam",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/samwilliamsam",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Lucasjun",
+      "name": "Lucasjun",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Lucasjun",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "EnergyAlex",
+      "name": "EnergyAlex",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/EnergyAlex",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "cleancuttalented",
+      "name": "cleancuttalented",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/cleancuttalented",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jashirohdean",
+      "name": "Jashirohdean",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Jashirohdean",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "PedroZ",
+      "name": "PedroZ",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/PedroZ",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Kiroshi",
+      "name": "Kiroshi",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Kiroshi",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RelaxwithDaddy",
+      "name": "RelaxwithDaddy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/RelaxwithDaddy",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:relax",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "samuel_solis",
+      "name": "samuel_solis",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/samuel_solis",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Andoni",
+      "name": "Andoni",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Andoni",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "ParadiseMassage",
+      "name": "ParadiseMassage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/ParadiseMassage",
+      "title": null,
+      "score": 5,
+      "label": "unknown",
+      "reasons": [
+        "client_username:massage",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Fitjocktouch",
+      "name": "Fitjocktouch",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Fitjocktouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "Santiagovzla",
+      "name": "Santiagovzla",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Santiagovzla",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Ariel",
+      "name": "Ariel",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Ariel",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "MarlonNY",
+      "name": "MarlonNY",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/MarlonNY",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Michaelwang",
+      "name": "Michaelwang",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Michaelwang",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "PashaNYC",
+      "name": "PashaNYC",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/PashaNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "HandSam",
+      "name": "HandSam",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/HandSam",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "MilanII",
+      "name": "MilanII",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/MilanII",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "tonyperalta",
+      "name": "tonyperalta",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/tonyperalta",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DaxtonKnight",
+      "name": "DaxtonKnight",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/DaxtonKnight",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Aratos",
+      "name": "Aratos",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Aratos",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JayHeals",
+      "name": "JayHeals",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/JayHeals",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DCIntuitiveTouch",
+      "name": "DCIntuitiveTouch",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/DCIntuitiveTouch",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:touch"
+      ]
+    },
+    {
+      "username": "hotitalian",
+      "name": "hotitalian",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/hotitalian",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Kaylotus",
+      "name": "Kaylotus",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Kaylotus",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GingerMister",
+      "name": "GingerMister",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/GingerMister",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JarrodRoxs",
+      "name": "JarrodRoxs",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/JarrodRoxs",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "TheGayGaston",
+      "name": "TheGayGaston",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/TheGayGaston",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Ivancho",
+      "name": "Ivancho",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Ivancho",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Elmamaito",
+      "name": "Elmamaito",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Elmamaito",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Jeremy_Jeremy",
+      "name": "Jeremy_Jeremy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Jeremy_Jeremy",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "IlovewhatIdo",
+      "name": "IlovewhatIdo",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/IlovewhatIdo",
+      "title": null,
+      "score": 40,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:love",
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "menthat",
+      "name": "menthat",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/menthat",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Fabriziomasajes",
+      "name": "Fabriziomasajes",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Fabriziomasajes",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "therapistBoy",
+      "name": "therapistBoy",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/therapistBoy",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:therapist"
+      ]
+    },
+    {
+      "username": "Cesaar",
+      "name": "Cesaar",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Cesaar",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "roberto",
+      "name": "roberto",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/roberto",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "DavidCopper",
+      "name": "DavidCopper",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/DavidCopper",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Magic_experience",
+      "name": "Magic_experience",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Magic_experience",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "KenzoNYC",
+      "name": "KenzoNYC",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/KenzoNYC",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AceSavage",
+      "name": "AceSavage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/AceSavage",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "GUSTAVO",
+      "name": "GUSTAVO",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/GUSTAVO",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BestBodyMassage",
+      "name": "BestBodyMassage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BestBodyMassage",
+      "title": null,
+      "score": 30,
+      "label": "client_possible",
+      "reasons": [
+        "client_username:massage",
+        "client_username:body",
+        "generic_or_uninformative_title",
+        "provider_username:massage"
+      ]
+    },
+    {
+      "username": "Lucamassini",
+      "name": "Lucamassini",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Lucamassini",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "AsianMuscular",
+      "name": "AsianMuscular",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/AsianMuscular",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Alejandromexican",
+      "name": "Alejandromexican",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Alejandromexican",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "VICENTICO",
+      "name": "VICENTICO",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/VICENTICO",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BrunoMathias",
+      "name": "BrunoMathias",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BrunoMathias",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "by_Marcus",
+      "name": "by_Marcus",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/by_Marcus",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Handsonvibes",
+      "name": "Handsonvibes",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Handsonvibes",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:hands"
+      ]
+    },
+    {
+      "username": "Joeeey",
+      "name": "Joeeey",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Joeeey",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Andresfitness",
+      "name": "Andresfitness",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Andresfitness",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Chakra",
+      "name": "Chakra",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Chakra",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "RileyMitchel",
+      "name": "RileyMitchel",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/RileyMitchel",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "BCastillox",
+      "name": "BCastillox",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/BCastillox",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "JeanKarlSalin",
+      "name": "JeanKarlSalin",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/JeanKarlSalin",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "Dan_masseur",
+      "name": "Dan_masseur",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Dan_masseur",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:masseur"
+      ]
+    },
+    {
+      "username": "Tytonn",
+      "name": "Tytonn",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Tytonn",
+      "title": null,
+      "score": 15,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title"
+      ]
+    },
+    {
+      "username": "SpaniardNYC",
+      "name": "SpaniardNYC",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/SpaniardNYC",
+      "title": null,
+      "score": -20,
+      "label": "unknown",
+      "reasons": [
+        "generic_or_uninformative_title",
+        "provider_username:spa"
+      ]
+    }
+  ]
+}

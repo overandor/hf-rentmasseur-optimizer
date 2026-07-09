@@ -1,0 +1,14 @@
+{
+  "id": "8d7db6328e0ecf67",
+  "stage": "govern",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T18:32:26.282697Z",
+  "decision": "SHIP",
+  "reasoning": "All stages passed — ship it",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

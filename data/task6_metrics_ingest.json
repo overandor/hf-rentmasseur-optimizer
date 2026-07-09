@@ -1,0 +1,36 @@
+{
+  "status": "GREEN_REAL",
+  "packet": {
+    "date": "2026-06-26",
+    "profile_views": 2836,
+    "contact_clicks": 135,
+    "new_visits": 33,
+    "new_emails": 0,
+    "availability_state": "available",
+    "is_hidden": false,
+    "headline": "KARPATHIAN WOLF \u2014 targeted recovery in Manhattan.",
+    "description_len": 597,
+    "bio_id": "controlled_wolf_v1",
+    "notes": "automated daily snapshot"
+  },
+  "ingest_result": {
+    "ok": true,
+    "ingested": true,
+    "computed": {
+      "contact_click_rate": 0.0476,
+      "email_rate": 0.0,
+      "contact_clicks_per_100_views": 4.76
+    },
+    "decision": {
+      "status": "READY_TO_TEST",
+      "reason": "Baseline established. No active experiment. Ready to start next test.",
+      "next_action": "start_experiment",
+      "baseline": {
+        "profile_views": 2836,
+        "contact_clicks": 135,
+        "contact_click_rate": 0.0476
+      }
+    }
+  },
+  "ts": "2026-06-26T06:32:18Z"
+}

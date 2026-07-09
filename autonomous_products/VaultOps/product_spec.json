@@ -1,0 +1,14 @@
+{
+  "product_name": "VaultOps",
+  "raw_response": "Thought for a couple of seconds\n\nSelf-selling answer:\n\nPai\n‘Small teams lose time and create deployment risk when configs, task lists, and operational notes live across Slack, docs,\nlocal files, and ad hoc spreadsheets.\n\nMechanism:\n\\VaultOps gives a single Flask web dashboard where users can create operational configs, attach tasks to them, and\nexport everything as JSON for backup, handoff, or deployment.\n\nProof:\nMinimal product shape below is buildable with one Flask app, one SQLite db module, and tests.\n\nDelta:\nReduces config/task handoff friction from scattered manual collection to one export button. Expected measurable gain:\n30-60 minutes saved per small deployment or ops handoff.\n\nNext action:\nCreate the files below and implement the first working export route.\n\nBoundary:\nUNRECEIPTED until implemented and tested locally.\n\n‘Score from 0-10:\n8\n\nProduct name:\n\\VaultOps o\n",
+  "features": [
+    "Product name:"
+  ],
+  "files": [],
+  "tech_stack": [
+    "SQLite",
+    "Flask"
+  ],
+  "parsed_at": "2026-06-24T19:52:45.720430Z",
+  "iteration": 1
+}

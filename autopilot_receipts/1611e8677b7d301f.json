@@ -1,0 +1,14 @@
+{
+  "id": "1611e8677b7d301f",
+  "stage": "govern",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T20:55:26.073945Z",
+  "decision": "HOLD",
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "server_info": {
+    "name": "hyperflow-unified-mcp",
+    "version": "0.2.0",
+    "description": "HyperFlow Ledger OS — receipt-backed AI production control plane"
+  },
+  "transport": {
+    "type": "http",
+    "url": "http://127.0.0.1:8765",
+    "endpoints": {
+      "health": "GET /",
+      "tools_list": "GET /tools",
+      "tool_call": "POST /tools/call",
+      "mcp_jsonrpc": "POST /mcp",
+      "receipts": "GET /receipts",
+      "lab_status": "GET /status"
+    }
+  },
+  "tools": [
+    {
+      "name": "get_task_state",
+      "description": "Get current task state from the HyperFlow ledger",
+      "tier": 0,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "task_id": {"type": "string", "description": "Optional task ID. Empty returns all tasks."}
+        }
+      }
+    },
+    {
+      "name": "snapshot_repo",
+      "description": "Snapshot Git status, changed files, and recent commits",
+      "tier": 0,
+      "input_schema": {"type": "object", "properties": {}}
+    },
+    {
+      "name": "get_lab_status",
+      "description": "Get YTL-MCP Research Lab status",
+      "tier": 0,
+      "input_schema": {"type": "object", "properties": {}}
+    },
+    {
+      "name": "get_receipts",
+      "description": "Get latest receipts from the ledger",
+      "tier": 0,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "count": {"type": "integer", "default": 10, "maximum": 50},
+          "source": {"type": "string", "enum": ["all", "hyperflow", "ytl", "mcp"], "default": "all"}
+        }
+      }
+    },
+    {
+      "name": "write_receipt",
+      "description": "Write a structured receipt to the HyperFlow ledger",
+      "tier": 1,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "task_id": {"type": "string"},
+          "agent": {"type": "string"},
+          "files_changed": {"type": "array", "items": {"type": "string"}},
+          "commands_run": {"type": "array", "items": {"type": "string"}},
+          "test_result": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]},
+          "build_result": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]},
+          "errors": {"type": "array", "items": {"type": "string"}},
+          "artifact_output": {"type": "string"},
+          "next_action": {"type": "string"}
+        },
+        "required": ["task_id", "agent", "files_changed", "commands_run"]
+      }
+    },
+    {
+      "name": "score_transcript",
+      "description": "Score a transcript for hook strength, retention, novelty, density",
+      "tier": 1,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "video_id": {"type": "string"},
+          "transcript_text": {"type": "string"}
+        },
+        "required": ["video_id", "transcript_text"]
+      }
+    },
+    {
+      "name": "run_verification",
+      "description": "Run the canonical verification chain (tests, watchdog, receipts)",
+      "tier": 2,
+      "input_schema": {"type": "object", "properties": {}}
+    },
+    {
+      "name": "prepare_upload_package",
+      "description": "Prepare a complete upload package (script, metadata, shotlist, risk report)",
+      "tier": 2,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "hypothesis": {"type": "string"},
+          "topic": {"type": "string"}
+        },
+        "required": ["hypothesis", "topic"]
+      }
+    },
+    {
+      "name": "create_experiment",
+      "description": "Create a formal experiment with hypothesis, metric, and baseline",
+      "tier": 2,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "hypothesis": {"type": "string"},
+          "variant": {"type": "string"},
+          "target_metric": {"type": "string"},
+          "baseline": {"type": "number"},
+          "measurement_window_days": {"type": "integer", "default": 7}
+        },
+        "required": ["hypothesis", "variant", "target_metric", "baseline"]
+      }
+    }
+  ],
+  "safety": {
+    "not_exposed": [
+      "run_any_shell_command", "read_arbitrary_file", "write_arbitrary_file",
+      "delete_file", "upload_public", "mass_comment", "mass_like", "mass_subscribe",
+      "scrape_private_data", "bypass_auth", "access_secrets",
+      "raw_git_push", "raw_git_reset", "raw_git_force_push"
+    ],
+    "principles": [
+      "No raw shell execution",
+      "No arbitrary file access",
+      "No secret exposure",
+      "Every tool call writes a receipt",
+      "Upload defaults to PRIVATE",
+      "No public action without human approval"
+    ]
+  },
+  "start_command": "python3 mcp/mcp_unified.py serve-http 8765"
+}

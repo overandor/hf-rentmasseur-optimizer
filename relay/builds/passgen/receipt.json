@@ -1,0 +1,16 @@
+{
+  "project": "PassGen",
+  "description": "A password generator with configurable length and strength scoring",
+  "stages": [
+    "IDEA",
+    "SPEC",
+    "ARCHITECT",
+    "CODE",
+    "BUILD",
+    "TEST",
+    "RECEIPT"
+  ],
+  "build_dir": "/Users/alep/Downloads/windsurf-smoke/relay/builds/passgen",
+  "timestamp": "2026-06-25T01:37:05Z",
+  "receipt_id": "53b9ee80-8b9"
+}

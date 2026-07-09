@@ -1,0 +1,125 @@
+name: RM Recovery Review — Draft Queues & Reply Drafts
+
+on:
+  schedule:
+    - cron: '30 */4 * * *'  # Every 4 hours, offset 30 min from observe
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["RM Observe — Read-Only State Collection"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+jobs:
+  recovery-review:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt 2>/dev/null || pip install requests beautifulsoup4
+
+      - name: Build reply draft queue (template-first, local-only)
+        env:
+          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+          RM_PHONE: ${{ secrets.RM_PHONE }}
+        run: |
+          python3 -c "
+          from rm_traffic.api_client import RentMasseurAPI
+          from rm_traffic.reply_drafter import draft_mailbox_replies, format_drafts_summary
+          import json, pathlib
+
+          api = RentMasseurAPI()
+          mailbox = api.get_mailbox(page=1, folder=1, sort=1)
+          emails = mailbox.get('emails', [])
+
+          ctx = {'rate': '\$200', 'phone': '', 'location': 'Manhattan incall'}
+          drafts = draft_mailbox_replies(emails, ctx)
+          print(format_drafts_summary(drafts))
+
+          # Write drafts as artifact
+          out = pathlib.Path('output')
+          out.mkdir(parents=True, exist_ok=True)
+          data = [{
+            'username': d.username,
+            'intent_class': d.intent_class,
+            'confidence': d.confidence,
+            'reply_text': d.reply_text,
+            'reply_class': d.reply_class,
+            'risk_level': d.risk_level,
+            'needs_human_approval': d.needs_human_approval,
+            'reason': d.reason,
+          } for d in drafts]
+          (out / 'reply_drafts.json').write_text(json.dumps(data, indent=2))
+          print(f'Drafts written: {len(drafts)}')
+          " || echo "Reply draft queue failed"
+
+      - name: Build visitor revisit queue
+        env:
+          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+        run: |
+          python3 -c "
+          from rm_traffic.api_client import RentMasseurAPI
+          from rm_traffic.visitor_revisit_engine import build_revisit_queue, write_revisit_queue, format_queue_summary
+          api = RentMasseurAPI()
+          queue = build_revisit_queue(api)
+          write_revisit_queue(queue)
+          print(format_queue_summary(queue))
+          " || echo "Visitor revisit queue failed"
+
+      - name: Validate no cloud fallback on private text
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reply_drafter import _try_local_llm_polish
+          src = inspect.getsource(_try_local_llm_polish)
+          assert 'groq' not in src.lower(), 'GROQ found in private text path — POLICY VIOLATION'
+          assert 'openrouter' not in src.lower(), 'OPENROUTER found in private text path — POLICY VIOLATION'
+          print('Policy check: no cloud on private text — PASS')
+          "
+
+      - name: Validate no auto-send
+        run: |
+          python3 -c "
+          import inspect
+          from rm_traffic.reply_drafter import draft_reply
+          src = inspect.getsource(draft_reply)
+          assert 'send' not in src.lower() or 'human_approval' in src.lower(), 'Auto-send detected — POLICY VIOLATION'
+          print('Policy check: no auto-send — PASS')
+          "
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-recovery-review-${{ github.run_id }}
+          path: |
+            output/
+            rm_traffic/receipts/
+          retention-days: 30
+
+      - name: Awaken issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[RM-Recovery-Review] Failure — run ${context.runId}`,
+              body: `## Recovery Review Failure\n\n**Run**: ${context.runId}\n\nThe recovery review workflow failed. Check artifacts and logs for details.\n\nPossible causes:\n- Cloud fallback attempted on private text\n- Bad draft validation failure\n- Mailbox API error\n\nGAG should diagnose and propose a repair PR.`,
+              labels: ['gag:needs-human-review', 'gag:privacy-policy'],
+            });

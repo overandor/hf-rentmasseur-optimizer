@@ -1,0 +1,1454 @@
+{
+  "timestamp": "2026-06-27T06:26:08.466353+00:00",
+  "count": 70,
+  "profiles": [
+    {
+      "username": "Aalphi",
+      "status": "visited",
+      "title": "Aalphi | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Aalphi",
+        "url": null,
+        "city": null,
+        "title": "Aalphi | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Achingbod",
+      "status": "visited",
+      "title": "Achingbod | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Achingbod",
+        "url": null,
+        "city": null,
+        "title": "Achingbod | RentMasseur",
+        "client_score": -50,
+        "label": "provider_likely",
+        "confidence": 0.95,
+        "reasons": [
+          "client_username:aching:20",
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Alexandr_Moscow",
+      "status": "visited",
+      "title": "Alexandr_Moscow - Male Masseur, Gay mass",
+      "source": "visited",
+      "classification": {
+        "username": "Alexandr_Moscow",
+        "url": null,
+        "city": null,
+        "title": "Alexandr_Moscow - Male Masseur, Gay mass",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Alexispf",
+      "status": "visited",
+      "title": "Alexispf | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Alexispf",
+        "url": null,
+        "city": null,
+        "title": "Alexispf | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Andrewmat",
+      "status": "visited",
+      "title": "Andrewmat | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Andrewmat",
+        "url": null,
+        "city": null,
+        "title": "Andrewmat | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Avengermichael",
+      "status": "visited",
+      "title": "Avengermichael | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Avengermichael",
+        "url": null,
+        "city": null,
+        "title": "Avengermichael | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "AvivaAviva",
+      "status": "visited",
+      "title": "AvivaAviva | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "AvivaAviva",
+        "url": null,
+        "city": null,
+        "title": "AvivaAviva | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "AxelMasseur",
+      "status": "visited",
+      "title": "AxelMasseur - Male Masseur, Gay massage ",
+      "source": "visited",
+      "classification": {
+        "username": "AxelMasseur",
+        "url": null,
+        "city": null,
+        "title": "AxelMasseur - Male Masseur, Gay massage ",
+        "client_score": -225,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_username:masseur:-55"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "BRAZILHEAT",
+      "status": "visited",
+      "title": "BRAZILHEAT - Male Masseur, Gay massage i",
+      "source": "visited",
+      "classification": {
+        "username": "BRAZILHEAT",
+        "url": null,
+        "city": null,
+        "title": "BRAZILHEAT - Male Masseur, Gay massage i",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "BRAZILPLEASURE",
+      "status": "visited",
+      "title": "BRAZILPLEASURE - Male Masseur, Gay massa",
+      "source": "visited",
+      "classification": {
+        "username": "BRAZILPLEASURE",
+        "url": null,
+        "city": null,
+        "title": "BRAZILPLEASURE - Male Masseur, Gay massa",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "BehindtheClouds",
+      "status": "visited",
+      "title": "BehindtheClouds | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "BehindtheClouds",
+        "url": null,
+        "city": null,
+        "title": "BehindtheClouds | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Big_Boy",
+      "status": "visited",
+      "title": "Big_Boy | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Big_Boy",
+        "url": null,
+        "city": null,
+        "title": "Big_Boy | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Bigadonismak",
+      "status": "visited",
+      "title": "Bigadonismak | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Bigadonismak",
+        "url": null,
+        "city": null,
+        "title": "Bigadonismak | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Blackcake",
+      "status": "visited",
+      "title": "Blackcake | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Blackcake",
+        "url": null,
+        "city": null,
+        "title": "Blackcake | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Brooklynkm",
+      "status": "visited",
+      "title": "Brooklynkm | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Brooklynkm",
+        "url": null,
+        "city": null,
+        "title": "Brooklynkm | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Brownbb",
+      "status": "visited",
+      "title": "Brownbb | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Brownbb",
+        "url": null,
+        "city": null,
+        "title": "Brownbb | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Calvinlau",
+      "status": "visited",
+      "title": "Calvinlau | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Calvinlau",
+        "url": null,
+        "city": null,
+        "title": "Calvinlau | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "ChrisRestrepo",
+      "status": "visited",
+      "title": "ChrisRestrepo - Male Masseur, Gay massag",
+      "source": "visited",
+      "classification": {
+        "username": "ChrisRestrepo",
+        "url": null,
+        "city": null,
+        "title": "ChrisRestrepo - Male Masseur, Gay massag",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "DAVIDMANXXX",
+      "status": "visited",
+      "title": "DAVIDMANXXX - Male Masseur, Gay massage ",
+      "source": "visited",
+      "classification": {
+        "username": "DAVIDMANXXX",
+        "url": null,
+        "city": null,
+        "title": "DAVIDMANXXX - Male Masseur, Gay massage ",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Davisit",
+      "status": "visited",
+      "title": "Davisit | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Davisit",
+        "url": null,
+        "city": null,
+        "title": "Davisit | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "DeepSwedishSpa",
+      "status": "visited",
+      "title": "DeepSwedishSpa - Male Masseur, Gay massa",
+      "source": "visited",
+      "classification": {
+        "username": "DeepSwedishSpa",
+        "url": null,
+        "city": null,
+        "title": "DeepSwedishSpa - Male Masseur, Gay massa",
+        "client_score": -315,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_title:swedish:-50",
+          "provider_username:spa:-35",
+          "provider_username:deep:-30",
+          "provider_username:swedish:-30"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Fredericodedeus",
+      "status": "visited",
+      "title": "Fredericodedeus - Male Masseur, Gay mass",
+      "source": "visited",
+      "classification": {
+        "username": "Fredericodedeus",
+        "url": null,
+        "city": null,
+        "title": "Fredericodedeus - Male Masseur, Gay mass",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Ghenessis",
+      "status": "visited",
+      "title": "Ghenessis - Male Masseur, Gay massage in",
+      "source": "visited",
+      "classification": {
+        "username": "Ghenessis",
+        "url": null,
+        "city": null,
+        "title": "Ghenessis - Male Masseur, Gay massage in",
+        "client_score": -310,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_title:gay massage in:-75",
+          "provider_title:massage in:-65"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Gokhankaan",
+      "status": "visited",
+      "title": "Gokhankaan | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Gokhankaan",
+        "url": null,
+        "city": null,
+        "title": "Gokhankaan | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Headsandtails",
+      "status": "visited",
+      "title": "Headsandtails | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Headsandtails",
+        "url": null,
+        "city": null,
+        "title": "Headsandtails | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Igor_Masseur",
+      "status": "visited",
+      "title": "Igor_Masseur - Male Masseur, Gay massage",
+      "source": "visited",
+      "classification": {
+        "username": "Igor_Masseur",
+        "url": null,
+        "city": null,
+        "title": "Igor_Masseur - Male Masseur, Gay massage",
+        "client_score": -225,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_username:masseur:-55"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Inneedofmassage",
+      "status": "visited",
+      "title": "Inneedofmassage | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Inneedofmassage",
+        "url": null,
+        "city": null,
+        "title": "Inneedofmassage | RentMasseur",
+        "client_score": -55,
+        "label": "provider_likely",
+        "confidence": 0.97,
+        "reasons": [
+          "client_username:inneed:35",
+          "client_username:need:25",
+          "provider_title:masseur:-80",
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "InosukeTopXL",
+      "status": "visited",
+      "title": "InosukeTopXL - Male Masseur, Gay massage",
+      "source": "visited",
+      "classification": {
+        "username": "InosukeTopXL",
+        "url": null,
+        "city": null,
+        "title": "InosukeTopXL - Male Masseur, Gay massage",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Jodymuscle",
+      "status": "visited",
+      "title": "Jodymuscle - Male Masseur, Gay massage i",
+      "source": "visited",
+      "classification": {
+        "username": "Jodymuscle",
+        "url": null,
+        "city": null,
+        "title": "Jodymuscle - Male Masseur, Gay massage i",
+        "client_score": -170,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "JoeUptownNYC",
+      "status": "visited",
+      "title": "JoeUptownNYC | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "JoeUptownNYC",
+        "url": null,
+        "city": null,
+        "title": "JoeUptownNYC | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Joerocca",
+      "status": "visited",
+      "title": "Joerocca | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Joerocca",
+        "url": null,
+        "city": null,
+        "title": "Joerocca | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Ksander",
+      "status": "visited",
+      "title": "Ksander - Male Masseur, Gay massage in M",
+      "source": "visited",
+      "classification": {
+        "username": "Ksander",
+        "url": null,
+        "city": null,
+        "title": "Ksander - Male Masseur, Gay massage in M",
+        "client_score": -310,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_title:gay massage in:-75",
+          "provider_title:massage in:-65"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "LeoAperol",
+      "status": "visited",
+      "title": "LeoAperol | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "LeoAperol",
+        "url": null,
+        "city": null,
+        "title": "LeoAperol | RentMasseur",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "LuisNYC",
+      "status": "visited",
+      "title": "LuisNYC - Male Masseur, Gay massage in N",
+      "source": "visited",
+      "classification": {
+        "username": "LuisNYC",
+        "url": null,
+        "city": null,
+        "title": "LuisNYC - Male Masseur, Gay massage in N",
+        "client_score": -310,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_title:gay massage in:-75",
+          "provider_title:massage in:-65"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Luvsagoodmassage",
+      "status": "visited",
+      "title": "Luvsagoodmassage | RentMasseur",
+      "source": "visited",
+      "classification": {
+        "username": "Luvsagoodmassage",
+        "url": null,
+        "city": null,
+        "title": "Luvsagoodmassage | RentMasseur",
+        "client_score": -95,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "client_username:luv:20",
+          "provider_title:masseur:-80",
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "MJack",
+      "status": "visited",
+      "title": "MJack - Male Masseur, Gay massage in New",
+      "source": "visited",
+      "classification": {
+        "username": "MJack",
+        "url": null,
+        "city": null,
+        "title": "MJack - Male Masseur, Gay massage in New",
+        "client_score": -310,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:male masseur:-90",
+          "provider_title:masseur:-80",
+          "provider_title:gay massage in:-75",
+          "provider_title:massage in:-65"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Mattlatino",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Mattlatino",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Paulvazo",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Paulvazo",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "RyanRypped",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "RyanRypped",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Sheldonn",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Sheldonn",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Sobro",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Sobro",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Talleshbr",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Talleshbr",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Trek",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Trek",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Uwsnyc",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Uwsnyc",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Webmaster",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "Webmaster",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "WenDylaTinoHot",
+      "status": "visited",
+      "title": "rentmasseur.com",
+      "source": "visited",
+      "classification": {
+        "username": "WenDylaTinoHot",
+        "url": null,
+        "city": null,
+        "title": "rentmasseur.com",
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_title:masseur:-80",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "DrewMassageNyc",
+      "name": "DrewMassageNyc",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DrewMassageNyc",
+      "source": "ny",
+      "classification": {
+        "username": "DrewMassageNyc",
+        "url": "https://rentmasseur.com/DrewMassageNyc",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "BKKmassage",
+      "name": "BKKmassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BKKmassage",
+      "source": "ny",
+      "classification": {
+        "username": "BKKmassage",
+        "url": "https://rentmasseur.com/BKKmassage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Hotmassage_man",
+      "name": "Hotmassage_man",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Hotmassage_man",
+      "source": "ny",
+      "classification": {
+        "username": "Hotmassage_man",
+        "url": "https://rentmasseur.com/Hotmassage_man",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "HealingHandsNYC",
+      "name": "HealingHandsNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/HealingHandsNYC",
+      "source": "ny",
+      "classification": {
+        "username": "HealingHandsNYC",
+        "url": "https://rentmasseur.com/HealingHandsNYC",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -60,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_username:hands:-35",
+          "provider_username:healing:-35",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "SportsMassageNYC",
+      "name": "SportsMassageNYC",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SportsMassageNYC",
+      "source": "ny",
+      "classification": {
+        "username": "SportsMassageNYC",
+        "url": "https://rentmasseur.com/SportsMassageNYC",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -70,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_username:massage:-45",
+          "provider_username:sportsmassage:-35",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Samuelmassage",
+      "name": "Samuelmassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Samuelmassage",
+      "source": "ny",
+      "classification": {
+        "username": "Samuelmassage",
+        "url": "https://rentmasseur.com/Samuelmassage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "BIGMANMASSAGE",
+      "name": "BIGMANMASSAGE",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/BIGMANMASSAGE",
+      "source": "ny",
+      "classification": {
+        "username": "BIGMANMASSAGE",
+        "url": "https://rentmasseur.com/BIGMANMASSAGE",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Nick_Massage",
+      "name": "Nick_Massage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Nick_Massage",
+      "source": "ny",
+      "classification": {
+        "username": "Nick_Massage",
+        "url": "https://rentmasseur.com/Nick_Massage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "DeepTouchMan",
+      "name": "DeepTouchMan",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/DeepTouchMan",
+      "source": "ny",
+      "classification": {
+        "username": "DeepTouchMan",
+        "url": "https://rentmasseur.com/DeepTouchMan",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -55,
+        "label": "provider_likely",
+        "confidence": 0.97,
+        "reasons": [
+          "provider_username:touch:-35",
+          "provider_username:deep:-30",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "MasseurJeremy",
+      "name": "MasseurJeremy",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MasseurJeremy",
+      "source": "ny",
+      "classification": {
+        "username": "MasseurJeremy",
+        "url": "https://rentmasseur.com/MasseurJeremy",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "AnderNYCmasseur",
+      "name": "AnderNYCmasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/AnderNYCmasseur",
+      "source": "ny",
+      "classification": {
+        "username": "AnderNYCmasseur",
+        "url": "https://rentmasseur.com/AnderNYCmasseur",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "jacobomasseur",
+      "name": "jacobomasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/jacobomasseur",
+      "source": "ny",
+      "classification": {
+        "username": "jacobomasseur",
+        "url": "https://rentmasseur.com/jacobomasseur",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Giomassage",
+      "name": "Giomassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Giomassage",
+      "source": "ny",
+      "classification": {
+        "username": "Giomassage",
+        "url": "https://rentmasseur.com/Giomassage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "TonyMassage",
+      "name": "TonyMassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/TonyMassage",
+      "source": "ny",
+      "classification": {
+        "username": "TonyMassage",
+        "url": "https://rentmasseur.com/TonyMassage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "SensualMasseurNJ",
+      "name": "SensualMasseurNJ",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/SensualMasseurNJ",
+      "source": "ny",
+      "classification": {
+        "username": "SensualMasseurNJ",
+        "url": "https://rentmasseur.com/SensualMasseurNJ",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Antoniomassage",
+      "name": "Antoniomassage",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/Antoniomassage",
+      "source": "ny",
+      "classification": {
+        "username": "Antoniomassage",
+        "url": "https://rentmasseur.com/Antoniomassage",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "MindfulMasseur",
+      "name": "MindfulMasseur",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/MindfulMasseur",
+      "source": "ny",
+      "classification": {
+        "username": "MindfulMasseur",
+        "url": "https://rentmasseur.com/MindfulMasseur",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "JonyHealingHands",
+      "name": "JonyHealingHands",
+      "city": "manhattan-ny",
+      "url": "https://rentmasseur.com/JonyHealingHands",
+      "source": "ny",
+      "classification": {
+        "username": "JonyHealingHands",
+        "url": "https://rentmasseur.com/JonyHealingHands",
+        "city": "manhattan-ny",
+        "title": null,
+        "client_score": -60,
+        "label": "provider_likely",
+        "confidence": 0.98,
+        "reasons": [
+          "provider_username:hands:-35",
+          "provider_username:healing:-35",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "jormasseur",
+      "name": "jormasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/jormasseur",
+      "source": "ny",
+      "classification": {
+        "username": "jormasseur",
+        "url": "https://rentmasseur.com/jormasseur",
+        "city": "brooklyn-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "PepeMasseur",
+      "name": "PepeMasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/PepeMasseur",
+      "source": "ny",
+      "classification": {
+        "username": "PepeMasseur",
+        "url": "https://rentmasseur.com/PepeMasseur",
+        "city": "brooklyn-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "GonzaloMasseur",
+      "name": "GonzaloMasseur",
+      "city": "brooklyn-ny",
+      "url": "https://rentmasseur.com/GonzaloMasseur",
+      "source": "ny",
+      "classification": {
+        "username": "GonzaloMasseur",
+        "url": "https://rentmasseur.com/GonzaloMasseur",
+        "city": "brooklyn-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "PromasseurMax",
+      "name": "PromasseurMax",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/PromasseurMax",
+      "source": "ny",
+      "classification": {
+        "username": "PromasseurMax",
+        "url": "https://rentmasseur.com/PromasseurMax",
+        "city": "bronx-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "ParadiseMassage",
+      "name": "ParadiseMassage",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/ParadiseMassage",
+      "source": "ny",
+      "classification": {
+        "username": "ParadiseMassage",
+        "url": "https://rentmasseur.com/ParadiseMassage",
+        "city": "bronx-ny",
+        "title": null,
+        "client_score": -35,
+        "label": "provider_likely",
+        "confidence": 0.88,
+        "reasons": [
+          "provider_username:massage:-45",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    },
+    {
+      "username": "Dan_masseur",
+      "name": "Dan_masseur",
+      "city": "bronx-ny",
+      "url": "https://rentmasseur.com/Dan_masseur",
+      "source": "ny",
+      "classification": {
+        "username": "Dan_masseur",
+        "url": "https://rentmasseur.com/Dan_masseur",
+        "city": "bronx-ny",
+        "title": null,
+        "client_score": -45,
+        "label": "provider_likely",
+        "confidence": 0.92,
+        "reasons": [
+          "provider_username:masseur:-55",
+          "generic_or_blank_title:+10"
+        ],
+        "next_action": "exclude_from_client_outreach"
+      }
+    }
+  ]
+}

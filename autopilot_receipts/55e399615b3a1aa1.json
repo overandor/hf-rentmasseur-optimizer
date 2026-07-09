@@ -1,0 +1,10 @@
+{
+  "id": "55e399615b3a1aa1",
+  "stage": "build",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T20:54:23.990112Z",
+  "result": "PASS",
+  "binary": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/FocusBeam/.build/release/FocusBeam",
+  "binary_size": 91480,
+  "build_log": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/FocusBeam/build.log"
+}

@@ -1,0 +1,110 @@
+{
+  "total_chats": 15,
+  "with_messages": 15,
+  "metadata_only": 0,
+  "total_messages": 79,
+  "by_source": {
+    "chatgpt": {
+      "total": 3,
+      "with_messages": 3,
+      "messages": 27
+    },
+    "unknown": {
+      "total": 12,
+      "with_messages": 12,
+      "messages": 52
+    }
+  },
+  "chats": [
+    {
+      "title": "New chat",
+      "source": "chatgpt",
+      "messages": 1,
+      "id": "f5de2332-cbcb-49ba-91c5-d5c04b3376fa"
+    },
+    {
+      "title": "llm?",
+      "source": "chatgpt",
+      "messages": 9,
+      "id": "a31a6101-7a00-4665-ab70-cceb00bfd255"
+    },
+    {
+      "title": "ollama?",
+      "source": "chatgpt",
+      "messages": 17,
+      "id": "8494f606-934f-4a2c-a114-107d47748f7c"
+    },
+    {
+      "title": "Generate image: car",
+      "source": "unknown",
+      "messages": 5,
+      "id": "518a5813-6d8e-497d-b4ac-1b47263db494"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "50c77152-422e-4c67-87ad-37ca95da0b74"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "a2cf0394-3f17-40b7-9a8b-ad032a64b8a3"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "161a97a3-c12e-4924-93c5-6aebf06f3146"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "e72ac49d-55e6-489e-9b99-6fc2b106b429"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "e317211f-f9f6-48f5-aba1-5f05eb5a4996"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "151acabb-0147-4f6b-be9a-557ff92ed2b7"
+    },
+    {
+      "title": "New chat",
+      "source": "unknown",
+      "messages": 1,
+      "id": "52a556b0-cc9b-4932-9d08-c842cedbabdc"
+    },
+    {
+      "title": "grok",
+      "source": "unknown",
+      "messages": 3,
+      "id": "ab37cb41-ed09-4b23-b179-e952da9ef1c2"
+    },
+    {
+      "title": "hel me what is in pictu",
+      "source": "unknown",
+      "messages": 7,
+      "id": "db074cfa-311d-4e60-99d4-8321e5d8fa71"
+    },
+    {
+      "title": "hello",
+      "source": "unknown",
+      "messages": 19,
+      "id": "14378aea-8b65-4172-b84c-bef11b3e31ba"
+    },
+    {
+      "title": "ok",
+      "source": "unknown",
+      "messages": 11,
+      "id": "d09c0b6a-5a25-4ccf-a5a6-a2090fe0643b"
+    }
+  ]
+}

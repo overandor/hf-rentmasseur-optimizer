@@ -1,0 +1,15 @@
+{
+  "id": "dd59b5ee6b18151f",
+  "stage": "architect",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T22:49:20.651756Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/FocusBeam",
+  "files": [
+    "Package.swift",
+    "Sources/FocusBeam/FocusBeamApp.swift",
+    "Sources/FocusBeam/Info.plist",
+    "README.md"
+  ],
+  "icon": "rocket",
+  "bundle_id": "com.autopilot.focusbeam"
+}

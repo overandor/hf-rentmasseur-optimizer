@@ -1,0 +1,15 @@
+{
+  "id": "3aaf45d6721cb5f3",
+  "stage": "architect",
+  "app": "ClipFlow",
+  "timestamp": "2026-06-27T22:25:48.030833Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/ClipFlow",
+  "files": [
+    "Package.swift",
+    "Sources/ClipFlow/ClipFlowApp.swift",
+    "Sources/ClipFlow/Info.plist",
+    "README.md"
+  ],
+  "icon": "rocket",
+  "bundle_id": "com.autopilot.clipflow"
+}

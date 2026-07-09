@@ -1,0 +1,24 @@
+# .over.glyph — programs that are their own AI
+# OI-14: Glyph-LLM Fusion — hybrid syntax
+
+# .over keywords
+step 1: superposition { fast | safe | cheap } → route_choice
+step 2: collapse → winner
+step 3: entangle(varA, varB) → entangled
+step 4: dream 5 → best_future
+step 5: agent analyze → analysis_result
+step 6: verify receipt → proof
+step 7: import crypto_utils → crypto_ops
+step 8: zero-shot anomaly_detector → detector
+step 9: likely optimize → optimization
+step 10: what if 3 → alternate_path
+
+# glyph lines
+◉◆⌁
+◇⟡▲
+⟡◆
+
+# natural language
+monitor the system for anomalies
+verify all receipts are valid
+stream results to output channel

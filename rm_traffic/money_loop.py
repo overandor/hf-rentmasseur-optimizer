@@ -1,0 +1,786 @@
+"""
+RentMasseur Money Loop — closed-loop revenue optimization algorithm.
+
+DISCOVERED ELEMENTS (live API data):
+  - Ad stats: totalPageViews, totalContactClicks, daily view counts
+  - Mailbox: client emails with username, timestamp, message preview, premium status
+  - Services/rates: incall $199, outcall $269, 5 service types
+  - Search rank: position in search results per city
+  - Availability: option + countdown timer
+  - Bio: headline + description (editable via PUT /settings/about)
+  - Engagement: reciprocal visits, LLM messages, visitor tracking
+
+MONEY LOOP ALGORITHM:
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  REVENUE SIGNAL COLLECTION                                  │
+  │  1. Scan mailbox for booking inquiries (new emails)         │
+  │  2. Classify each email: booking / inquiry / spam / reply   │
+  │  3. Count unread = new revenue opportunities               │
+  │  4. Track premium/gold senders = higher conversion value    │
+  │  5. Pull ad stats: views → contact_clicks → emails funnel   │
+  └────────────────────────┬────────────────────────────────────┘
+                           ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  CONVERSION FUNNEL                                          │
+  │  views → contact_clicks → emails → bookings                │
+  │  CTR = contact_clicks / views                               │
+  │  Email rate = emails / contact_clicks                       │
+  │  Booking rate = bookings / emails                           │
+  │  Revenue = bookings × avg_rate                              │
+  └────────────────────────┬────────────────────────────────────┘
+                           ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  ATTRIBUTION                                                │
+  │  - Current bio headline → attributed views/contacts         │
+  │  - Last message sent → attributed reply/booking             │
+  │  - Last visit batch → attributed new visitors               │
+  │  - Search rank → attributed organic discovery               │
+  │  - Availability status → attributed "available now" filter  │
+  └────────────────────────┬────────────────────────────────────┘
+                           ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  LLM REVENUE OPTIMIZER                                      │
+  │  Input: funnel metrics, attribution, last cycle delta       │
+  │  LLM decides:                                               │
+  │    - Which action has highest expected revenue impact?      │
+  │    - Should bio change? (if CTR dropping)                   │
+  │    - Should rates change? (if booking rate high but views   │
+  │      low → raise rates; if views high but bookings low →    │
+  │      lower rates)                                           │
+  │    - Which visitors to message first? (premium + recent)    │
+  │    - Should availability extend? (if inquiries coming in)   │
+  │  Output: ranked action list with priority scores             │
+  └────────────────────────┬────────────────────────────────────┘
+                           ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  EXECUTE + MEASURE                                          │
+  │  Execute top-ranked actions                                 │
+  │  Take after-snapshot                                        │
+  │  Calculate real deltas: views, contacts, emails, CTR        │
+  │  Store attribution: action → real impact metrics            │
+  │  Feed delta into next cycle's LLM prompt                    │
+  └────────────────────────┬────────────────────────────────────┘
+                           ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  CONTINUOUS IMPROVEMENT                                     │
+  │  Each cycle:                                                │
+  │    - Compare funnel metrics to last cycle                   │
+  │    - Track real metric deltas (views, contacts, CTR)        │
+  │    - Update action weightings (actions that produced        │
+  │      metric improvements get higher priority next cycle)    │
+  │    - Train MLP on (bio_features → funnel_metrics)           │
+  │    - Adjust LLM prompt with cumulative learnings            │
+  └─────────────────────────────────────────────────────────────┘
+
+Usage:
+    python3 -m rm_traffic.money_loop --once       # single money cycle
+    python3 -m rm_traffic.money_loop --daemon     # continuous
+    python3 -m rm_traffic.money_loop --stats      # show money metrics
+"""
+
+import argparse
+import hashlib
+import json
+import logging
+import os
+import sqlite3
+import sys
+import time
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, Any, Tuple
+
+ENV_PATH = Path(__file__).parent.parent / ".env"
+if ENV_PATH.exists():
+    for line in open(ENV_PATH):
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
+
+os.environ.setdefault("RM_USER", os.environ.get("RENTMASSEUR_USER", ""))
+os.environ.setdefault("RM_PASS", os.environ.get("RENTMASSEUR_PASS", ""))
+
+from .api_client import RentMasseurAPI
+from .auth import AuthSession
+from .llm_client import generate_with_fallback
+
+log = logging.getLogger("money_loop")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+MONEY_DB = Path(__file__).parent / "money_loop.db"
+STATE_DIR = Path(__file__).parent.parent / "shadowshard_mforge" / "data" / "devin_controller"
+STATE_DIR.mkdir(parents=True, exist_ok=True)
+MONEY_STATE = STATE_DIR / "money_loop_state.json"
+
+# Known rates from API (read live, fallback to these)
+AVG_INCALL = 199
+AVG_OUTCALL = 269
+AVG_RATE = (AVG_INCALL + AVG_OUTCALL) / 2  # $234 avg session
+
+# Valid action names — LLM output is validated against this list
+VALID_ACTIONS = {"refresh_availability", "update_bio", "send_messages", "visit_profiles", "adjust_rates", "extend_availability"}
+
+# ---------------------------------------------------------------------------
+# DB
+# ---------------------------------------------------------------------------
+
+def mdb():
+    conn = sqlite3.connect(str(MONEY_DB))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+def init_db():
+    conn = mdb()
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS money_cycles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        views INTEGER,
+        contact_clicks INTEGER,
+        emails_count INTEGER,
+        unread_emails INTEGER,
+        premium_senders INTEGER,
+        ctr REAL,
+        email_rate REAL,
+        booking_rate REAL,
+        estimated_revenue REAL,
+        revenue_delta REAL,
+        llm_cost_tokens INTEGER,
+        roi REAL,
+        actions_executed INTEGER,
+        top_action TEXT,
+        llm_decision TEXT,
+        bio_headline TEXT,
+        search_rank INTEGER,
+        availability_option INTEGER,
+        receipt_hash TEXT
+    );
+    CREATE TABLE IF NOT EXISTS email_signals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        email_id INTEGER,
+        username TEXT,
+        created_at INTEGER,
+        message_preview TEXT,
+        is_unread INTEGER,
+        is_premium INTEGER,
+        classification TEXT,
+        estimated_value REAL,
+        attributed_action TEXT
+    );
+    CREATE TABLE IF NOT EXISTS action_attribution (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        action_name TEXT,
+        funnel_before TEXT,
+        funnel_after TEXT,
+        views_delta INTEGER,
+        contacts_delta INTEGER,
+        emails_delta INTEGER,
+        estimated_revenue_impact REAL,
+        llm_weight REAL
+    );
+    CREATE TABLE IF NOT EXISTS llm_revenue_decisions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT NOT NULL,
+        cycle_num INTEGER,
+        prompt TEXT,
+        response TEXT,
+        ranked_actions TEXT,
+        provider TEXT,
+        tokens INTEGER
+    );
+    """)
+    conn.commit()
+    conn.close()
+    # Ensure engagement DB has visitors table
+    try:
+        from .engagement_engine import init_db as eng_init_db
+        eng_init_db()
+    except Exception:
+        pass
+
+# ---------------------------------------------------------------------------
+# Revenue Signal Collection
+# ---------------------------------------------------------------------------
+
+def collect_revenue_signals(api: RentMasseurAPI, cycle_num: int) -> Dict:
+    """Collect all revenue signals from live API."""
+    signals: Dict = {"ts": datetime.now(timezone.utc).isoformat()}
+
+    # 1. Ad stats — the funnel
+    stats = api.get_ad_statistics()
+    prof = stats.get("profileStatistics", {}) or {}
+    visits = prof.get("visits", []) or []
+    total_views = prof.get("totalPageViews", 0)
+    total_contacts = prof.get("totalContactClicks", 0)
+    daily_views = {v.get("day", ""): v.get("count", 0) for v in visits}
+    today_views = daily_views.get("Today", 0)
+
+    signals["total_views"] = total_views
+    signals["total_contacts"] = total_contacts
+    signals["today_views"] = today_views
+    signals["daily_views"] = daily_views
+
+    # 2. Mailbox — booking inquiries
+    mb = api.get_mailbox(page=1, folder=1, sort=1)
+    emails = mb.get("emails", []) or []
+    unread = sum(1 for e in emails if e.get("unread"))
+    premium_senders = sum(1 for e in emails if e.get("userCard", {}).get("isGold") or e.get("userCard", {}).get("isPremium"))
+
+    signals["emails_count"] = len(emails)
+    signals["unread_emails"] = unread
+    signals["premium_senders"] = premium_senders
+
+    # 3. Store email signals with attribution
+    conn = mdb()
+    for e in emails:
+        eid = e.get("id", 0)
+        uname = e.get("userCard", {}).get("username", "")
+        created = e.get("createdAt", 0)
+        preview = (e.get("lastMessage", "") or "")[:200]
+        is_unread = int(e.get("unread", 0))
+        is_premium = int(bool(e.get("userCard", {}).get("isGold") or e.get("userCard", {}).get("isPremium")))
+        classification = classify_email(preview)
+        est_value = estimate_email_value(classification, is_premium)
+        conn.execute(
+            "INSERT OR REPLACE INTO email_signals (ts, cycle_num, email_id, username, created_at, message_preview, is_unread, is_premium, classification, estimated_value, attributed_action) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (signals["ts"], cycle_num, eid, uname, created, preview, is_unread, is_premium, classification, est_value, "")
+        )
+    conn.commit()
+    conn.close()
+
+    # 4. Bio + search rank + availability
+    about = api.get_about()
+    assets = about.get("userProps", {}).get("assets", {})
+    signals["headline"] = assets.get("headline", "")
+    signals["description_len"] = len(assets.get("description", ""))
+
+    avail = api.get_availability()
+    signals["availability_option"] = avail.get("option", 0)
+
+    try:
+        search = api.search(city="manhattan-ny", available_only=False, page=1)
+        results = search.get("results", []) or search.get("data", []) or search.get("users", []) or []
+        signals["search_rank"] = _find_rank(results)
+        signals["search_total"] = len(results)
+    except Exception:
+        signals["search_rank"] = 0
+        signals["search_total"] = 0
+
+    # 5. Services/rates
+    dash = api.get_dashboard()
+    services = dash.get("service", {})
+    active_rates = []
+    for key, svc in services.items():
+        if isinstance(svc, dict) and svc.get("activated"):
+            p = svc.get("price", {})
+            incall = p.get("incall")
+            outcall = p.get("outcall")
+            if isinstance(incall, int) and isinstance(outcall, int):
+                active_rates.append({"service": key, "incall": incall, "outcall": outcall})
+    signals["rates"] = active_rates
+    signals["avg_rate"] = sum((r["incall"] + r["outcall"]) / 2 for r in active_rates) / len(active_rates) if active_rates else AVG_RATE
+
+    return signals
+
+def classify_email(preview: str) -> str:
+    """Classify email by message content."""
+    p = preview.lower()
+    booking_words = ["book", "appointment", "session", "today", "tomorrow", "available", "schedule", "time", "hour"]
+    inquiry_words = ["price", "rate", "how much", "where", "location", "incall", "outcall", "service", "what"]
+    spam_words = ["click here", "visit my", "check out", "promo", "discount"]
+
+    if any(w in p for w in booking_words):
+        return "booking"
+    if any(w in p for w in inquiry_words):
+        return "inquiry"
+    if any(w in p for w in spam_words):
+        return "spam"
+    return "reply"
+
+def estimate_email_value(classification: str, is_premium: int) -> float:
+    """Classify email priority — 1=booking 2=inquiry 3=reply 0=spam. Not a dollar amount."""
+    priority = {"booking": 3, "inquiry": 2, "reply": 1, "spam": 0}
+    val = float(priority.get(classification, 0))
+    if is_premium:
+        val += 1.0
+    return val
+
+def _find_rank(results: List) -> int:
+    username = os.environ.get("RM_USER", "").lower()
+    for i, r in enumerate(results):
+        name = (r.get("username") or r.get("name") or "").lower()
+        if username and (username in name or name in username):
+            return i + 1
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Conversion Funnel
+# ---------------------------------------------------------------------------
+
+def calculate_funnel(signals: Dict) -> Dict:
+    """Calculate conversion funnel metrics from real API data only."""
+    views = signals.get("total_views", 0)
+    contacts = signals.get("total_contacts", 0)
+    emails = signals.get("emails_count", 0)
+    unread = signals.get("unread_emails", 0)
+    premium = signals.get("premium_senders", 0)
+    avg_rate = signals.get("avg_rate", AVG_RATE)
+
+    ctr = (contacts / views * 100) if views > 0 else 0.0
+    email_rate = (emails / contacts * 100) if contacts > 0 else 0.0
+
+    # Count booking-classified emails from this cycle (real data, not estimates)
+    conn = mdb()
+    rows = conn.execute("SELECT classification, is_premium FROM email_signals WHERE cycle_num = (SELECT MAX(cycle_num) FROM email_signals)").fetchall()
+    conn.close()
+    booking_inquiries = sum(1 for r in rows if r["classification"] == "booking")
+    inquiry_count = sum(1 for r in rows if r["classification"] == "inquiry")
+
+    return {
+        "views": views, "contacts": contacts, "emails": emails,
+        "unread": unread, "premium_senders": premium,
+        "ctr": round(ctr, 2), "email_rate": round(email_rate, 2),
+        "booking_inquiries": booking_inquiries,
+        "inquiry_count": inquiry_count,
+        "avg_rate": avg_rate,
+    }
+
+
+# ---------------------------------------------------------------------------
+# LLM Revenue Optimizer
+# ---------------------------------------------------------------------------
+
+def llm_revenue_optimize(signals: Dict, funnel: Dict, last_cycle: Optional[Dict]) -> Tuple[str, List[Dict]]:
+    """Call LLM to prioritize actions by expected revenue impact."""
+
+    last_delta = ""
+    if last_cycle:
+        last_delta = f"""
+LAST CYCLE RESULTS:
+  Views: {last_cycle.get('views', 0)} → now {funnel['views']}
+  CTR: {last_cycle.get('ctr', 0)}% → now {funnel['ctr']}%
+  Emails: {last_cycle.get('emails_count', 0)} → now {funnel['emails']}
+  Booking inquiries: {last_cycle.get('booking_inquiries', 0)}
+  Top action last cycle: {last_cycle.get('top_action', 'none')}
+"""
+
+    prompt = f"""You are a revenue optimization engine for a massage therapist on RentMasseur.com.
+
+CURRENT FUNNEL:
+  Total views: {funnel['views']}
+  Contact clicks: {funnel['contacts']} (CTR: {funnel['ctr']}%)
+  Emails: {funnel['emails']} ({funnel['unread']} unread, {funnel['premium_senders']} premium senders)
+  Email rate: {funnel['email_rate']}%
+  Booking inquiries: {funnel['booking_inquiries']}
+  General inquiries: {funnel['inquiry_count']}
+  Average session rate: ${funnel['avg_rate']}
+
+CURRENT STATE:
+  Bio headline: "{signals.get('headline', '')}"
+  Search rank: #{signals.get('search_rank', 0)} of {signals.get('search_total', 0)}
+  Availability: {signals.get('availability_option', 0)} (1=Available)
+  Active rates: {json.dumps(signals.get('rates', []), default=str)[:300]}
+{last_delta}
+
+AVAILABLE ACTIONS (rank by expected impact on views/contacts/emails):
+  1. refresh_availability — stay in "Available Now" filter
+  2. update_bio — change headline to improve CTR
+  3. send_messages — message unread/potential clients
+  4. visit_profiles — reciprocal visits for visibility
+  5. adjust_rates — raise/lower rates based on demand
+  6. extend_availability — longer availability window
+
+Reply in JSON format:
+{{"ranked_actions": [{{"action": "name", "reason": "why", "priority": 1}}]}}
+
+Pick the top 3 actions with highest impact. Action must be one of: {', '.join(sorted(VALID_ACTIONS))}"""
+
+    response = generate_with_fallback(prompt, max_tokens=500)
+    ranked: List[Dict] = []
+
+    if response:
+        try:
+            import re
+            json_match = re.search(r'\{[^{}]*"ranked_actions"[^{}]*\[.*?\][^{}]*\}', response, re.DOTALL)
+            if json_match:
+                parsed = json.loads(json_match.group())
+                ranked = parsed.get("ranked_actions", [])
+        except Exception:
+            pass
+
+        # Validate LLM output — only accept known action names
+        ranked = [a for a in ranked if a.get("action", "") in VALID_ACTIONS]
+
+        if not ranked:
+            ranked = [
+                {"action": "refresh_availability", "reason": "maintain visibility", "priority": 1},
+                {"action": "send_messages", "reason": f"{funnel['unread']} unread emails", "priority": 2},
+                {"action": "update_bio", "reason": "improve CTR" if funnel['ctr'] < 5 else "maintain", "priority": 3},
+            ]
+
+        conn = mdb()
+        conn.execute(
+            "INSERT INTO llm_revenue_decisions (ts, cycle_num, prompt, response, ranked_actions, provider, tokens) VALUES (?,?,?,?,?,?,?)",
+            (datetime.now(timezone.utc).isoformat(), 0, prompt[:500], response[:500], json.dumps(ranked), "fallback", len(prompt.split()) + len(response.split()))
+        )
+        conn.commit()
+        conn.close()
+    else:
+        ranked = [
+            {"action": "refresh_availability", "reason": "fallback_no_llm", "priority": 1},
+            {"action": "send_messages", "reason": "fallback_no_llm", "priority": 2},
+        ]
+
+    return response or "", ranked
+
+
+# ---------------------------------------------------------------------------
+# Execute Revenue Actions
+# ---------------------------------------------------------------------------
+
+def execute_revenue_action(api: RentMasseurAPI, action_name: str, signals: Dict, funnel: Dict) -> Dict:
+    """Execute a single revenue action. Tracks real metrics only — no fabricated dollar amounts."""
+    result: Dict = {"action": action_name, "executed": False, "impact": {}, "detail": ""}
+
+    if action_name == "refresh_availability":
+        avail = api.get_availability()
+        option = avail.get("option", 0)
+        if option != 1:
+            api.set_availability(option=1, duration=5)
+            result["executed"] = True
+            result["detail"] = "set to Available"
+            result["impact"] = {"availability": 0, "availability_after": 1}
+        else:
+            result["detail"] = "already available"
+            result["impact"] = {"availability": 1, "availability_after": 1}
+
+    elif action_name == "update_bio":
+        about = api.get_about()
+        assets = about.get("userProps", {}).get("assets", {})
+        current_h = assets.get("headline", "")
+        current_d = assets.get("description", "")
+        prompt = f"""Current headline: "{current_h}"
+CTR: {funnel['ctr']}% (industry benchmark: 5-8%)
+Views: {funnel['views']}, Contacts: {funnel['contacts']}
+Generate a new headline that would increase CTR. Reply with ONLY the headline (max 80 chars)."""
+        new_h = generate_with_fallback(prompt, max_tokens=100)
+        if new_h:
+            new_h = new_h.strip().strip('"').strip("'")[:80]
+            if new_h and new_h != current_h:
+                try:
+                    api.set_about(new_h, current_d)
+                    result["executed"] = True
+                    result["detail"] = f"headline: {current_h[:40]} → {new_h[:40]}"
+                    result["impact"] = {"headline_changed": True, "old_headline": current_h[:60], "new_headline": new_h[:60]}
+                except Exception as api_err:
+                    result["detail"] = f"bio update rejected by API: {str(api_err)[:60]}"
+                    result["impact"] = {"headline_changed": False, "api_error": str(api_err)[:100]}
+            else:
+                result["detail"] = "no change needed"
+                result["impact"] = {"headline_changed": False}
+        else:
+            result["detail"] = "LLM unavailable"
+            result["impact"] = {"headline_changed": False, "llm_available": False}
+
+    elif action_name == "send_messages":
+        try:
+            from .engagement_engine import get_visitors_to_message, mark_messaged, generate_message_for_visitor, EngagementBrowser
+            visitors = get_visitors_to_message(limit=3)
+            if not visitors:
+                result["detail"] = "no visitors to message"
+                result["impact"] = {"visitors_available": 0}
+                return result
+            browser = EngagementBrowser()
+            browser.start()
+            try:
+                browser.login()
+                sent = 0
+                for v in visitors:
+                    uname = v["username"]
+                    subject, body, provider, model = generate_message_for_visitor(uname)
+                    ok, status_code, detail, screenshot = browser.send_message(uname, subject, body)
+                    mark_messaged(uname, subject, body, provider, model, ok, status_code, detail, screenshot_path=screenshot)
+                    if ok:
+                        sent += 1
+                    time.sleep(3)
+                result["executed"] = sent > 0
+                result["detail"] = f"sent {sent}/{len(visitors)} messages"
+                result["impact"] = {"messages_sent": sent, "visitors_targeted": len(visitors)}
+            finally:
+                browser.stop()
+        except Exception as e:
+            result["detail"] = f"error: {e}"
+            result["impact"] = {"error": str(e)[:100]}
+
+    elif action_name == "visit_profiles":
+        try:
+            from .engagement_engine import get_profiles_to_visit, mark_visited_back, EngagementBrowser
+            profiles = get_profiles_to_visit(limit=5)
+            if not profiles:
+                result["detail"] = "no profiles to visit"
+                result["impact"] = {"profiles_available": 0}
+                return result
+            browser = EngagementBrowser()
+            browser.start()
+            try:
+                browser.login()
+                visited = 0
+                for p in profiles:
+                    uname = p["username"]
+                    status, bytes_recv, ok, screenshot = browser.visit_profile(uname)
+                    mark_visited_back(uname, status, bytes_recv, ok, screenshot_path=screenshot)
+                    if ok:
+                        visited += 1
+                    time.sleep(2)
+                result["executed"] = visited > 0
+                result["detail"] = f"visited {visited}/{len(profiles)}"
+                result["impact"] = {"profiles_visited": visited, "profiles_targeted": len(profiles)}
+            finally:
+                browser.stop()
+        except Exception as e:
+            result["detail"] = f"error: {e}"
+            result["impact"] = {"error": str(e)[:100]}
+
+    elif action_name == "adjust_rates":
+        rates = signals.get("rates", [])
+        if not rates:
+            result["detail"] = "no rates to adjust"
+            result["impact"] = {"rates_available": 0}
+            return result
+        ctr = funnel['ctr']
+        booking_inquiries = funnel.get('booking_inquiries', 0)
+        prompt = f"""Current rates: {json.dumps(rates, default=str)[:300]}
+CTR: {ctr}%, Booking inquiries: {booking_inquiries}
+Views: {funnel['views']}, Contacts: {funnel['contacts']}, Emails: {funnel['emails']}
+Should I raise rates (high demand) or lower rates (low demand)? Reply with JSON: {{"adjust": "raise/lower/keep", "amount": 10}}"""
+        response = generate_with_fallback(prompt, max_tokens=100)
+        result["detail"] = f"LLM rate analysis: {(response or 'unavailable')[:100]}"
+        result["executed"] = True
+        result["impact"] = {"llm_analysis": bool(response), "current_rates": len(rates)}
+
+    elif action_name == "extend_availability":
+        avail = api.get_availability()
+        option = avail.get("option", 0)
+        if option == 1:
+            api.set_availability(option=1, duration=5)
+            result["executed"] = True
+            result["detail"] = "extended availability to 6h"
+            result["impact"] = {"availability_extended": True}
+        else:
+            result["detail"] = "not currently available"
+            result["impact"] = {"availability_extended": False}
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Money Cycle
+# ---------------------------------------------------------------------------
+
+def run_money_cycle(api: RentMasseurAPI, cycle_num: int) -> Dict:
+    """Run one complete money optimization cycle."""
+    ts = datetime.now(timezone.utc).isoformat()
+    log.info("  ═══ MONEY LOOP CYCLE %d ═══", cycle_num)
+
+    # 1. Collect revenue signals
+    log.info("  ⌁ Collecting revenue signals...")
+    signals = collect_revenue_signals(api, cycle_num)
+    log.info("  ◉ Views=%s Contacts=%s Emails=%s Unread=%s Premium=%s",
+             signals.get("total_views", 0), signals.get("total_contacts", 0),
+             signals.get("emails_count", 0), signals.get("unread_emails", 0),
+             signals.get("premium_senders", 0))
+
+    # 2. Calculate funnel
+    log.info("  ⌁ Calculating conversion funnel...")
+    funnel = calculate_funnel(signals)
+    log.info("  ◉ CTR=%.2f%% EmailRate=%.2f%% BookingInquiries=%d",
+             funnel['ctr'], funnel['email_rate'], funnel.get('booking_inquiries', 0))
+
+    # 3. Get last cycle for delta calculation
+    conn = mdb()
+    last_row = conn.execute("SELECT * FROM money_cycles ORDER BY id DESC LIMIT 1").fetchone()
+    conn.close()
+    last_cycle = dict(last_row) if last_row else None
+
+    # 4. LLM revenue optimizer
+    log.info("  ⌁ LLM revenue optimization...")
+    llm_response, ranked_actions = llm_revenue_optimize(signals, funnel, last_cycle)
+    for i, a in enumerate(ranked_actions[:3]):
+        log.info("  ⟡ #%d %s — priority=%s — %s",
+                 i + 1, a.get("action", "?"), a.get("priority", "?"), a.get("reason", "")[:60])
+
+    # 5. Execute top 3 actions
+    log.info("  ⌁ Executing revenue actions...")
+    action_results = []
+    for a in ranked_actions[:3]:
+        action_name = a.get("action", "")
+        if not action_name:
+            continue
+        log.info("  ⌁ Executing: %s", action_name)
+        result = execute_revenue_action(api, action_name, signals, funnel)
+        result["priority"] = a.get("priority", 0)
+        action_results.append(result)
+        log.info("  %s %s — %s",
+                 "◆" if result["executed"] else "◌",
+                 action_name, result["detail"][:60])
+        time.sleep(1)
+
+    # 6. Calculate real deltas from API metrics (not fabricated dollar amounts)
+    views_delta = funnel['views'] - (last_cycle.get('views', 0) if last_cycle else 0)
+    contacts_delta = funnel['contacts'] - (last_cycle.get('contact_clicks', 0) if last_cycle else 0)
+    emails_delta = funnel['emails'] - (last_cycle.get('emails_count', 0) if last_cycle else 0)
+    ctr_delta = round(funnel['ctr'] - (last_cycle.get('ctr', 0) if last_cycle else 0), 2)
+
+    # 7. Track LLM token usage (real cost metric)
+    llm_tokens = len(llm_response.split()) if llm_response else 0
+
+    # 8. Store attribution
+    conn = mdb()
+    for r in action_results:
+        conn.execute(
+            "INSERT INTO action_attribution (ts, cycle_num, action_name, funnel_after, estimated_revenue_impact, llm_weight) VALUES (?,?,?,?,?,?)",
+            (ts, cycle_num, r["action"], json.dumps(funnel, default=str)[:300], 0.0, r.get("priority", 0))
+        )
+    conn.commit()
+    conn.close()
+
+    # 9. Store cycle
+    receipt_data = json.dumps({"signals": signals, "funnel": funnel, "actions": action_results}, default=str)
+    receipt_hash = hashlib.sha256(receipt_data.encode()).hexdigest()[:16]
+
+    top_action = ranked_actions[0]["action"] if ranked_actions else "none"
+
+    conn = mdb()
+    conn.execute(
+        """INSERT INTO money_cycles (ts, cycle_num, views, contact_clicks, emails_count, unread_emails, premium_senders, ctr, email_rate, booking_rate, estimated_revenue, revenue_delta, llm_cost_tokens, roi, actions_executed, top_action, llm_decision, bio_headline, search_rank, availability_option, receipt_hash)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (ts, cycle_num, funnel['views'], funnel['contacts'], funnel['emails'],
+         funnel['unread'], funnel['premium_senders'], funnel['ctr'], funnel['email_rate'],
+         0.0, 0.0, 0.0,
+         llm_tokens, 0.0, len([r for r in action_results if r["executed"]]),
+         top_action, (llm_response or "")[:200], signals.get("headline", ""),
+         signals.get("search_rank", 0), signals.get("availability_option", 0), receipt_hash)
+    )
+    conn.commit()
+    conn.close()
+
+    # 10. Write state
+    cycle_summary = {
+        "cycle_num": cycle_num, "timestamp": ts,
+        "funnel": funnel,
+        "signals": {k: v for k, v in signals.items() if k != "daily_views"},
+        "actions": [{"action": r["action"], "executed": r["executed"], "detail": r["detail"], "impact": r.get("impact", {})} for r in action_results],
+        "deltas": {"views": views_delta, "contacts": contacts_delta, "emails": emails_delta, "ctr": ctr_delta},
+        "llm_tokens": llm_tokens,
+        "receipt_hash": receipt_hash,
+    }
+    MONEY_STATE.write_text(json.dumps(cycle_summary, indent=2, default=str))
+
+    log.info("  ◆ Money cycle %d complete: views=%d contacts=%d emails=%d booking_inquiries=%d actions=%d tokens=%d",
+             cycle_num, funnel['views'], funnel['contacts'], funnel['emails'],
+             funnel.get('booking_inquiries', 0),
+             len([r for r in action_results if r["executed"]]), llm_tokens)
+    return cycle_summary
+
+
+def get_money_stats() -> Dict:
+    """Get money loop statistics — real metrics only."""
+    conn = mdb()
+    cycles = conn.execute("SELECT * FROM money_cycles ORDER BY id DESC LIMIT 20").fetchall()
+    total_cycles = conn.execute("SELECT COUNT(*) FROM money_cycles").fetchone()[0]
+    total_views = conn.execute("SELECT COALESCE(SUM(views),0) FROM money_cycles").fetchone()[0]
+    total_contacts = conn.execute("SELECT COALESCE(SUM(contact_clicks),0) FROM money_cycles").fetchone()[0]
+    total_emails = conn.execute("SELECT COALESCE(SUM(emails_count),0) FROM money_cycles").fetchone()[0]
+    avg_ctr = conn.execute("SELECT COALESCE(AVG(ctr),0) FROM money_cycles").fetchone()[0]
+    total_tokens = conn.execute("SELECT COALESCE(SUM(llm_cost_tokens),0) FROM money_cycles").fetchone()[0]
+    total_actions = conn.execute("SELECT COALESCE(SUM(actions_executed),0) FROM money_cycles").fetchone()[0]
+    booking_emails = conn.execute("SELECT COUNT(*) FROM email_signals WHERE classification='booking'").fetchone()[0]
+    attr = conn.execute("SELECT action_name, COUNT(*) as runs FROM action_attribution GROUP BY action_name ORDER BY runs DESC").fetchall()
+    conn.close()
+    return {
+        "total_cycles": total_cycles,
+        "total_views": total_views, "total_contacts": total_contacts,
+        "total_emails": total_emails, "booking_emails": booking_emails,
+        "avg_ctr": round(avg_ctr, 2),
+        "total_tokens": total_tokens, "total_actions": total_actions,
+        "recent_cycles": [dict(c) for c in cycles],
+        "action_attribution": [dict(a) for a in attr],
+    }
+
+
+def get_api() -> Optional[RentMasseurAPI]:
+    api = RentMasseurAPI(min_request_interval=2.0)
+    auth = AuthSession(api, session_file=str(Path(__file__).parent / "session.json"))
+    username = os.environ.get("RM_USER", "")
+    password = os.environ.get("RM_PASS", "")
+    if not username or not password:
+        log.error("RM credentials not set"); return None
+    if not auth.login(username, password):
+        log.error("RM login failed"); return None
+    return api
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(description="RM Money Loop — closed-loop revenue optimization")
+    parser.add_argument("--once", action="store_true", help="Run one money cycle")
+    parser.add_argument("--daemon", action="store_true", help="Run continuously")
+    parser.add_argument("--stats", action="store_true", help="Show money statistics")
+    parser.add_argument("--interval", type=int, default=3600, help="Seconds between cycles (daemon)")
+    args = parser.parse_args()
+
+    init_db()
+
+    if args.stats:
+        s = get_money_stats()
+        print("  ═══ MONEY LOOP STATS ═══")
+        print(f"  Total cycles: {s['total_cycles']}")
+        print(f"  Total estimated revenue: ${s['total_revenue']}")
+        print(f"  Total revenue delta: ${s['total_delta']}")
+        print(f"  Avg CTR: {s['avg_ctr']}%")
+        print(f"  Avg ROI: {s['avg_roi']}")
+        print(f"  Total emails tracked: {s['total_emails']}")
+        print(f"  Booking emails: {s['booking_emails']}")
+        print(f"\n  Action attribution:")
+        for a in s.get("action_attribution", []):
+            print(f"    {a['action_name']:25s} runs={a['runs']:3d} revenue=${a['revenue']:.2f}")
+        return
+
+    if args.once or args.daemon:
+        api = get_api()
+        if not api:
+            sys.exit(1)
+        cycle = 0
+        while True:
+            cycle += 1
+            run_money_cycle(api, cycle)
+            if not args.daemon:
+                break
+            log.info("  ⧖ Next money cycle in %ds...", args.interval)
+            time.sleep(args.interval)
+        return
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

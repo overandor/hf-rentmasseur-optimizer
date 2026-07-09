@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>SentinelDesk</string>
+    <key>CFBundleDisplayName</key>
+    <string>SentinelDesk</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.local.sentinelDesk</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>SentinelDesk</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright 2026</string>
+    <key>NSCameraUsageDescription</key>
+    <string>SentinelDesk uses the camera to detect your presence and start autonomous work when you step away.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>SentinelDesk connects to local Ollama for LLM-powered autonomous task execution.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+</dict>
+</plist>

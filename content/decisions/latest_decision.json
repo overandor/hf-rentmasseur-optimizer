@@ -1,0 +1,12 @@
+{
+  "id": "7f0a29fdcf4c23f1",
+  "decision_time": "2026-06-27T19:24:52.593079",
+  "state": "HOLD",
+  "immortality": 1.0,
+  "virality": 0.5,
+  "conversion": 0.3,
+  "trust": 1.0,
+  "reasoning": "Verified but not notarized — waiting on certificate",
+  "action": "retry",
+  "receipt_hash": "f60a34e44d8613ef39b8fe53ad49ddcb2b2db08500749953d64288c6aaea400f"
+}

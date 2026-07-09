@@ -1,0 +1,10 @@
+# OverLanguage workflow: verify and pay
+workflow: VerifyPay
+intent: verify artifact hash and issue payment receipt
+step 1: index file → local_index
+step 2: compute hash → merkle_root
+step 3: verify hash ≡ canonical → verified
+step 4: issue receipt → signed_receipt
+artifact: signed_receipt
+receipt: SHA256 chained from step 1 to step 4
+value: verified artifact with payment proof

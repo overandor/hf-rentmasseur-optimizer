@@ -1,0 +1,15 @@
+{
+  "id": "7436192017563659",
+  "stage": "architect",
+  "app": "GlyphBoard",
+  "timestamp": "2026-06-27T18:34:59.748891Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/GlyphBoard",
+  "files": [
+    "Package.swift",
+    "Sources/GlyphBoard/GlyphBoardApp.swift",
+    "Sources/GlyphBoard/Info.plist",
+    "README.md"
+  ],
+  "icon": "rocket",
+  "bundle_id": "com.autopilot.glyphboard"
+}

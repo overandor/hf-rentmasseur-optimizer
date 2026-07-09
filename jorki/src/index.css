@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-bg text-text font-sans;
+    overflow: hidden;
+  }
+  ::selection {
+    @apply bg-primary/30 text-text;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .glass-strong {
+    background: rgba(18, 20, 23, 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .glass-orange {
+    background: rgba(255, 138, 0, 0.06);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 138, 0, 0.15);
+  }
+  .glow-orange {
+    box-shadow: 0 0 30px rgba(255, 138, 0, 0.15), 0 0 60px rgba(255, 138, 0, 0.05);
+  }
+  .glow-orange-strong {
+    box-shadow: 0 0 20px rgba(255, 138, 0, 0.4), 0 0 40px rgba(255, 138, 0, 0.2);
+  }
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(30, 35, 41, 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 35, 41, 0.5) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .scanline {
+    position: relative;
+    overflow: hidden;
+  }
+  .scanline::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 138, 0, 0.6), transparent);
+    animation: scan 3s linear infinite;
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #FF8A00 0%, #FFB347 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bar-fill {
+    background: linear-gradient(90deg, #FF8A00 0%, #FFB347 100%);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 138, 0, 0.2);
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}

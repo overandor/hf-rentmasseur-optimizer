@@ -1,0 +1,15 @@
+{
+  "id": "7e6bd259298fd705",
+  "stage": "architect",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T23:23:08.974643Z",
+  "app_dir": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/DimLight",
+  "files": [
+    "Package.swift",
+    "Sources/DimLight/DimLightApp.swift",
+    "Sources/DimLight/Info.plist",
+    "README.md"
+  ],
+  "icon": "speedometer",
+  "bundle_id": "com.autopilot.dimlight"
+}

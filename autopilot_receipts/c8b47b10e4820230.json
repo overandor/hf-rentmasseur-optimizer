@@ -1,0 +1,9 @@
+{
+  "id": "c8b47b10e4820230",
+  "stage": "notary",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T18:50:25.030707Z",
+  "result": "PENDING",
+  "submission_id": "ee9e6a38-2c03-498d-8f7c-8ce7daac55e1",
+  "bundle": "/Users/alep/Downloads/windsurf-smoke/autopilot_apps/FocusBeam/FocusBeam.app"
+}

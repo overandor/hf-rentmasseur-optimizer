@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #0a0a0f;
+  --bg-panel: #12121a;
+  --bg-glass: #1a1a2e;
+  --accent: #ff6b1a;
+  --accent-glow: #ff8c42;
+  --signal-live: #00ff88;
+  --signal-warn: #ffaa00;
+  --signal-crit: #ff3344;
+  --signal-verified: #00aaff;
+  --signal-dormant: #555566;
+}
+
+body {
+  background: var(--bg-deep);
+  color: #e0e0e8;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  overflow-x: hidden;
+}
+
+.glass-panel {
+  background: rgba(18, 18, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 107, 26, 0.15);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,107,26,0.4), transparent);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.score-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.score-ring svg {
+  transform: rotate(-90deg);
+}
+
+.score-ring circle {
+  fill: none;
+  stroke-width: 4;
+}
+
+.score-ring .bg-ring {
+  stroke: rgba(255,255,255,0.05);
+}
+
+.score-ring .fill-ring {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.glyph {
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+  animation: scan 4s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px currentColor; }
+  50% { opacity: 0.5; box-shadow: 0 0 12px currentColor; }
+}
+
+.metric-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(255,107,26,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,107,26,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}

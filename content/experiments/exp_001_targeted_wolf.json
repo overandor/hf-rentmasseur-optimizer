@@ -1,0 +1,23 @@
+{
+  "id": "exp_001",
+  "name": "Targeted Wolf Bio Test",
+  "status": "running",
+  "start_date": "2026-06-27T00:00:00Z",
+  "duration_hours": 48,
+  "control_bio": "bio_001",
+  "test_bio": "bio_002",
+  "hypothesis": "Stress-focused messaging increases contact rate by addressing client pain point",
+  "frozen_variables": ["photos", "price", "services", "availability", "external_link"],
+  "minimum_views_needed": 100,
+  "rollback_threshold": 0.25,
+  "winner_condition": "CTR_test > CTR_control AND views_test >= views_control",
+  "dirty_test_detector": {
+    "photos_changed": "CONTAMINATED",
+    "price_changed": "CONTAMINATED",
+    "services_changed": "CONTAMINATED",
+    "availability_changed": "CONTAMINATED",
+    "external_link_changed": "CONTAMINATED"
+  },
+  "snapshots_collected": 0,
+  "decision": "PENDING"
+}

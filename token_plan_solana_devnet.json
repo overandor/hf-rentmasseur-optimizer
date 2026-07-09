@@ -1,0 +1,43 @@
+{
+  "plan_type": "solana_devnet_mint_plan",
+  "status": "SPEC_ONLY",
+  "warning": "This is a plan only. Do not execute on mainnet.",
+  "disclaimer": "This is not legal, financial, or investment advice. This tool produces proof and launch-readiness artifacts, not investment guarantees.",
+  "token": {
+    "name": "LatentOS Proof Token",
+    "symbol": "LPT",
+    "decimals": 18,
+    "supply": 1000000.0
+  },
+  "mint_account": {
+    "description": "Solana mint account representing the token",
+    "mint_authority": "0x0000000000000000000000000000000000000001",
+    "decimals": 18,
+    "supply": 1000000.0,
+    "is_initialized": true,
+    "freeze_authority": null
+  },
+  "token_account": {
+    "description": "Associated token account for the creator",
+    "owner": "0x0000000000000000000000000000000000000001",
+    "amount": 1000000.0
+  },
+  "metadata": {
+    "uri": "https://example.com/latentos",
+    "name": "LatentOS Proof Token",
+    "symbol": "LPT"
+  },
+  "devnet_checklist": [
+    "1. Generate keypair OUTSIDE this tool (never enter private keys here)",
+    "2. Configure Solana CLI to devnet: solana config set --url https://api.devnet.solana.com",
+    "3. Airdrop test SOL: solana airdrop 2",
+    "4. Create mint account: spl-token create-token",
+    "5. Create token account: spl-token create-account <MINT_ADDRESS>",
+    "6. Mint tokens: spl-token mint <MINT_ADDRESS> <AMOUNT>",
+    "7. Verify on devnet explorer: https://explorer.solana.com?cluster=devnet"
+  ],
+  "proof_metadata": {
+    "proof_grade": "EXTERNALLY_VERIFIED",
+    "receipt_hash": "sha256:b851af906a41735c3ad7688a616419671349796c96b0ad7dc808c588e24c48b3"
+  }
+}

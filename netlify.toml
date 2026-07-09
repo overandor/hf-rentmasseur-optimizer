@@ -1,0 +1,8 @@
+[build]
+  command = "pip install -r requirements.txt"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/hf_space_app.py"
+  status = 200

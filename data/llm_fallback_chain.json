@@ -1,0 +1,11 @@
+[
+  {
+    "provider": "llm7",
+    "env_var": "LLM7_API_KEY",
+    "model": "gpt-4o-mini",
+    "score": 63.9,
+    "latency_ms": 1804,
+    "rate_limit": "high_rpm",
+    "endpoint": "https://api.llm7.io/v1/chat/completions"
+  }
+]

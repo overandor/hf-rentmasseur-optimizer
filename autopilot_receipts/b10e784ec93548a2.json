@@ -1,0 +1,16 @@
+{
+  "id": "b10e784ec93548a2",
+  "stage": "verify",
+  "app": "DimLight",
+  "timestamp": "2026-06-27T22:32:00.814482Z",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "result": "PASS"
+}

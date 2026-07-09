@@ -1,0 +1,14 @@
+{
+  "id": "5460753226f9a8d9",
+  "stage": "govern",
+  "app": "FocusBeam",
+  "timestamp": "2026-06-27T18:36:11.314292Z",
+  "decision": "SHIP",
+  "reasoning": "All stages passed — ship it",
+  "kpis": {
+    "immortality": 1.0,
+    "virality": 0.5,
+    "conversion": 0.3,
+    "trust": 1.0
+  }
+}

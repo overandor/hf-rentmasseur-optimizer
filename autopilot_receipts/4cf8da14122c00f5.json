@@ -1,0 +1,8 @@
+{
+  "id": "4cf8da14122c00f5",
+  "stage": "codesign",
+  "app": "QuickLaunch",
+  "timestamp": "2026-06-27T21:01:31.287488Z",
+  "result": "FAIL",
+  "error": "Command '['codesign', '--deep', '--force', '--verify', '--verbose', '--sign', 'Developer ID Application: Joseph SKrobynets (ZKKA58M5W9)', '--options', 'runtime', '/Users/alep/Downloads/windsurf-smoke/autopilot_apps/QuickLaunch/QuickLaunch.app']' timed out after 60 seconds"
+}

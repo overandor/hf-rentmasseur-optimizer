@@ -1,0 +1,13 @@
+workflow: GlyphLockUnfold
+intent: unfold a GE² envelope — verify TOTP, decrypt AEAD, decompress, glyph decode, verify merkle root
+step 1: read glyphpack manifest → manifest
+step 2: generate current TOTP code → totp_code
+step 3: verify TOTP within time window → totp_verified
+step 4: AEAD decrypt ciphertext with payload key → compressed
+step 5: deflate decompress → glyph_encoded
+step 6: glyph decode with reverse dictionary → raw_file
+step 7: verify SHA256 merkle root → merkle_verified
+step 8: issue unfold receipt → unfold_receipt
+artifact: unfold_receipt
+receipt: SHA256 chained — unfold proof with TOTP verification
+value: file reconstructed only with correct decoder, time key, and policy

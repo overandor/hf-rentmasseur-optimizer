@@ -1,0 +1,46 @@
+{
+  "status": "GREEN_REAL",
+  "count": 3,
+  "drafts": [
+    {
+      "title": "Real Talk: Sports Recovery Massage in Manhattan: What to Expect",
+      "body_len": 391,
+      "score": {
+        "local_seo": 0.39,
+        "marketing": 1.0,
+        "readability": 1.0,
+        "engagement": 0.3,
+        "risk": 0.0,
+        "composite": 0.608
+      },
+      "hypothesis": "Sports/recovery angle captures fitness-focused readers."
+    },
+    {
+      "title": "Manhattan Guide to Karpathian Wolf's Guide to Not Walking Like a Robot",
+      "body_len": 281,
+      "score": {
+        "local_seo": 0.23,
+        "marketing": 0.8,
+        "readability": 1.0,
+        "engagement": 0.7,
+        "risk": 0.0,
+        "composite": 0.598
+      },
+      "hypothesis": "Funny, branded content increases shareability and memorability."
+    },
+    {
+      "title": "Real Talk: Why Do My Hips Hurt After Squats? A Manhattan Guide",
+      "body_len": 271,
+      "score": {
+        "local_seo": 0.15,
+        "marketing": 0.8,
+        "readability": 1.0,
+        "engagement": 0.6,
+        "risk": 0.0,
+        "composite": 0.557
+      },
+      "hypothesis": "Fitness-specific pain points drive high-intent searches."
+    }
+  ],
+  "ts": "2026-06-26T06:32:20Z"
+}

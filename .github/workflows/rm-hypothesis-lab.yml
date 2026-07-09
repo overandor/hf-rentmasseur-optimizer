@@ -1,0 +1,119 @@
+name: RM Hypothesis Lab — 300-Hypothesis Growth Lab
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["RM Observe — Read-Only State Collection"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+jobs:
+  hypothesis-lab:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt 2>/dev/null || pip install requests beautifulsoup4
+
+      - name: Check telemetry validity before running lab
+        id: telemetry-check
+        env:
+          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+        run: |
+          python3 -c "
+          from rm_traffic.api_client import RentMasseurAPI
+          from rm_traffic.state_engine import collect_state
+          from rm_traffic.reward_engine import is_measurement_valid
+          import json
+
+          api = RentMasseurAPI()
+          state = collect_state(api)
+          valid = is_measurement_valid(state, state)
+          print(f'Measurement valid: {valid}')
+          print(f'Endpoint errors: {state.endpoint_error_count}')
+          print(f'Errors: {state.endpoint_errors}')
+
+          if not valid:
+              print('::warning::Measurement invalid — skipping hypothesis reward learning')
+              # Write failure file for issue awakening
+              import pathlib
+              pathlib.Path('rm_traffic/last_failure.json').write_text(json.dumps({
+                  'failure_class': '403_measurement_invalid',
+                  'source': 'rm-hypothesis-lab',
+                  'description': f'Measurement invalid: {state.endpoint_error_count} endpoint errors',
+                  'endpoint_errors': state.endpoint_errors,
+              }))
+              with open('/tmp/skip_lab', 'w') as f:
+                  f.write('skip')
+          else:
+              with open('/tmp/run_lab', 'w') as f:
+                  f.write('run')
+          "
+
+      - name: Run hypothesis lab (only on valid telemetry)
+        if: steps.telemetry-check.outputs.skip != 'true'
+        env:
+          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
+        run: |
+          if [ -f /tmp/skip_lab ]; then
+            echo "Skipping lab — measurement invalid"
+            exit 0
+          fi
+          python3 -c "
+          from rm_traffic.revenue_overclock_ai import run_cycle
+          run_cycle(tenant_id='production')
+          " || echo "Hypothesis lab run failed"
+
+      - name: Skip reward learning on invalid measurement
+        if: always()
+        run: |
+          if [ -f /tmp/skip_lab ]; then
+            echo "::notice::Reward learning skipped — measurement invalid. Bandit NOT updated. Hypotheses NOT promoted/demoted."
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-hypothesis-lab-${{ github.run_id }}
+          path: |
+            output/
+            rm_traffic/receipts/
+            rm_traffic/overclock_bandit.db
+          retention-days: 30
+
+      - name: Awaken issue on invalid measurement
+        if: failure() || steps.telemetry-check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let failureData = {};
+            try {
+              failureData = JSON.parse(fs.readFileSync('rm_traffic/last_failure.json', 'utf8'));
+            } catch (e) {}
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[RM-Hypothesis-Lab] Measurement invalid — run ${context.runId}`,
+              body: `## Hypothesis Lab — Invalid Telemetry\n\n**Run**: ${context.runId}\n**Failure class**: ${failureData.failure_class || 'unknown'}\n\nReward learning was SKIPPED. Bandit NOT updated. Hypotheses NOT promoted/demoted.\n\n\`\`\`json\n${JSON.stringify(failureData, null, 2)}\n\`\`\`\n\nGAG should diagnose the endpoint failures and propose a repair PR.`,
+              labels: ['gag:measurement-invalid', 'gag:reward-poisoning'],
+            });
