@@ -39,6 +39,9 @@ jobs:
           import json
 
           api = RentMasseurAPI()
+          if not api.login('${RENTMASSEUR_USER}', '${RENTMASSEUR_PASS}'):
+              print('::error::Login failed — check secrets')
+              exit(1)
           state = collect_state(api)
           print(json.dumps({
             'available_status': state.available_status,
@@ -66,6 +69,9 @@ jobs:
           import json
 
           api = RentMasseurAPI()
+          if not api.login('${RENTMASSEUR_USER}', '${RENTMASSEUR_PASS}'):
+              print('::error::Login failed — check secrets')
+              exit(1)
           state = collect_state(api)
 
           if not state.measurement_valid:
@@ -93,6 +99,9 @@ jobs:
           from rm_traffic.api_client import RentMasseurAPI
           from rm_traffic.visitor_revisit_engine import build_revisit_queue, write_revisit_queue, format_queue_summary
           api = RentMasseurAPI()
+          if not api.login('${RENTMASSEUR_USER}', '${RENTMASSEUR_PASS}'):
+              print('::error::Login failed — check secrets')
+              exit(1)
           queue = build_revisit_queue(api)
           filepath = write_revisit_queue(queue)
           print(format_queue_summary(queue))
@@ -108,6 +117,9 @@ jobs:
           from rm_traffic.api_client import RentMasseurAPI
           from rm_traffic.state_engine import collect_state, compute_revenue_pressure
           api = RentMasseurAPI()
+          if not api.login('${RENTMASSEUR_USER}', '${RENTMASSEUR_PASS}'):
+              print('::error::Login failed — check secrets')
+              exit(1)
           state = collect_state(api)
           pressure = compute_revenue_pressure(state)
           print(f'Revenue pressure: {pressure}')
