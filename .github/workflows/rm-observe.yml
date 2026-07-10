@@ -40,7 +40,7 @@ jobs:
           import json, os
 
           api = RentMasseurAPI()
-          api.session.headers['Authorization'] = f'Bearer {os.environ["RM_TOKEN"]}'
+          api.session.headers['Authorization'] = 'Bearer ' + os.environ['RM_TOKEN']
           api.logged_in = True
           state = collect_state(api)
           print(json.dumps({
@@ -70,7 +70,7 @@ jobs:
           import json, os
 
           api = RentMasseurAPI()
-          api.session.headers['Authorization'] = f'Bearer {os.environ["RM_TOKEN"]}'
+          api.session.headers['Authorization'] = 'Bearer ' + os.environ['RM_TOKEN']
           api.logged_in = True
           state = collect_state(api)
 
@@ -101,7 +101,7 @@ jobs:
           from rm_traffic.visitor_revisit_engine import build_revisit_queue, write_revisit_queue, format_queue_summary
           import os
           api = RentMasseurAPI()
-          api.session.headers['Authorization'] = f'Bearer {os.environ["RM_TOKEN"]}'
+          api.session.headers['Authorization'] = 'Bearer ' + os.environ['RM_TOKEN']
           api.logged_in = True
           queue = build_revisit_queue(api)
           filepath = write_revisit_queue(queue)
@@ -120,7 +120,7 @@ jobs:
           from rm_traffic.state_engine import collect_state, compute_revenue_pressure
           import os
           api = RentMasseurAPI()
-          api.session.headers['Authorization'] = f'Bearer {os.environ["RM_TOKEN"]}'
+          api.session.headers['Authorization'] = 'Bearer ' + os.environ['RM_TOKEN']
           api.logged_in = True
           state = collect_state(api)
           pressure = compute_revenue_pressure(state)
