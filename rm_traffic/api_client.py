@@ -6,6 +6,7 @@ Confirmed endpoints only. No guesswork. No spam.
 
 import json
 import logging
+import os
 import re
 import time
 from typing import Optional, Dict, Any
@@ -16,6 +17,15 @@ log = logging.getLogger("rm_api")
 
 BASE = "https://rentmasseur.com"
 API = f"{BASE}/api/v1"
+
+_PROXY_URL = os.environ.get("PROXY_URL", "")
+_PROXY_SECRET = os.environ.get("PROXY_SECRET", "")
+
+if _PROXY_URL:
+    _PROXY_URL = _PROXY_URL.rstrip("/")
+    API = f"{_PROXY_URL}/api/v1"
+    BASE = _PROXY_URL
+    log.info("Using proxy: %s", _PROXY_URL)
 
 
 class RentMasseurAPI:
@@ -32,6 +42,8 @@ class RentMasseurAPI:
             "Referer": f"{BASE}/settings",
             "Origin": BASE,
         })
+        if _PROXY_SECRET:
+            self.session.headers["X-Proxy-Secret"] = _PROXY_SECRET
         self.csrf = None
         self.logged_in = False
         self.username = None
