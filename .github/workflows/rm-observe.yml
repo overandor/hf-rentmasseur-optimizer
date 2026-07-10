@@ -29,10 +29,9 @@ jobs:
 
       - name: Collect RM state (read-only)
         env:
-          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
-          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
-          RM_PHONE: ${{ secrets.RM_PHONE }}
           RM_TOKEN: ${{ secrets.RM_TOKEN }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
         run: |
           python3 -c "
           from rm_traffic.api_client import RentMasseurAPI
@@ -60,9 +59,9 @@ jobs:
 
       - name: Refresh availability
         env:
-          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
-          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
           RM_TOKEN: ${{ secrets.RM_TOKEN }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
         run: |
           python3 -c "
           from rm_traffic.api_client import RentMasseurAPI
@@ -92,9 +91,9 @@ jobs:
 
       - name: Build visitor revisit queue
         env:
-          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
-          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
           RM_TOKEN: ${{ secrets.RM_TOKEN }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
         run: |
           python3 -c "
           from rm_traffic.api_client import RentMasseurAPI
@@ -111,9 +110,9 @@ jobs:
 
       - name: Build demand summary
         env:
-          RENTMASSEUR_USER: ${{ secrets.RENTMASSEUR_USER }}
-          RENTMASSEUR_PASS: ${{ secrets.RENTMASSEUR_PASS }}
           RM_TOKEN: ${{ secrets.RM_TOKEN }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
         run: |
           python3 -c "
           from rm_traffic.api_client import RentMasseurAPI
