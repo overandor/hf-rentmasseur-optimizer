@@ -760,7 +760,6 @@ def run_selenium(message_text, dry_run, headless):
         if not token_ready:
             fresh_token = refresh_access_token()
             if fresh_token:
-                driver.get(BASE)
                 driver.execute_script(
                     "window.localStorage.setItem('accessToken', arguments[0]);", fresh_token
                 )
