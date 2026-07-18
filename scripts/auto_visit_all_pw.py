@@ -105,6 +105,26 @@ def refresh_access_token():
         return ""
 
 
+def set_browser_token(driver, token):
+    """Set RentMasseur auth through Chrome's origin storage, not page JS."""
+    driver.execute_cdp_cmd("DOMStorage.enable", {})
+    driver.execute_cdp_cmd("DOMStorage.setDOMStorageItem", {
+        "storageId": {
+            "securityOrigin": BASE,
+            "isLocalStorage": True,
+        },
+        "key": "accessToken",
+        "value": token,
+    })
+    driver.execute_cdp_cmd("Network.setCookie", {
+        "name": "accessToken",
+        "value": token,
+        "domain": ".rentmasseur.com",
+        "path": "/",
+        "secure": True,
+    })
+
+
 # ─── Playwright Engine ────────────────────────────────────────────────────────
 
 def run_playwright(message_text, dry_run, headless):
@@ -738,13 +758,7 @@ def run_selenium(message_text, dry_run, headless):
         if TOKEN:
             print("[1] Loading RM_TOKEN into direct RentMasseur browser session...")
             driver.get(BASE)
-            driver.execute_script(
-                "window.localStorage.setItem('accessToken', arguments[0]);", TOKEN
-            )
-            driver.add_cookie({
-                "name": "accessToken", "value": TOKEN,
-                "domain": ".rentmasseur.com", "path": "/",
-            })
+            set_browser_token(driver, TOKEN)
             driver.get(f"{BASE}/settings/whosawme")
             time.sleep(4)
             if not driver.current_url.startswith(BASE):
@@ -760,13 +774,7 @@ def run_selenium(message_text, dry_run, headless):
         if not token_ready:
             fresh_token = refresh_access_token()
             if fresh_token:
-                driver.execute_script(
-                    "window.localStorage.setItem('accessToken', arguments[0]);", fresh_token
-                )
-                driver.add_cookie({
-                    "name": "accessToken", "value": fresh_token,
-                    "domain": ".rentmasseur.com", "path": "/",
-                })
+                set_browser_token(driver, fresh_token)
                 driver.get(f"{BASE}/settings/whosawme")
                 time.sleep(4)
                 token_ready = "/settings/whosawme" in driver.current_url
