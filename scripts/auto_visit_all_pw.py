@@ -35,6 +35,7 @@ from pathlib import Path
 BASE = "https://rentmasseur.com"
 USERNAME = os.getenv("RENTMASSEUR_USERNAME", "karpathianwolf")
 PASSWORD = os.getenv("RENTMASSEUR_PASSWORD", os.environ.get("RM_PASSWORD", ""))
+TOKEN = os.getenv("RM_TOKEN", "")
 PHONE = os.getenv("WOLF_PHONE", "347-453-5129")
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -682,70 +683,92 @@ def run_puppeteer(message_text, dry_run, headless):
     )
 
 
-# ─── Selenium Engine (undetected-chromedriver) ────────────────────────────────
+# ─── Selenium Engine ─────────────────────────────────────────────────────────
 
 def run_selenium(message_text, dry_run, headless):
-    """Selenium via undetected-chromedriver — fallback engine 2."""
-    import undetected_chromedriver as uc
+    """Selenium + Chrome, with direct RentMasseur navigation."""
+    from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
 
-    print("[ENGINE] Selenium (undetected-chromedriver)")
+    print("[ENGINE] Selenium (Chrome)")
 
     os.makedirs(PROFILE_DIR, exist_ok=True)
-    opts = uc.ChromeOptions()
+    opts = webdriver.ChromeOptions()
     opts.add_argument("--window-size=1280,900")
     opts.add_argument(f"--user-data-dir={PROFILE_DIR}")
-    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
     if headless:
         opts.add_argument("--headless=new")
-    driver = uc.Chrome(options=opts, version_main=149)
+    driver = webdriver.Chrome(options=opts)
 
     try:
         # ── Login ──
-        print("[1] Logging in (Selenium)...")
-        driver.get(f"{BASE}/login")
-        time.sleep(4)
-        _sel_wait_captcha(driver)
+        if TOKEN:
+            print("[1] Loading RM_TOKEN into direct RentMasseur browser session...")
+            driver.get(BASE)
+            driver.execute_script(
+                "window.localStorage.setItem('accessToken', arguments[0]);", TOKEN
+            )
+            driver.add_cookie({
+                "name": "accessToken", "value": TOKEN,
+                "domain": ".rentmasseur.com", "path": "/",
+            })
+            driver.get(f"{BASE}/settings/whosawme")
+            time.sleep(4)
+            if not driver.current_url.startswith(BASE):
+                print(f"  Refusing non-RentMasseur origin: {driver.current_url}")
+                driver.quit()
+                return None
+            print(f"  Token session loaded: {driver.current_url}")
+        else:
+            print("[1] Logging in (Selenium)...")
+            driver.get(f"{BASE}/login")
+            time.sleep(4)
+            _sel_wait_captcha(driver)
 
-        pwd = None
-        for _ in range(15):
-            try:
-                elements = driver.find_elements(By.CSS_SELECTOR, 'input[type="password"]')
-                if elements and elements[0].is_displayed():
-                    pwd = elements[0]
-                    break
-            except Exception:
-                pass
+            pwd = None
+            for _ in range(15):
+                try:
+                    elements = driver.find_elements(By.CSS_SELECTOR, 'input[type="password"]')
+                    if elements and elements[0].is_displayed():
+                        pwd = elements[0]
+                        break
+                except Exception:
+                    pass
+                time.sleep(1)
+
+            if not pwd:
+                print("  No password field. Aborting.")
+                driver.quit()
+                return None
+
+            # Fill via JS for SPA compatibility
+            driver.execute_script("""
+                const pwd = document.querySelector('input[type="password"]');
+                const user = document.querySelector('input[type="text"], input[type="email"]');
+                const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                if (user) { ns.call(user, arguments[0]); user.dispatchEvent(new Event('input', {bubbles: true})); }
+                if (pwd) { ns.call(pwd, arguments[1]); pwd.dispatchEvent(new Event('input', {bubbles: true})); }
+            """, USERNAME, PASSWORD)
             time.sleep(1)
+            pwd.send_keys(Keys.ENTER)
+            time.sleep(5)
+            _sel_wait_captcha(driver)
 
-        if not pwd:
-            print("  No password field. Aborting.")
-            driver.quit()
-            return None
-
-        # Fill via JS for SPA compatibility
-        driver.execute_script("""
-            const pwd = document.querySelector('input[type="password"]');
-            const user = document.querySelector('input[type="text"], input[type="email"]');
-            const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-            if (user) { ns.call(user, arguments[0]); user.dispatchEvent(new Event('input', {bubbles: true})); }
-            if (pwd) { ns.call(pwd, arguments[1]); pwd.dispatchEvent(new Event('input', {bubbles: true})); }
-        """, USERNAME, PASSWORD)
-        time.sleep(1)
-        pwd.send_keys(Keys.ENTER)
-        time.sleep(5)
-        _sel_wait_captcha(driver)
-
-        if "login" in driver.current_url.lower():
-            print("  Login FAILED.")
-            driver.quit()
-            return None
-        print(f"  Login OK: {driver.current_url}")
+            if "login" in driver.current_url.lower():
+                print("  Login FAILED.")
+                driver.quit()
+                return None
+            print(f"  Login OK: {driver.current_url}")
 
         # ── Scrape Who Saw Me ──
         print("[2] Scraping Who Saw Me (Selenium)...")
         visitors = _sel_scrape_whosawme(driver)
+        max_visits = int(os.getenv("RM_MAX_VISITS", "0") or "0")
+        if max_visits > 0:
+            visitors = visitors[:max_visits]
         print(f"  Total unique visitors: {len(visitors)}")
 
         if not visitors:
@@ -753,7 +776,7 @@ def run_selenium(message_text, dry_run, headless):
             return {"visitors": 0, "visited": 0, "messaged": 0, "engine": "selenium"}
 
         # ── Visit + Message ──
-        print(f"\n[3] Visiting + messaging {len(visitors)} visitors...")
+        print(f"\n[3] Visiting {len(visitors)} visitors...")
         results = []
         for i, v in enumerate(visitors):
             print(f"  [{i+1}/{len(visitors)}] {v['username']}...")
@@ -878,8 +901,8 @@ def _sel_visit_and_message(driver, visitor, message_text, dry_run, By, Keys):
     except Exception:
         result["page_title"] = ""
 
-    if dry_run:
-        print(f"  [DRY] visited {uname}")
+    if dry_run or not message_text:
+        print(f"  VISITED {uname}")
         return result
 
     try:

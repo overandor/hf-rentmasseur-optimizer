@@ -5,6 +5,11 @@ on:
     - cron: '0 */4 * * *'  # Every 4 hours
     - cron: '0 */2 * * *'  # Every 2 hours — availability refresh
   workflow_dispatch:
+    inputs:
+      max_visits:
+        description: 'Browser visits for manual verification (0 = every visitor)'
+        required: false
+        default: '3'
 
 permissions:
   contents: read
@@ -108,6 +113,18 @@ jobs:
           print(f'Queue written: {filepath}')
           " || echo "Visitor queue build failed"
 
+      - name: Revisit visitors in direct Selenium browser
+        env:
+          RM_TOKEN: ${{ secrets.RM_TOKEN }}
+          RENTMASSEUR_USERNAME: ${{ secrets.RENTMASSEUR_USER }}
+          RENTMASSEUR_PASSWORD: ${{ secrets.RENTMASSEUR_PASS }}
+          RM_MAX_VISITS: ${{ inputs.max_visits }}
+        run: |
+          python3 scripts/auto_visit_all_pw.py \
+            --engine selenium \
+            --headless \
+            --skip-message
+
       - name: Build demand summary
         env:
           RM_TOKEN: ${{ secrets.RM_TOKEN }}
@@ -133,6 +150,8 @@ jobs:
           name: rm-observe-${{ github.run_id }}
           path: |
             output/
+            data/auto_visit_all_latest.json
+            receipts/auto_visit_all_multi_*.json
             rm_traffic/receipts/
           retention-days: 30
 
