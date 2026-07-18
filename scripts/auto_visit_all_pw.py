@@ -705,6 +705,7 @@ def run_selenium(message_text, dry_run, headless):
 
     try:
         # ── Login ──
+        token_ready = False
         if TOKEN:
             print("[1] Loading RM_TOKEN into direct RentMasseur browser session...")
             driver.get(BASE)
@@ -721,9 +722,14 @@ def run_selenium(message_text, dry_run, headless):
                 print(f"  Refusing non-RentMasseur origin: {driver.current_url}")
                 driver.quit()
                 return None
-            print(f"  Token session loaded: {driver.current_url}")
-        else:
-            print("[1] Logging in (Selenium)...")
+            token_ready = "/settings/whosawme" in driver.current_url
+            if token_ready:
+                print(f"  Token session loaded: {driver.current_url}")
+            else:
+                print(f"  RM_TOKEN session rejected at {driver.current_url}; using credential login")
+
+        if not token_ready:
+            print("[1] Logging in with repository credentials (Selenium)...")
             driver.get(f"{BASE}/login")
             time.sleep(4)
             _sel_wait_captcha(driver)
