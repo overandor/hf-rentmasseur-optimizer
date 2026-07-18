@@ -106,15 +106,14 @@ def refresh_access_token():
 
 
 def set_browser_token(driver, token):
-    """Set RentMasseur auth through Chrome's origin storage, not page JS."""
-    driver.execute_cdp_cmd("DOMStorage.enable", {})
-    driver.execute_cdp_cmd("DOMStorage.setDOMStorageItem", {
-        "storageId": {
-            "securityOrigin": BASE,
-            "isLocalStorage": True,
-        },
-        "key": "accessToken",
-        "value": token,
+    """Install RentMasseur auth before the SPA reads browser storage."""
+    encoded_token = json.dumps(token)
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": (
+            "if (location.origin === 'https://rentmasseur.com') {"
+            f"localStorage.setItem('accessToken', {encoded_token});"
+            "}"
+        ),
     })
     driver.execute_cdp_cmd("Network.setCookie", {
         "name": "accessToken",
