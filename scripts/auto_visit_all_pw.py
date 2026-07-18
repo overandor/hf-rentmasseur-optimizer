@@ -27,6 +27,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -74,6 +75,34 @@ def write_receipt(action, data, success=True):
 def save_data(filename, payload):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / filename).write_text(json.dumps(payload, indent=2))
+
+
+def refresh_access_token():
+    """Exchange repository credentials for a fresh direct RentMasseur token."""
+    import requests
+
+    session = requests.Session()
+    session.headers.update({
+        "Accept": "application/json, text/plain, */*",
+        "Origin": BASE,
+        "Referer": f"{BASE}/login",
+    })
+    login_page = session.get(f"{BASE}/login", timeout=20)
+    match = re.search(r'csrf["\s:=]+([A-Za-z0-9+/=]{20,})', login_page.text)
+    csrf = match.group(1) if match else ""
+    response = session.post(
+        f"{BASE}/api/v1/login",
+        json={"email": USERNAME, "password": PASSWORD, "csrf": csrf, "remember": True},
+        timeout=20,
+    )
+    if response.status_code != 200:
+        print(f"  Direct API credential login rejected: HTTP {response.status_code}")
+        return ""
+    try:
+        return response.json().get("accessToken", "")
+    except Exception:
+        print("  Direct API credential login returned a non-JSON challenge")
+        return ""
 
 
 # ─── Playwright Engine ────────────────────────────────────────────────────────
@@ -726,7 +755,24 @@ def run_selenium(message_text, dry_run, headless):
             if token_ready:
                 print(f"  Token session loaded: {driver.current_url}")
             else:
-                print(f"  RM_TOKEN session rejected at {driver.current_url}; using credential login")
+                print(f"  RM_TOKEN session rejected at {driver.current_url}; refreshing token")
+
+        if not token_ready:
+            fresh_token = refresh_access_token()
+            if fresh_token:
+                driver.get(BASE)
+                driver.execute_script(
+                    "window.localStorage.setItem('accessToken', arguments[0]);", fresh_token
+                )
+                driver.add_cookie({
+                    "name": "accessToken", "value": fresh_token,
+                    "domain": ".rentmasseur.com", "path": "/",
+                })
+                driver.get(f"{BASE}/settings/whosawme")
+                time.sleep(4)
+                token_ready = "/settings/whosawme" in driver.current_url
+                if token_ready:
+                    print(f"  Fresh credential token loaded: {driver.current_url}")
 
         if not token_ready:
             print("[1] Logging in with repository credentials (Selenium)...")

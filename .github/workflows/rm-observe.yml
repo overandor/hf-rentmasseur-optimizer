@@ -198,7 +198,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Selenium
-        run: pip install 'selenium>=4.15'
+        run: pip install 'selenium>=4.15' 'requests>=2.31'
 
       - name: Revisit visitors in direct Selenium browser
         env:
