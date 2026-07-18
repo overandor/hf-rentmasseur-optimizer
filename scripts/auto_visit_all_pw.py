@@ -286,7 +286,7 @@ def _pw_scrape_whosawme(page):
                 }
                 return result;
             }
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -589,7 +589,7 @@ async def _pp_scrape_whosawme(page):
                 }
                 return result;
             }
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -931,7 +931,7 @@ def _sel_scrape_whosawme(driver):
                 }
             }
             return result;
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -1090,7 +1090,8 @@ def main():
     print(f"  Engine: {args.engine}")
     print(f"  Headless: {args.headless}")
     print(f"  Message: {args.message[:80]}...")
-    print(f"  Limit: NONE (all visitors)")
+    max_visits = int(os.getenv("RM_MAX_VISITS", "0") or "0")
+    print(f"  Limit: {max_visits or 'NONE (all visitors)'}")
 
     message_text = args.message
     if args.skip_message:
