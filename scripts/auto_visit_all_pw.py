@@ -773,6 +773,8 @@ def run_selenium(message_text, dry_run, headless):
 
         if not visitors:
             driver.quit()
+            if os.getenv("RM_REQUIRE_VISITS", "") == "1":
+                raise RuntimeError("WhoSawMe returned zero visitors")
             return {"visitors": 0, "visited": 0, "messaged": 0, "engine": "selenium"}
 
         # ── Visit + Message ──
@@ -805,15 +807,16 @@ def run_selenium(message_text, dry_run, headless):
 def _sel_wait_captcha(driver, max_wait=90):
     src = driver.page_source or ""
     if "crowdsec" not in src.lower() and "captcha" not in src.lower():
-        return
+        return True
     print("  [CAPTCHA] Detected. Waiting for clearance...")
     for _ in range(max_wait // 3):
         time.sleep(3)
         src = driver.page_source or ""
         if "crowdsec" not in src.lower() and "captcha" not in src.lower():
             print("  [CAPTCHA] Cleared!")
-            return
+            return True
     print("  [CAPTCHA] Timeout.")
+    return False
 
 
 def _sel_scrape_whosawme(driver):
@@ -823,7 +826,8 @@ def _sel_scrape_whosawme(driver):
     for pg in range(1, 100):
         driver.get(f"{BASE}/settings/whosawme?page={pg}")
         time.sleep(4)
-        _sel_wait_captcha(driver)
+        if not _sel_wait_captcha(driver):
+            raise RuntimeError("CrowdSec blocked the WhoSawMe page")
 
         for _ in range(3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
