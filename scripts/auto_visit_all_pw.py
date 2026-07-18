@@ -27,6 +27,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -35,6 +36,7 @@ from pathlib import Path
 BASE = "https://rentmasseur.com"
 USERNAME = os.getenv("RENTMASSEUR_USERNAME", "karpathianwolf")
 PASSWORD = os.getenv("RENTMASSEUR_PASSWORD", os.environ.get("RM_PASSWORD", ""))
+TOKEN = os.getenv("RM_TOKEN", "")
 PHONE = os.getenv("WOLF_PHONE", "347-453-5129")
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -73,6 +75,53 @@ def write_receipt(action, data, success=True):
 def save_data(filename, payload):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / filename).write_text(json.dumps(payload, indent=2))
+
+
+def refresh_access_token():
+    """Exchange repository credentials for a fresh direct RentMasseur token."""
+    import requests
+
+    session = requests.Session()
+    session.headers.update({
+        "Accept": "application/json, text/plain, */*",
+        "Origin": BASE,
+        "Referer": f"{BASE}/login",
+    })
+    login_page = session.get(f"{BASE}/login", timeout=20)
+    match = re.search(r'csrf["\s:=]+([A-Za-z0-9+/=]{20,})', login_page.text)
+    csrf = match.group(1) if match else ""
+    response = session.post(
+        f"{BASE}/api/v1/login",
+        json={"email": USERNAME, "password": PASSWORD, "csrf": csrf, "remember": True},
+        timeout=20,
+    )
+    if response.status_code != 200:
+        print(f"  Direct API credential login rejected: HTTP {response.status_code}")
+        return ""
+    try:
+        return response.json().get("accessToken", "")
+    except Exception:
+        print("  Direct API credential login returned a non-JSON challenge")
+        return ""
+
+
+def set_browser_token(driver, token):
+    """Install RentMasseur auth before the SPA reads browser storage."""
+    encoded_token = json.dumps(token)
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": (
+            "if (location.origin === 'https://rentmasseur.com') {"
+            f"localStorage.setItem('accessToken', {encoded_token});"
+            "}"
+        ),
+    })
+    driver.execute_cdp_cmd("Network.setCookie", {
+        "name": "accessToken",
+        "value": token,
+        "domain": ".rentmasseur.com",
+        "path": "/",
+        "secure": True,
+    })
 
 
 # ─── Playwright Engine ────────────────────────────────────────────────────────
@@ -237,7 +286,7 @@ def _pw_scrape_whosawme(page):
                 }
                 return result;
             }
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -540,7 +589,7 @@ async def _pp_scrape_whosawme(page):
                 }
                 return result;
             }
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -682,78 +731,112 @@ def run_puppeteer(message_text, dry_run, headless):
     )
 
 
-# ─── Selenium Engine (undetected-chromedriver) ────────────────────────────────
+# ─── Selenium Engine ─────────────────────────────────────────────────────────
 
 def run_selenium(message_text, dry_run, headless):
-    """Selenium via undetected-chromedriver — fallback engine 2."""
-    import undetected_chromedriver as uc
+    """Selenium + Chrome, with direct RentMasseur navigation."""
+    from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
 
-    print("[ENGINE] Selenium (undetected-chromedriver)")
+    print("[ENGINE] Selenium (Chrome)")
 
     os.makedirs(PROFILE_DIR, exist_ok=True)
-    opts = uc.ChromeOptions()
+    opts = webdriver.ChromeOptions()
     opts.add_argument("--window-size=1280,900")
     opts.add_argument(f"--user-data-dir={PROFILE_DIR}")
-    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
     if headless:
         opts.add_argument("--headless=new")
-    driver = uc.Chrome(options=opts, version_main=149)
+    driver = webdriver.Chrome(options=opts)
 
     try:
         # ── Login ──
-        print("[1] Logging in (Selenium)...")
-        driver.get(f"{BASE}/login")
-        time.sleep(4)
-        _sel_wait_captcha(driver)
+        token_ready = False
+        if TOKEN:
+            print("[1] Loading RM_TOKEN into direct RentMasseur browser session...")
+            driver.get(BASE)
+            set_browser_token(driver, TOKEN)
+            driver.get(f"{BASE}/settings/whosawme")
+            time.sleep(4)
+            if not driver.current_url.startswith(BASE):
+                print(f"  Refusing non-RentMasseur origin: {driver.current_url}")
+                driver.quit()
+                return None
+            token_ready = "/settings/whosawme" in driver.current_url
+            if token_ready:
+                print(f"  Token session loaded: {driver.current_url}")
+            else:
+                print(f"  RM_TOKEN session rejected at {driver.current_url}; refreshing token")
 
-        pwd = None
-        for _ in range(15):
-            try:
-                elements = driver.find_elements(By.CSS_SELECTOR, 'input[type="password"]')
-                if elements and elements[0].is_displayed():
-                    pwd = elements[0]
-                    break
-            except Exception:
-                pass
+        if not token_ready:
+            fresh_token = refresh_access_token()
+            if fresh_token:
+                set_browser_token(driver, fresh_token)
+                driver.get(f"{BASE}/settings/whosawme")
+                time.sleep(4)
+                token_ready = "/settings/whosawme" in driver.current_url
+                if token_ready:
+                    print(f"  Fresh credential token loaded: {driver.current_url}")
+
+        if not token_ready:
+            print("[1] Logging in with repository credentials (Selenium)...")
+            driver.get(f"{BASE}/login")
+            time.sleep(4)
+            _sel_wait_captcha(driver)
+
+            pwd = None
+            for _ in range(15):
+                try:
+                    elements = driver.find_elements(By.CSS_SELECTOR, 'input[type="password"]')
+                    if elements and elements[0].is_displayed():
+                        pwd = elements[0]
+                        break
+                except Exception:
+                    pass
+                time.sleep(1)
+
+            if not pwd:
+                print("  No password field. Aborting.")
+                driver.quit()
+                return None
+
+            # Fill via JS for SPA compatibility
+            driver.execute_script("""
+                const pwd = document.querySelector('input[type="password"]');
+                const user = document.querySelector('input[type="text"], input[type="email"]');
+                const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                if (user) { ns.call(user, arguments[0]); user.dispatchEvent(new Event('input', {bubbles: true})); }
+                if (pwd) { ns.call(pwd, arguments[1]); pwd.dispatchEvent(new Event('input', {bubbles: true})); }
+            """, USERNAME, PASSWORD)
             time.sleep(1)
+            pwd.send_keys(Keys.ENTER)
+            time.sleep(5)
+            _sel_wait_captcha(driver)
 
-        if not pwd:
-            print("  No password field. Aborting.")
-            driver.quit()
-            return None
-
-        # Fill via JS for SPA compatibility
-        driver.execute_script("""
-            const pwd = document.querySelector('input[type="password"]');
-            const user = document.querySelector('input[type="text"], input[type="email"]');
-            const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-            if (user) { ns.call(user, arguments[0]); user.dispatchEvent(new Event('input', {bubbles: true})); }
-            if (pwd) { ns.call(pwd, arguments[1]); pwd.dispatchEvent(new Event('input', {bubbles: true})); }
-        """, USERNAME, PASSWORD)
-        time.sleep(1)
-        pwd.send_keys(Keys.ENTER)
-        time.sleep(5)
-        _sel_wait_captcha(driver)
-
-        if "login" in driver.current_url.lower():
-            print("  Login FAILED.")
-            driver.quit()
-            return None
-        print(f"  Login OK: {driver.current_url}")
+            if "login" in driver.current_url.lower():
+                print("  Login FAILED.")
+                driver.quit()
+                return None
+            print(f"  Login OK: {driver.current_url}")
 
         # ── Scrape Who Saw Me ──
         print("[2] Scraping Who Saw Me (Selenium)...")
         visitors = _sel_scrape_whosawme(driver)
+        max_visits = int(os.getenv("RM_MAX_VISITS", "0") or "0")
+        if max_visits > 0:
+            visitors = visitors[:max_visits]
         print(f"  Total unique visitors: {len(visitors)}")
 
         if not visitors:
             driver.quit()
+            if os.getenv("RM_REQUIRE_VISITS", "") == "1":
+                raise RuntimeError("WhoSawMe returned zero visitors")
             return {"visitors": 0, "visited": 0, "messaged": 0, "engine": "selenium"}
 
         # ── Visit + Message ──
-        print(f"\n[3] Visiting + messaging {len(visitors)} visitors...")
+        print(f"\n[3] Visiting {len(visitors)} visitors...")
         results = []
         for i, v in enumerate(visitors):
             print(f"  [{i+1}/{len(visitors)}] {v['username']}...")
@@ -782,15 +865,16 @@ def run_selenium(message_text, dry_run, headless):
 def _sel_wait_captcha(driver, max_wait=90):
     src = driver.page_source or ""
     if "crowdsec" not in src.lower() and "captcha" not in src.lower():
-        return
+        return True
     print("  [CAPTCHA] Detected. Waiting for clearance...")
     for _ in range(max_wait // 3):
         time.sleep(3)
         src = driver.page_source or ""
         if "crowdsec" not in src.lower() and "captcha" not in src.lower():
             print("  [CAPTCHA] Cleared!")
-            return
+            return True
     print("  [CAPTCHA] Timeout.")
+    return False
 
 
 def _sel_scrape_whosawme(driver):
@@ -800,7 +884,8 @@ def _sel_scrape_whosawme(driver):
     for pg in range(1, 100):
         driver.get(f"{BASE}/settings/whosawme?page={pg}")
         time.sleep(4)
-        _sel_wait_captcha(driver)
+        if not _sel_wait_captcha(driver):
+            raise RuntimeError("CrowdSec blocked the WhoSawMe page")
 
         for _ in range(3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -846,7 +931,7 @@ def _sel_scrape_whosawme(driver):
                 }
             }
             return result;
-        """, list(SKIP_USERNAMES))
+        """, list(SKIP_USERNAMES | {USERNAME.lower()}))
 
         new_count = 0
         for v in visitors:
@@ -878,8 +963,8 @@ def _sel_visit_and_message(driver, visitor, message_text, dry_run, By, Keys):
     except Exception:
         result["page_title"] = ""
 
-    if dry_run:
-        print(f"  [DRY] visited {uname}")
+    if dry_run or not message_text:
+        print(f"  VISITED {uname}")
         return result
 
     try:
@@ -1005,7 +1090,8 @@ def main():
     print(f"  Engine: {args.engine}")
     print(f"  Headless: {args.headless}")
     print(f"  Message: {args.message[:80]}...")
-    print(f"  Limit: NONE (all visitors)")
+    max_visits = int(os.getenv("RM_MAX_VISITS", "0") or "0")
+    print(f"  Limit: {max_visits or 'NONE (all visitors)'}")
 
     message_text = args.message
     if args.skip_message:
