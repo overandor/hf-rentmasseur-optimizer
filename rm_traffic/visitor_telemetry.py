@@ -57,8 +57,8 @@ DEFAULT_DB = Path(os.environ.get("RM_VISITOR_DB", Path(__file__).resolve().paren
 DEFAULT_OUTPUT = Path(os.environ.get("RM_VISITOR_OUTPUT", Path(__file__).resolve().parent.parent / "output"))
 DEFAULT_PROFILE_DIR = Path(os.environ.get("RM_VISITOR_CHROME_PROFILE", "/tmp/rm_visitor_telemetry_chrome"))
 PROFILE_PATH_EXCLUSIONS = {"", "settings", "login", "logout", "about", "contact", "privacy", "terms", "help", "blog", "blogs", "topics", "stream", "advertise", "api", "gay-massage", "masseurcams", "sitemap", "robots", "build-stream"}
-NYC_TOKENS = {"new york", "new york city", "nyc", "manhattan", "brooklyn", "queens", "bronx", "staten island", "harlem", "chelsea", "midtown", "soho", "tribeca", "upper east side", "upper west side", "hell's kitchen", "williamsburg", "astoria", "long island city", "flushing", "jamaica", "forest hills", "washington heights", "greenpoint", "bushwick"}
-NY_STATE_TOKENS = NYC_TOKENS | {"new york state", "long island", "nassau", "suffolk", "westchester", "yonkers", "white plains", "new rochelle", "mount vernon", "buffalo", "rochester", "albany", "syracuse", "utica", "troy", "poughkeepsie"}
+NYC_TOKENS = {"new york city", "nyc", "manhattan", "brooklyn", "queens", "bronx", "staten island", "harlem", "chelsea", "midtown", "soho", "tribeca", "upper east side", "upper west side", "hell's kitchen", "williamsburg", "astoria", "long island city", "flushing", "jamaica", "forest hills", "washington heights", "greenpoint", "bushwick"}
+NY_STATE_TOKENS = NYC_TOKENS | {"new york", "new york state", "long island", "nassau", "suffolk", "westchester", "yonkers", "white plains", "new rochelle", "mount vernon", "buffalo", "rochester", "albany", "syracuse", "utica", "troy", "poughkeepsie"}
 
 
 def utc_now() -> datetime:
@@ -93,8 +93,8 @@ def normalize_location(location: str) -> Tuple[str, str, bool, bool]:
     parts = [p.strip() for p in re.split(r"[,|/]", lower) if p.strip()]
     city = parts[0].title() if parts else ""
     state = "NY" if re.search(r"\bny\b", lower) or "new york" in lower else ""
-    in_nyc = any(token in lower for token in NYC_TOKENS)
-    in_new_york = in_nyc or state == "NY" or any(token in lower for token in NY_STATE_TOKENS)
+    in_nyc = any(re.search(r'\b' + re.escape(token) + r'\b', lower) for token in NYC_TOKENS)
+    in_new_york = in_nyc or state == "NY" or any(re.search(r'\b' + re.escape(token) + r'\b', lower) for token in NY_STATE_TOKENS)
     return city, state, in_nyc, in_new_york
 
 
@@ -392,7 +392,7 @@ class VisitorTelemetryScanner:
             self.driver.get(f"{BASE_URL}/settings/whosawme?page={page_number}")
             self._raise_on_challenge()
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, "body")))
-            raw = self.driver.execute_script("""
+            raw = self.driver.execute_script(r"""
             const excluded = new Set(arguments[0]); const currentUser = (arguments[1] || '').toLowerCase(); const rows = [];
             for (const link of [...document.querySelectorAll('a[href]')]) { let url; try { url = new URL(link.href); } catch (_) { continue; } if (url.origin !== location.origin) continue; const parts = url.pathname.split('/').filter(Boolean); if (parts.length !== 1) continue; const username = decodeURIComponent(parts[0]); if (!username || excluded.has(username.toLowerCase()) || username.toLowerCase() === currentUser || /^\d+$/.test(username)) continue; const card = link.closest('article, li, tr, [class*="card"], [class*="item"], [class*="row"]') || link.parentElement; const timeEl = card ? card.querySelector('time') : null; rows.push({username, profile_url: url.origin + '/' + username, visitor_text: (card?.innerText || link.innerText || '').trim().slice(0, 1000), visitor_datetime: timeEl?.getAttribute('datetime') || ''}); }
             return rows;
@@ -431,7 +431,7 @@ class VisitorTelemetryScanner:
         return result
 
     def _extract_dom_fields(self) -> Dict[str, Any]:
-        return self.driver.execute_script("""
+        return self.driver.execute_script(r"""
         const bodyText = (document.body?.innerText || '').replace(/\s+/g, ' ').trim(); const contactKinds = new Set(); let hasContact = false;
         for (const a of [...document.querySelectorAll('a[href]')]) { const href = (a.getAttribute('href') || '').toLowerCase(); const text = (a.innerText || a.getAttribute('aria-label') || '').toLowerCase(); if (href.startsWith('tel:')) { contactKinds.add('phone'); hasContact = true; } if (href.startsWith('mailto:')) { contactKinds.add('email'); hasContact = true; } if (/contact|call|phone|email/.test(text) && a.offsetParent !== null) { contactKinds.add('visible_contact'); hasContact = true; } }
         let hasMessage = false; for (const el of [...document.querySelectorAll('a,button')]) { const text = (el.innerText || el.getAttribute('aria-label') || '').toLowerCase().trim(); const href = (el.getAttribute('href') || '').toLowerCase(); if ((/^(message|send message|email me|contact)$/.test(text) || href.includes('message') || href.includes('mailbox')) && el.offsetParent !== null) { hasMessage = true; break; } }
