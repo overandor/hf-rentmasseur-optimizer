@@ -1,0 +1,76 @@
+name: RM Visitor Telemetry — New York Visitors
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+    inputs:
+      max_profiles:
+        description: 'Maximum profiles to scan; 0 means all discovered visitors'
+        required: false
+        default: '0'
+      cooldown_hours:
+        description: 'Minimum hours between reciprocal browser visits to the same profile'
+        required: false
+        default: '24'
+
+concurrency:
+  group: rm-visitor-telemetry
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  collect:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RM_TOKEN: ${{ secrets.RM_TOKEN }}
+      RENTMASSEUR_USERNAME: ${{ secrets.RENTMASSEUR_USERNAME || secrets.RENTMASSEUR_USER || secrets.RM_USER }}
+      RENTMASSEUR_PASSWORD: ${{ secrets.RENTMASSEUR_PASSWORD || secrets.RENTMASSEUR_PASS || secrets.RM_PASS }}
+      PROXY_URL: ${{ secrets.PROXY_URL }}
+      PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bounded browser dependencies
+        run: pip install 'selenium>=4.15' 'requests>=2.31'
+      - name: Restore latest telemetry database
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data output
+          ARTIFACT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=rm-visitor-telemetry-state&per_page=100" --jq '.artifacts | map(select(.expired == false)) | sort_by(.created_at) | reverse | .[0].id // empty')"
+          if [[ -n "$ARTIFACT_ID" ]]; then
+            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/rm-visitor-state.zip
+            unzip -o /tmp/rm-visitor-state.zip -d .
+          fi
+      - name: Collect visitor telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAX_PROFILES="${{ github.event.inputs.max_profiles || '0' }}"
+          COOLDOWN_HOURS="${{ github.event.inputs.cooldown_hours || '24' }}"
+          python3 -m rm_traffic.visitor_telemetry scan --cooldown-hours "$COOLDOWN_HOURS" --max-profiles "$MAX_PROFILES" --page-limit 25 --delay 2 --area new-york
+      - name: Verify telemetry outputs
+        run: |
+          test -s data/rm_visitor_telemetry.sqlite3
+          test -s output/rm_visitor_dashboard.html
+          test -s output/rm_visitor_telemetry.json
+          python3 -m rm_traffic.visitor_telemetry summary --area new-york
+      - name: Upload persistent telemetry state
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rm-visitor-telemetry-state
+          path: |
+            data/rm_visitor_telemetry.sqlite3
+            output/rm_visitor_dashboard.html
+            output/rm_visitor_telemetry.json
+          if-no-files-found: error
+          retention-days: 30
