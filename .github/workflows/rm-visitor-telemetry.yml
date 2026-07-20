@@ -1,6 +1,13 @@
 name: RM Visitor Telemetry — New York Visitors
 
 on:
+  pull_request:
+    paths:
+      - 'rm_traffic/visitor_telemetry.py'
+      - 'scripts/rm_visitor_telemetry.py'
+      - 'tests/test_visitor_telemetry.py'
+      - 'scripts/install_rm_visitor_telemetry_launchd.sh'
+      - '.github/workflows/rm-visitor-telemetry.yml'
   schedule:
     - cron: '17,47 * * * *'
   workflow_dispatch:
@@ -15,7 +22,7 @@ on:
         default: '24'
 
 concurrency:
-  group: rm-visitor-telemetry
+  group: rm-visitor-telemetry-${{ github.event_name }}
   cancel-in-progress: false
 
 permissions:
@@ -23,7 +30,22 @@ permissions:
   actions: read
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: pip install pytest requests
+      - name: Compile visitor telemetry
+        run: python3 -m py_compile rm_traffic/visitor_telemetry.py scripts/rm_visitor_telemetry.py
+      - name: Run visitor telemetry tests
+        run: python3 -m pytest tests/test_visitor_telemetry.py -v
+
   collect:
+    if: github.event_name != 'pull_request'
     runs-on: macos-15
     timeout-minutes: 45
     env:
