@@ -1,0 +1,10 @@
+{
+  "session_id": "5bad49352601",
+  "action": "fatal",
+  "status": "error",
+  "timestamp": "2026-07-30T18:03:31.214787+00:00",
+  "elapsed_s": 11.56,
+  "error": "Incorrect number of bindings supplied. The current statement uses 6, and there are 5 supplied.",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/hf-rentmasseur-optimizer/hf-rentmasseur-optimizer/rm_demo_agent.py\", line 1358, in main\n    record_visitor_sighting(\n  File \"/home/runner/work/hf-rentmasseur-optimizer/hf-rentmasseur-optimizer/rm_demo_agent.py\", line 185, in record_visitor_sighting\n    conn.execute(\"\"\"\nsqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement uses 6, and there are 5 supplied.\n",
+  "receipt_hash": "3d811552422f1159"
+}
