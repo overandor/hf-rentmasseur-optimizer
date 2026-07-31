@@ -370,3 +370,4 @@
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-07-31T20:14:24.637415+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-07-31T21:34:14.394818+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-07-31T22:42:35.199877+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
+{"packet_type": "rm_hourly_kpis", "timestamp": "2026-07-31T23:48:44.414939+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
