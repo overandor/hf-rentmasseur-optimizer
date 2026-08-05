@@ -1,0 +1,11 @@
+{
+  "session_id": "c0c018aa5a6d",
+  "action": "auto_message_summary",
+  "status": "pass",
+  "timestamp": "2026-08-05T11:06:13.413674+00:00",
+  "elapsed_s": 6.59,
+  "messaged_count": 0,
+  "skipped_count": 0,
+  "threshold": 3,
+  "receipt_hash": "10542ef8cfabb29d"
+}
