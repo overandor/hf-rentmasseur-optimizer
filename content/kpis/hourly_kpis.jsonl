@@ -427,3 +427,4 @@
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-08-05T18:30:59.938797+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-08-05T20:14:21.203693+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
 {"packet_type": "rm_hourly_kpis", "timestamp": "2026-08-05T21:38:41.231038+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
+{"packet_type": "rm_hourly_kpis", "timestamp": "2026-08-05T22:48:21.958428+00:00", "immortality": {"score": 0, "grade": "NO_DATA", "components": {}}, "virality": {"score": 0, "grade": "NO_DATA", "components": {}}, "metrics_snapshots_used": 0}
