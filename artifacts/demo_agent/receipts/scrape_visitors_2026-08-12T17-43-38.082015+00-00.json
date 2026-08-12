@@ -1,0 +1,9 @@
+{
+  "session_id": "3fa65e97d9f5",
+  "action": "scrape_visitors",
+  "status": "blocked",
+  "timestamp": "2026-08-12T17:43:38.082015+00:00",
+  "elapsed_s": 31.24,
+  "reason": "crowdsec_detected",
+  "receipt_hash": "c4e0eee28aa0701b"
+}
