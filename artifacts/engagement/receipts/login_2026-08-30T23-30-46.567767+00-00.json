@@ -1,0 +1,9 @@
+{
+  "session_id": "2153d9b71e9d",
+  "action": "login",
+  "status": "skipped",
+  "timestamp": "2026-08-30T23:30:46.567767+00:00",
+  "elapsed_s": 2.02,
+  "reason": "no_credentials",
+  "receipt_hash": "e2d9fd0ae22aad18"
+}
